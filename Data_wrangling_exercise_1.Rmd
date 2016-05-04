@@ -1,0 +1,103 @@
+---
+output: html_document
+---
+# Data Wrangling Exercise 1: Basic Data Manipulation
+Author: Eliza J. Villarino
+
+This contains the codes I've created for Data Wrangling Exercise 1: Basic Data Manipulation for Springboard's Data Science Workshop.
+
+1. Load the data in RStudio
+
+``` {r}
+refine_original <- read.csv("C:/Users/elizajv/Documents/Data science exercises/refine.csv", 1)
+View(refine_original)
+as.data.frame(refine_original)
+```
+
+2. Clean up brand names
+
+Standardize spelling of company names as "philips", "akzo", "van houten" and "unilever
+
+``` {r}
+refine_original$company[refine_original$company=="Phillips"] <- "philips"
+refine_original$company[refine_original$company=="philips"] <- "philips"
+refine_original$company[refine_original$company=="phllips"] <- "philips"
+refine_original$company[refine_original$company=="phillps"] <- "philips"
+refine_original$company[refine_original$company=="phillipS"] <- "philips"
+refine_original$company[refine_original$company=="fillips"] <- "philips"
+refine_original$company[refine_original$company=="phlips"] <- "philips"
+refine_original$company[refine_original$company=="Akzo"] <- "akzo"
+refine_original$company[refine_original$company=="akz0"] <- "akzo"
+refine_original$company[refine_original$company=="ak zo"] <- "akzo"
+refine_original$company[refine_original$company=="AKZO"] <- "akzo"
+refine_original$company[refine_original$company=="Van Houten"] <- "van houten"
+refine_original$company[refine_original$company=="van Houten"] <- "van houten"
+refine_original$company[refine_original$company=="unilver"] <- "unilever"
+refine_original$company[refine_original$company=="Unilever"] <- "unilever"
+```
+
+3. Separate product code and number
+
+Split *Product.code...number* into *product_code* and *product_number*, respectively; add *product_code* and *product_number* to the dataframe
+
+```{r}
+refine_original$Product.code...number <- as.character(refine_original$Product.code...number)
+product_code_number_split <- strsplit(refine_original$Product.code...number, split = "-")
+select_el <- function(x, index) {x[index]}
+product_code <- lapply(product_code_number_split, select_el, index = 1) 
+product_number <- lapply(product_code_number_split, select_el, index = 2) 
+refine_original$product_code <- product_code
+refine_original$product_number <- product_number
+refine_original$Product.code...number <- NULL
+```
+
+4. Add product categories
+
+Create the variable *product_category* with observations "Smartphone", "TV", "Laptop" and "Tablet" as equivalent to "p", "v", "x" and "q" in the product_code column
+
+```{r}
+product_category <- c("Smartphone", "Smartphone", "Laptop", "Laptop", "Laptop", "Smartphone", "TV", "TV", "Laptop", "Smartphone", "Tablet", "Tablet", "Laptop", "Smartphone", "TV", "TV", "Laptop", "TV", "TV", "Laptop", "Smartphone", "Laptop", "Tablet", "Tablet", "Tablet")  
+refine_original$product_category <- product_category
+```
+
+5. Add full address for geocoding
+
+Concatenate *full_address* with variables "address", "city" and "country" separated by commas then add *full_address* to the dataframe
+
+```{r}
+full_address <- as.character(paste(refine_original$address, refine_original$city, refine_original$country, sep = ","))
+refine_original$full_address <- full_address
+refine_original$address <- NULL 
+refine_original$city <- NULL
+refine_original$country <- NULL
+```
+
+6. Create dummy variables for company and product category
+
+Create binary variables for company names and product categories and add them to the dataframe
+
+``` {r}
+company_philips <- as.numeric(refine_original$company == "philips")
+company_akzo <- as.numeric(refine_original$company == "akzo")
+company_van_houten <- as.numeric(refine_original$company == "van houten")
+company_unilever <- as.numeric(refine_original$company == "unilever")
+product_smartphone <- as.numeric(refine_original$product_category == "Smartphone")
+product_tv <- as.numeric(refine_original$product_category == "TV")
+product_laptop <- as.numeric(refine_original$product_category == "Laptop")
+product_tablet <- as.numeric(refine_original$product_category == "Tablet")
+refine_original$company_philips <- company_philips
+refine_original$company_akzo <- company_akzo
+refine_original$company_unilever <- company_unilever 
+refine_original$company_van_houten <- company_van_houten
+refine_original$product_smartphone <- product_smartphone
+refine_original$product_tv <- product_tv
+refine_original$product_laptop <- product_laptop
+refine_original$product_tablet <- product_tablet
+```
+
+8. Save cleaned data 
+
+``` {r}
+refine_clean <- refine_original
+as.data.frame(refine_clean)
+```

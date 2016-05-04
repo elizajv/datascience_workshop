@@ -2,6 +2,7 @@
 output: html_document
 ---
 # Data Wrangling Exercise 1: Basic Data Manipulation
+Author: Eliza J. Villarino
 
 This contains the codes I've created for Data Wrangling Exercise 1: Basic Data Manipulation for Springboard's Data Science Workshop.
 
@@ -45,8 +46,8 @@ product_code_number_split <- strsplit(refine_original$Product.code...number, spl
 select_el <- function(x, index) {x[index]}
 product_code <- lapply(product_code_number_split, select_el, index = 1) 
 product_number <- lapply(product_code_number_split, select_el, index = 2) 
-refine_original$product_code <- product_code
-refine_original$product_number <- product_number
+refine_original$product_code <- as.character(product_code)
+refine_original$product_number <- as.numeric(product_number)
 refine_original$Product.code...number <- NULL
 ```
 
@@ -56,7 +57,7 @@ Create the variable *product_category* with observations "Smartphone", "TV", "La
 
 ```{r}
 product_category <- c("Smartphone", "Smartphone", "Laptop", "Laptop", "Laptop", "Smartphone", "TV", "TV", "Laptop", "Smartphone", "Tablet", "Tablet", "Laptop", "Smartphone", "TV", "TV", "Laptop", "TV", "TV", "Laptop", "Smartphone", "Laptop", "Tablet", "Tablet", "Tablet")  
-refine_original$product_category <- product_category
+refine_original$product_category <- as.character(product_category)
 ```
 
 5. Add full address for geocoding
@@ -98,5 +99,5 @@ refine_original$product_tablet <- product_tablet
 
 ``` {r}
 refine_clean <- refine_original
-as.data.frame(refine_clean)
+write.csv(refine_clean, "refine_clean.csv")
 ```

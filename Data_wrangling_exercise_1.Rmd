@@ -2,7 +2,6 @@
 output: html_document
 ---
 # Data Wrangling Exercise 1: Basic Data Manipulation
-Author: Eliza J. Villarino
 
 This contains the codes I've created for Data Wrangling Exercise 1: Basic Data Manipulation for Springboard's Data Science Workshop.
 

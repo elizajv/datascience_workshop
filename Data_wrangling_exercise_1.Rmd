@@ -6,7 +6,7 @@ Author: Eliza J. Villarino
 
 This contains the codes I've created for Data Wrangling Exercise 1: Basic Data Manipulation for Springboard's Data Science Workshop.
 
-1. Load the data in RStudio
+### Load the data in RStudio
 
 ``` {r}
 refine_original <- read.csv("C:/Users/elizajv/Documents/Data science exercises/refine.csv", 1)
@@ -14,7 +14,7 @@ View(refine_original)
 as.data.frame(refine_original)
 ```
 
-2. Clean up brand names
+### Clean up brand names
 
 Standardize spelling of company names as "philips", "akzo", "van houten" and "unilever
 
@@ -36,7 +36,7 @@ refine_original$company[refine_original$company=="unilver"] <- "unilever"
 refine_original$company[refine_original$company=="Unilever"] <- "unilever"
 ```
 
-3. Separate product code and number
+### Separate product code and number
 
 Split *Product.code...number* into *product_code* and *product_number*, respectively; add *product_code* and *product_number* to the dataframe
 
@@ -51,7 +51,7 @@ refine_original$product_number <- as.numeric(product_number)
 refine_original$Product.code...number <- NULL
 ```
 
-4. Add product categories
+### Add product categories
 
 Create the variable *product_category* with observations "Smartphone", "TV", "Laptop" and "Tablet" as equivalent to "p", "v", "x" and "q" in the product_code column
 
@@ -60,7 +60,7 @@ product_category <- c("Smartphone", "Smartphone", "Laptop", "Laptop", "Laptop", 
 refine_original$product_category <- as.character(product_category)
 ```
 
-5. Add full address for geocoding
+### Add full address for geocoding
 
 Concatenate *full_address* with variables "address", "city" and "country" separated by commas then add *full_address* to the dataframe
 
@@ -72,7 +72,7 @@ refine_original$city <- NULL
 refine_original$country <- NULL
 ```
 
-6. Create dummy variables for company and product category
+### Create dummy variables for company and product category
 
 Create binary variables for company names and product categories and add them to the dataframe
 
@@ -95,7 +95,7 @@ refine_original$product_laptop <- product_laptop
 refine_original$product_tablet <- product_tablet
 ```
 
-8. Save cleaned data 
+### Save cleaned data 
 
 ``` {r}
 refine_clean <- refine_original

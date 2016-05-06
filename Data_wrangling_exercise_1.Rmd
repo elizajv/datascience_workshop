@@ -56,8 +56,9 @@ refine_original$Product.code...number <- NULL
 Create the variable *product_category* with observations "Smartphone", "TV", "Laptop" and "Tablet" as equivalent to "p", "v", "x" and "q" in the product_code column
 
 ```{r}
-product_category <- c("Smartphone", "Smartphone", "Laptop", "Laptop", "Laptop", "Smartphone", "TV", "TV", "Laptop", "Smartphone", "Tablet", "Tablet", "Laptop", "Smartphone", "TV", "TV", "Laptop", "TV", "TV", "Laptop", "Smartphone", "Laptop", "Tablet", "Tablet", "Tablet")  
-refine_original$product_category <- as.character(product_category)
+y <- refine_original$product_code
+x <- c("Smartphone", "TV", "Laptop", "Tablet")
+refine_original$product_category <- ifelse(y == "p", x[1], ifelse(y == "v", x[2], ifelse(y == "x", x[3], ifelse(y == "q", x[4], NA))))
 ```
 
 ### Add full address for geocoding

@@ -9,7 +9,10 @@ Download and save the *titanic* dataset as *titanic_original.csv*. Load the *tit
 
 ``` {r}
 titanic_original <- read.csv("C:/Users/elizajv/Documents/Data science exercises/titanic3.csv")
-View(titanic_original)
+
+library(tidyr)
+library(plyr)
+library(dplyr)
 ```
 
 ### Find and replace missing values in the *embarked* column
@@ -20,11 +23,12 @@ Find the missing values in the *embarked* column and replace them with "S".
 titanic_original$embarked[titanic_original$embarked == ''] <- "S"
 ```
 
-### Replace missing values in *age* column with the mean of all missing values
+### Replace missing values in *age* column with the mean of all complete values
 
 
 ```{r}
-titanic_original$age[titanic_original$age == NA] <- mean(titanic_original$age, na.rm=T)
+titanic_original$age <- titanic_original %>% select(age) %>%
+  replace_na(list(age=mean(titanic_original$age, na.rm=T)))
 ```
 
 ### Fill empty slots in *boat* column with NA
@@ -33,14 +37,17 @@ titanic_original$age[titanic_original$age == NA] <- mean(titanic_original$age, n
 titanic_original$boat[titanic_original$boat == ''] <- NA
 ```
 
-### Fill missing values in the *cabin* column with NA
-
-```{r}
-titanic_original$cabin[titanic_original$cabin == ''] <- NA
-```
-
 ### Create *has_cabin_number* column
 
-Create *has_cabin_number* column with values 1 for complete cases and 0 for NA values in the *cabin* column.
+Create *has_cabin_number* column with values 1 for complete cases and 0 for missing values in the *cabin* column.
 
+```{r}
+titanic_original$has_cabin_number <- ifelse(titanic_original$cabin=="", 0, 1)
+```
 
+### Save the cleaned data
+
+``` {r}
+titanic_clean <- titanic_original
+write.csv(titanic_clean, "titanic_clean.csv")
+```

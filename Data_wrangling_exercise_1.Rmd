@@ -48,7 +48,6 @@ product_code <- lapply(product_code_number_split, select_el, index = 1)
 product_number <- lapply(product_code_number_split, select_el, index = 2) 
 refine_original$product_code <- as.character(product_code)
 refine_original$product_number <- as.numeric(product_number)
-refine_original$Product.code...number <- NULL
 ```
 
 ### Add product categories
@@ -68,9 +67,6 @@ Concatenate *full_address* with variables "address", "city" and "country" separa
 ```{r}
 full_address <- as.character(paste(refine_original$address, refine_original$city, refine_original$country, sep = ","))
 refine_original$full_address <- full_address
-refine_original$address <- NULL 
-refine_original$city <- NULL
-refine_original$country <- NULL
 ```
 
 ### Create dummy variables for company and product category

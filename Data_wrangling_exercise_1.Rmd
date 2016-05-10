@@ -2,10 +2,11 @@
 output: html_document
 ---
 # Data Wrangling Exercise 1: Basic Data Manipulation
+Author: Eliza J. Villarino
 
 This contains the codes I've created for Data Wrangling Exercise 1: Basic Data Manipulation for Springboard's Data Science Workshop.
 
-1. Load the data in RStudio
+### Load the data in RStudio
 
 ``` {r}
 refine_original <- read.csv("C:/Users/elizajv/Documents/Data science exercises/refine.csv", 1)
@@ -13,7 +14,7 @@ View(refine_original)
 as.data.frame(refine_original)
 ```
 
-2. Clean up brand names
+### Clean up brand names
 
 Standardize spelling of company names as "philips", "akzo", "van houten" and "unilever
 
@@ -35,7 +36,7 @@ refine_original$company[refine_original$company=="unilver"] <- "unilever"
 refine_original$company[refine_original$company=="Unilever"] <- "unilever"
 ```
 
-3. Separate product code and number
+### Separate product code and number
 
 Split *Product.code...number* into *product_code* and *product_number*, respectively; add *product_code* and *product_number* to the dataframe
 
@@ -45,58 +46,47 @@ product_code_number_split <- strsplit(refine_original$Product.code...number, spl
 select_el <- function(x, index) {x[index]}
 product_code <- lapply(product_code_number_split, select_el, index = 1) 
 product_number <- lapply(product_code_number_split, select_el, index = 2) 
-refine_original$product_code <- product_code
-refine_original$product_number <- product_number
-refine_original$Product.code...number <- NULL
+refine_original$product_code <- as.character(product_code)
+refine_original$product_number <- as.numeric(product_number)
 ```
 
-4. Add product categories
+### Add product categories
 
 Create the variable *product_category* with observations "Smartphone", "TV", "Laptop" and "Tablet" as equivalent to "p", "v", "x" and "q" in the product_code column
 
 ```{r}
-product_category <- c("Smartphone", "Smartphone", "Laptop", "Laptop", "Laptop", "Smartphone", "TV", "TV", "Laptop", "Smartphone", "Tablet", "Tablet", "Laptop", "Smartphone", "TV", "TV", "Laptop", "TV", "TV", "Laptop", "Smartphone", "Laptop", "Tablet", "Tablet", "Tablet")  
-refine_original$product_category <- product_category
+y <- refine_original$product_code
+x <- c("Smartphone", "TV", "Laptop", "Tablet")
+refine_original$product_category <- ifelse(y == "p", x[1], ifelse(y == "v", x[2], ifelse(y == "x", x[3], ifelse(y == "q", x[4], NA))))
 ```
 
-5. Add full address for geocoding
+### Add full address for geocoding
 
 Concatenate *full_address* with variables "address", "city" and "country" separated by commas then add *full_address* to the dataframe
 
 ```{r}
 full_address <- as.character(paste(refine_original$address, refine_original$city, refine_original$country, sep = ","))
 refine_original$full_address <- full_address
-refine_original$address <- NULL 
-refine_original$city <- NULL
-refine_original$country <- NULL
 ```
 
-6. Create dummy variables for company and product category
+### Create dummy variables for company and product category
 
 Create binary variables for company names and product categories and add them to the dataframe
 
 ``` {r}
-company_philips <- as.numeric(refine_original$company == "philips")
-company_akzo <- as.numeric(refine_original$company == "akzo")
-company_van_houten <- as.numeric(refine_original$company == "van houten")
-company_unilever <- as.numeric(refine_original$company == "unilever")
-product_smartphone <- as.numeric(refine_original$product_category == "Smartphone")
-product_tv <- as.numeric(refine_original$product_category == "TV")
-product_laptop <- as.numeric(refine_original$product_category == "Laptop")
-product_tablet <- as.numeric(refine_original$product_category == "Tablet")
-refine_original$company_philips <- company_philips
-refine_original$company_akzo <- company_akzo
-refine_original$company_unilever <- company_unilever 
-refine_original$company_van_houten <- company_van_houten
-refine_original$product_smartphone <- product_smartphone
-refine_original$product_tv <- product_tv
-refine_original$product_laptop <- product_laptop
-refine_original$product_tablet <- product_tablet
+refine_original$company_philips <- as.numeric(refine_original$company == "philips")
+refine_original$company_akzo <- as.numeric(refine_original$company == "akzo")
+refine_original$company_van_houten <- as.numeric(refine_original$company == "van houten")
+refine_original$company_unilever <- as.numeric(refine_original$company == "unilever")
+refine_original$product_smartphone <- as.numeric(refine_original$product_category == "Smartphone")
+refine_original$product_tv <- as.numeric(refine_original$product_category == "TV")
+refine_original$product_laptop <- as.numeric(refine_original$product_category == "Laptop")
+refine_original$product_tablet <- as.numeric(refine_original$product_category == "Tablet")
 ```
 
-8. Save cleaned data 
+### Save cleaned data 
 
 ``` {r}
 refine_clean <- refine_original
-as.data.frame(refine_clean)
+write.csv(refine_clean, "refine_clean.csv")
 ```

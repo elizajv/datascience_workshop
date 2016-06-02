@@ -426,6 +426,3 @@ count_4lang <- count(rwjobsall$language_freq==4)
 count_3lang <- count(rwjobsall$language_freq==3)
 count_2lang <- count(rwjobsall$language_freq==2)
 count_1lang <- count(rwjobsall$language_freq==1)
-
-
-total_language <- sum(total_French, total_English, total_Spanish, total_Italian, total_Arabic, total_local, total_Russian, total_Portuguese)

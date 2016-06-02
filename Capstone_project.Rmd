@@ -418,7 +418,6 @@ local_percentage <- total_local / nrow(rwjobsall)
 total_language <- sum(rwjobsall$language_freq)
 
 ## Count occurences of single and multiple languages
-library(plyr)
 count_7lang <- count(rwjobsall$language_freq==7)
 count_6lang <- count(rwjobsall$language_freq==6)
 count_5lang <- count(rwjobsall$language_freq==5)

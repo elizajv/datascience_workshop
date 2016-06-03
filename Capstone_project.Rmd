@@ -7,7 +7,7 @@ This contains codes for my Data Science Workshop capstone project:
 library(jsonlite) 
 
 ## Assign extracted API data to "rwjobs"
-rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?limit=1000&filter[field]=date.created&filter[value][from]=2016-05-24T00:00:00%2B00:00&filter[value][to]=2016-05-31T00:00:00%2B00:00&&fields[include][]title&fields[include][]=body&fields[include][]=theme&fields[include][]=country&fields[include][]=type&fields[include][]=experience&fields[include][]=career_categories")
+"rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?offset=9000&limit=1000&preset=analysis&fields[include][]title&fields[include][]=body&fields[include][]=theme&fields[include][]=country&fields[include][]=type&fields[include][]=experience&fields[include][]=career_categories&fields[include][]=date.created")
 
 ## Assign data set to "rwjobs1" and review column names
 rwjobs1 <- rwjobsraw1$data$fields
@@ -27,46 +27,19 @@ rwjobs1$career_categories <- llply(rwjobs1$career_categories, unlist)
 rwjobs1$country <- llply(rwjobs1$country, unlist)
 
 ## Clean dataset by removing unneccesary characters and splitting strings 
+rwjobs1$date <- llply(rwjobs1$date, unlist)
+
+## Clean dataset by removing unneccesary characters and splitting strings 
 rwjobs1$type <- gsub("\\c\\(", "", rwjobs1$type)
 rwjobs1$type <- gsub("\"", "", rwjobs1$type)
 rwjobs1$type <- gsub("\\)", "", rwjobs1$type)
 rwjobs1$type <- as.character(rwjobs1$type)
-type_split <- strsplit(rwjobs1$type, split = ",")
-select_el <- function(x, index) {x[index]}
-type_id <- lapply(type_split, select_el, index = 1) 
-type_name <- lapply(type_split, select_el, index = 2) 
-rwjobs1$type_id <- as.character(type_id)
-rwjobs1$type_name <- as.character(type_name)
-rwjobs1$type <- NULL
-
-rwjobs1$career_categories <- gsub("\\c\\(", "", rwjobs1$career_categories)
-rwjobs1$career_categories <- gsub("\"", "", rwjobs1$career_categories)
-rwjobs1$career_categories <- gsub("\\)", "", rwjobs1$career_categories)
-rwjobs1$career_categories <- as.character(rwjobs1$career_categories)
-career_categories_split <- strsplit(rwjobs1$career_categories, split = ",")
-select_el <- function(x, index) {x[index]}
-career_categories_id <- lapply(career_categories_split, select_el, index = 1) 
-career_categories_name <- lapply(career_categories_split, select_el, index = 2) 
-rwjobs1$career_categories_id <- as.character(career_categories_id)
-rwjobs1$career_categories_name <- as.character(career_categories_name)
-rwjobs1$career_categories <- NULL
-
-rwjobs1$theme <- gsub("\\c\\(", "", rwjobs1$theme)
-rwjobs1$theme <- gsub("\"", "", rwjobs1$theme)
-rwjobs1$theme <- gsub("\\)", "", rwjobs1$theme)
-rwjobs1$theme <- as.character(rwjobs1$theme)
-theme_split <- strsplit(rwjobs1$theme, split = ",")
-select_el <- function(x, index) {x[index]}
-theme_id <- lapply(theme_split, select_el, index = 1) 
-theme_name <- lapply(theme_split, select_el, index = 2) 
-rwjobs1$theme_id <- as.character(theme_id)
-rwjobs1$theme_name <- as.character(theme_name)
-rwjobs1$theme <- NULL
+rwjobs1$type <- gsub("\\d+\\,", "", rwjobs1$type)
 
 rwjobs1$experience <- gsub("\\c\\(", "", rwjobs1$experience)
 rwjobs1$experience <- gsub("\"", "", rwjobs1$experience)
 rwjobs1$experience <- gsub("\\years\\)", "", rwjobs1$experience)
-rwjobs1$experience <- as.character(rwjobs1$experience)
+rwjobs1$experience <- gsub("\\)", "", rwjobs1$experience)
 experience_split <- strsplit(rwjobs1$experience, split = ",")
 select_el <- function(x, index) {x[index]}
 experience_id <- lapply(experience_split, select_el, index = 1) 
@@ -91,19 +64,49 @@ country_iso <- lapply(country_split, select_el, index = 6)
 country_sn <- lapply(country_split, select_el, index = 7)
 rwjobs1$country_id <- as.character(country_id)
 rwjobs1$country_name <- as.character(country_name)
-rwjobs1$country <- NULL 
+rwjobs1$country <- rwjobs1$country_name 
+rwjobs1$country_id <- NULL
+rwjobs1$country_name <- NULL
+
+rwjobs1$career_categories <- gsub("\\c\\(", "", rwjobs1$career_categories)
+rwjobs1$career_categories <- gsub("\"", "", rwjobs1$career_categories)
+rwjobs1$career_categories <- gsub("\\)", "", rwjobs1$career_categories)
+rwjobs1$career_categories <- as.character(rwjobs1$career_categories)
+rwjobs1$career_categories <- gsub("\\d+\\,", "", rwjobs1$career_categories)
+
+rwjobs1$theme <- gsub("\\c\\(", "", rwjobs1$theme)
+rwjobs1$theme <- gsub("\"", "", rwjobs1$theme)
+rwjobs1$theme <- gsub("\\)", "", rwjobs1$theme)
+rwjobs1$theme <- gsub("\\d+\\,", "", rwjobs1$theme)
+
+rwjobs1$date <- gsub("\\c\\(", "", rwjobs1$date)
+rwjobs1$date <- gsub("\"", "", rwjobs1$date)
+date_split <- strsplit(rwjobs1$date, split = "-")
+select_el <- function(x, index) {x[index]}
+year <- lapply(date_split, select_el, index = 1) 
+month <- lapply(type_split, select_el, index = 2) 
+day <- lapply(type_split, select_el, index = 3) 
+rwjobs1$year <- as.character(year)
+rwjobs1$date <- NULL
+rwjobs1$year[1000]
 
 ## Save dataset into a csv file, amending the csv file name depending on the batch of data extracted
-write.csv(rwjobs1, "rwjobs5.csv")
+write.csv(rwjobs1, "rwjobs1.csv")
 
 ## Combine cleaned dataset
 rwjobs1 <- read.csv("C:/Users/elizajv/Documents/rwjobs1.csv", 1)
 rwjobs2 <- read.csv("C:/Users/elizajv/Documents/rwjobs2.csv", 1)
 rwjobs3 <- read.csv("C:/Users/elizajv/Documents/rwjobs3.csv", 1)
-rwjobsall <- rbind(rwjobs1, rwjobs2, rwjobs3)
+rwjobs4 <- read.csv("C:/Users/elizajv/Documents/rwjobs4.csv", 1)
+rwjobs5 <- read.csv("C:/Users/elizajv/Documents/rwjobs5.csv", 1)
+rwjobs6 <- read.csv("C:/Users/elizajv/Documents/rwjobs6.csv", 1)
+rwjobs7 <- read.csv("C:/Users/elizajv/Documents/rwjobs7.csv", 1)
+rwjobs8 <- read.csv("C:/Users/elizajv/Documents/rwjobs8.csv", 1)
+rwjobs9 <- read.csv("C:/Users/elizajv/Documents/rwjobs9.csv", 1)
+rwjobs2016 <- rbind(rwjobs1, rwjobs2, rwjobs3, rwjobs4, rwjobs5, rwjobs6, rwjobs7, rwjobs8, rwjobs9)
 
 ## View combined dataset
-View(rwjobsall)
+View(rwjobs2016)
 
 ## Remove unnecessary column
 rwjobsall$X <- NULL

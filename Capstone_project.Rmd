@@ -1,23 +1,22 @@
 This contains codes for my Data Science Workshop capstone project:
 
 ```{r}
+
+## Load packages
+library(jsonlite)
+library(plyr)
+library(stringr)
+library(tidyr)
+library(dplyr)
+library(gdata)
+
 ## Extract data from Reliefweb API
-
-## Load jsonlite package
-library(jsonlite) 
-
-## Assign extracted API data to "rwjobs"
 "rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?offset=9000&limit=1000&preset=analysis&fields[include][]title&fields[include][]=body&fields[include][]=theme&fields[include][]=country&fields[include][]=type&fields[include][]=experience&fields[include][]=career_categories&fields[include][]=date.created")
 
-## Assign data set to "rwjobs1" and review column names
+## Assign data set to "rwjobs1" and view dataset
 rwjobs1 <- rwjobsraw1$data$fields
 colnames(rwjobs1)
-
-## View data set
 View(rwjobs1)
-
-## Load plyr package
-library(plyr)
 
 ## Unlist nested lists
 rwjobs1$theme <- llply(rwjobs1$theme, unlist)
@@ -25,9 +24,6 @@ rwjobs1$type <- llply(rwjobs1$type, unlist)
 rwjobs1$experience <- llply(rwjobs1$experience, unlist)
 rwjobs1$career_categories <- llply(rwjobs1$career_categories, unlist)
 rwjobs1$country <- llply(rwjobs1$country, unlist)
-
-## Clean dataset by removing unneccesary characters and splitting strings 
-rwjobs1$date <- llply(rwjobs1$date, unlist)
 
 ## Clean dataset by removing unneccesary characters and splitting strings 
 rwjobs1$type <- gsub("\\c\\(", "", rwjobs1$type)
@@ -52,20 +48,13 @@ rwjobs1$experience <- NULL
 rwjobs1$country <- gsub("\\c\\(", "", rwjobs1$country)
 rwjobs1$country <- gsub("\"", "", rwjobs1$country)
 rwjobs1$country <- gsub("\\)", "", rwjobs1$country)
+rwjobs1$country <- gsub('http\\S*\\s*', "", rwjobs1$country)
 rwjobs1$country <- as.character(rwjobs1$country)
 country_split <- strsplit(rwjobs1$country, split = ",")
 select_el <- function(x, index) {x[index]}
-country_href <- lapply(country_split, select_el, index = 1) 
-country_id <- lapply(country_split, select_el, index = 2) 
-country_location1 <- lapply(country_split, select_el, index = 3) 
-country_location2 <- lapply(country_split, select_el, index = 4) 
-country_name <- lapply(country_split, select_el, index = 5) 
-country_iso <- lapply(country_split, select_el, index = 6)
-country_sn <- lapply(country_split, select_el, index = 7)
-rwjobs1$country_id <- as.character(country_id)
+country_name <- lapply(country_split, select_el, index = 4)
 rwjobs1$country_name <- as.character(country_name)
-rwjobs1$country <- rwjobs1$country_name 
-rwjobs1$country_id <- NULL
+rwjobs1$country <- rwjobs1$country_name
 rwjobs1$country_name <- NULL
 
 rwjobs1$career_categories <- gsub("\\c\\(", "", rwjobs1$career_categories)
@@ -84,16 +73,20 @@ rwjobs1$date <- gsub("\"", "", rwjobs1$date)
 date_split <- strsplit(rwjobs1$date, split = "-")
 select_el <- function(x, index) {x[index]}
 year <- lapply(date_split, select_el, index = 1) 
-month <- lapply(type_split, select_el, index = 2) 
-day <- lapply(type_split, select_el, index = 3) 
+month <- lapply(date_split, select_el, index = 2) 
+day <- lapply(date_split, select_el, index = 3) 
 rwjobs1$year <- as.character(year)
+rwjobs1$month <- as.character(month)
 rwjobs1$date <- NULL
+rwjobs1$year[1]
 rwjobs1$year[1000]
+rwjobs1$month[1]
+rwjobs1$month[1000]
 
 ## Save dataset into a csv file, amending the csv file name depending on the batch of data extracted
 write.csv(rwjobs1, "rwjobs1.csv")
 
-## Combine cleaned dataset
+## Combine and view cleaned dataset
 rwjobs1 <- read.csv("C:/Users/elizajv/Documents/rwjobs1.csv", 1)
 rwjobs2 <- read.csv("C:/Users/elizajv/Documents/rwjobs2.csv", 1)
 rwjobs3 <- read.csv("C:/Users/elizajv/Documents/rwjobs3.csv", 1)
@@ -101,330 +94,179 @@ rwjobs4 <- read.csv("C:/Users/elizajv/Documents/rwjobs4.csv", 1)
 rwjobs5 <- read.csv("C:/Users/elizajv/Documents/rwjobs5.csv", 1)
 rwjobs6 <- read.csv("C:/Users/elizajv/Documents/rwjobs6.csv", 1)
 rwjobs7 <- read.csv("C:/Users/elizajv/Documents/rwjobs7.csv", 1)
-rwjobs8 <- read.csv("C:/Users/elizajv/Documents/rwjobs8.csv", 1)
 rwjobs9 <- read.csv("C:/Users/elizajv/Documents/rwjobs9.csv", 1)
-rwjobs2016 <- rbind(rwjobs1, rwjobs2, rwjobs3, rwjobs4, rwjobs5, rwjobs6, rwjobs7, rwjobs8, rwjobs9)
-
-## View combined dataset
+rwjobs10 <- read.csv("C:/Users/elizajv/Documents/rwjobs10.csv", 1)
+rwjobs14 <- read.csv("C:/Users/elizajv/Documents/rwjobs14.csv", 1)
+rwjobs20 <- read.csv("C:/Users/elizajv/Documents/rwjobs20.csv", 1)
+rwjobs56 <- read.csv("C:/Users/elizajv/Documents/rwjobs56.csv", 1)
+rwjobs69 <- read.csv("C:/Users/elizajv/Documents/rwjobs69.csv", 1)
+rwjobs70 <- read.csv("C:/Users/elizajv/Documents/rwjobs70.csv", 1)
+rwjobs124 <- read.csv("C:/Users/elizajv/Documents/rwjobs124.csv", 1)
+rwjobs125 <- read.csv("C:/Users/elizajv/Documents/rwjobs125.csv", 1)
+rwjobs126 <- read.csv("C:/Users/elizajv/Documents/rwjobs126.csv", 1)
+rwjobs127 <- read.csv("C:/Users/elizajv/Documents/rwjobs127.csv", 1)
+rwjobs2016 <- rbind(rwjobs1, rwjobs2, rwjobs3, rwjobs4, rwjobs5, rwjobs6, rwjobs7, rwjobs9, rwjobs10, rwjobs14, rwjobs20, rwjobs56, rwjobs69, rwjobs70, rwjobs124, rwjobs125, rwjobs126, rwjobs127)
 View(rwjobs2016)
-
-## Remove unnecessary column
 rwjobsall$X <- NULL
 
 ## Create columns for languages
 
-## Load stringr package
-library(stringr)
+## Create columns based on language keywords in the "body" and "country_name" columns, with the latter based on which donor countries have made English an official language
+rwjobs2016$English1 <- as.vector(c(NA * 16799))
+rwjobs2016$English1 <- str_match(rwjobs2016$body, "English")
+rwjobs2016$English1 <- ifelse(rwjobs2016$English1 == "English", 1, 0)
+rwjobs2016$English1 <- unmatrix(rwjobs2016$English1)
+
+rwjobs2016$English2 <- as.vector(c(NA * 16799))
+rwjobs2016$English2 <- str_match(rwjobs2016$country, "United States")
+rwjobs2016$English2 <- ifelse(rwjobs2016$English2 == "United States", 1, 0)
+rwjobs2016$English2 <- unmatrix(rwjobs2016$English2)
+for (i in 1:length(rwjobs2016$English1))
+if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English2[i]=NA
+
+rwjobs2016$English3 <- as.vector(c(NA * 16799))
+rwjobs2016$English3 <- str_match(rwjobs2016$country, "United Kingdom")
+rwjobs2016$English3 <- ifelse(rwjobs2016$English3 == "United Kingdom", 1, 0)
+rwjobs2016$English3 <- unmatrix(rwjobs2016$English3)
+for (i in 1:length(rwjobs2016$English1))
+if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English3[i]=NA
+
+rwjobs2016$English4 <- as.vector(c(NA * 16799))
+rwjobs2016$English4 <- str_match(rwjobs2016$country, "Ireland")
+rwjobs2016$English4 <- ifelse(rwjobs2016$English4 == "Ireland", 1, 0)
+rwjobs2016$English4 <- unmatrix(rwjobs2016$English4)
+for (i in 1:length(rwjobs2016$English1))
+if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English4[i]=NA
+for (i in 1:length(rwjobs2016$English3))
+if (!is.na(rwjobs2016$English3[i])) rwjobs2016$English4[i]=NA
+
+rwjobs2016$English5 <- as.vector(c(NA * 16799))
+rwjobs2016$English5 <- str_match(rwjobs2016$country, "Canada")
+rwjobs2016$English5 <- ifelse(rwjobs2016$English5 == "Canada", 1, 0)
+rwjobs2016$English5 <- unmatrix(rwjobs2016$English5)
+for (i in 1:length(rwjobs2016$English1))
+if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English5[i]=NA
+
+rwjobs2016$English_total <- rowSums(rwjobs2016[, 11:16], na.rm = TRUE)
+
+rwjobs2016$French <- as.vector(c(NA * 16799))
+rwjobs2016$French <- str_match(rwjobs2016$body, "French")
+rwjobs2016$French <- ifelse(rwjobs2016$French == "French", 1, 0)
+rwjobs2016$French <- unmatrix(rwjobs2016$French)
+
+rwjobs2016$Arabic <- as.vector(c(NA * 16799))
+rwjobs2016$Arabic <- str_match(rwjobs2016$body, "Arabic") 
+rwjobs2016$Arabic <- ifelse(rwjobs2016$Arabic=="Arabic", 1, 0)
+rwjobs2016$Arabic <- unmatrix(rwjobs2016$Arabic)
+
+rwjobs2016$Spanish <- as.vector(c(NA * 16799))
+rwjobs2016$Spanish <- str_match(rwjobs2016$body, "Spanish") 
+rwjobs2016$Spanish <- ifelse(rwjobs2016$Spanish=="Spanish", 1, 0)
+rwjobs2016$Spanish <- unmatrix(rwjobs2016$Spanish)
+
+rwjobs2016$Russian <- as.vector(c(NA * 16799))
+rwjobs2016$Russian <- str_match(rwjobs2016$body, "Russian") 
+rwjobs2016$Russian <- ifelse(rwjobs2016$Russian=="Russian", 1, 0)
+rwjobs2016$Russian <- unmatrix(rwjobs2016$Russian)
+
+rwjobs2016$Chinese <- as.vector(c(NA * 16799))
+rwjobs2016$Chinese <- str_match(rwjobs2016$body, "Chinese") 
+rwjobs2016$Chinese <- ifelse(rwjobs2016$Chinese=="Chinese", 1, 0)
+rwjobs2016$Chinese <- unmatrix(rwjobs2016$Chinese)
+
+rwjobs2016$Italian <- as.vector(c(NA * 16799))
+rwjobs2016$Italian <- str_match(rwjobs2016$body, "Italian") 
+rwjobs2016$Italian <- ifelse(rwjobs2016$Italian=="Italian", 1, 0)
+rwjobs2016$Italian <- unmatrix(rwjobs2016$Italian)
+
+rwjobs2016$Portuguese <- as.vector(c(NA * 16799))
+rwjobs2016$Portuguese <- str_match(rwjobs2016$body, "Portuguese") 
+rwjobs2016$Portuguese <- ifelse(rwjobs2016$Portuguese=="Portuguese", 1, 0)
+rwjobs2016$Portuguese <- unmatrix(rwjobs2016$Portuguese)
+
+rwjobs2016$local <- as.vector(c(NA * 16799))
+rwjobs2016$local <- str_match(rwjobs2016$body, "local language") 
+rwjobs2016$local <- ifelse(rwjobs2016$local=="local language", 1, 0)
+rwjobs2016$local <- unmatrix(rwjobs2016$local)
+
+rwjobs2016$Swahili <- as.vector(c(NA * 16799))
+rwjobs2016$Swahili <- str_match(rwjobs2016$body, "Swahili") 
+rwjobs2016$Swahili <- ifelse(rwjobs2016$Swahili=="Swahili", 1, 0)
+rwjobs2016$Swahili <- unmatrix(rwjobs2016$Swahili)
+
+rwjobs2016$Urdu <- as.vector(c(NA * 16799))
+rwjobs2016$Urdu <- str_match(rwjobs2016$body, "Urdu") 
+rwjobs2016$Urdu <- ifelse(rwjobs2016$Urdu=="Urdu", 1, 0)
+rwjobs2016$Urdu <- unmatrix(rwjobs2016$Urdu)
+
+rwjobs2016$Bahasa <- as.vector(c(NA * 16799))
+rwjobs2016$Bahasa <- str_match(rwjobs2016$body, "Bahasa") 
+rwjobs2016$Bahasa <- ifelse(rwjobs2016$Bahasa=="Bahasa", 1, 0)
+rwjobs2016$Bahasa <- unmatrix(rwjobs2016$Bahasa)
+
+rwjobs2016$Hindi <- as.vector(c(NA * 16799))
+rwjobs2016$Hindi <- str_match(rwjobs2016$body, "Hindi") 
+rwjobs2016$Hindi <- ifelse(rwjobs2016$Hindi=="Hindi", 1, 0)
+rwjobs2016$Hindi <- unmatrix(rwjobs2016$Hindi)
+
+rwjobs2016$language_total <- rowSums(rwjobs2016[, 17:29], na.rm = TRUE)
+
+## Reassign dataset
+rwjobs2016fl <- filter(rwjobs2016, English_total == 1)
+View(rwjobs2016fl)
 
-## Create columns based on language keywords in the "body" and "country_name" columns
-rwjobsall$English <- str_match(rwjobsall$body, "English") ## when the "body" column mentions "English" 
-rwjobsall$English <- ifelse(rwjobsall$English=="English", 1, 0)
+## Create columns indicating fluency and/or working knowledge in English and another language 
+rwjobs2016fl$EF <- rwjobs2016fl$English_total + rwjobs2016fl$French
+rwjobs2016fl$EA <- rwjobs2016fl$English_total + rwjobs2016fl$Arabic
+rwjobs2016fl$ES <- rwjobs2016fl$English_total + rwjobs2016fl$Spanish
+rwjobs2016fl$ER <- rwjobs2016fl$English_total + rwjobs2016fl$Russian
+rwjobs2016fl$EC <- rwjobs2016fl$English_total + rwjobs2016fl$Chinese
+rwjobs2016fl$EI <- rwjobs2016fl$English_total + rwjobs2016fl$Italian
+rwjobs2016fl$EP <- rwjobs2016fl$English_total + rwjobs2016fl$Portuguese
+rwjobs2016fl$EL <- rwjobs2016fl$English_total + rwjobs2016fl$local
+rwjobs2016fl$ESw <- rwjobs2016fl$English_total + rwjobs2016fl$Swahili
+rwjobs2016fl$EU <- rwjobs2016fl$English_total + rwjobs2016fl$Urdu
+rwjobs2016fl$EB <- rwjobs2016fl$English_total + rwjobs2016fl$Bahasa
+rwjobs2016fl$EH <- rwjobs2016fl$English_total + rwjobs2016fl$Hindi
 
-rwjobsall$English2 <- str_match(rwjobsall$country_name, "United States of America") ## when the "country" column mentions "United States of America" where English is an official language
-rwjobsall$English2 <- ifelse(rwjobsall$English2=="United States of America", 1, 0) 
+## Determine bilingual frequencies
+## Determine overall bilingual frequencies
+total_EF <- sum(rwjobs2016fl$EF, na.rm = TRUE) / 2
+EF_percent <- total_EF / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English and English2 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English2[i]=NA
+total_EA <- sum(rwjobs2016fl$EA, na.rm = TRUE) / 2 
+EA_percent <- total_EA / nrow(rwjobs2016fl)
 
-rwjobsall$English3 <- str_match(rwjobsall$country_name, "United Kingdom") ## when the "country" column mentions "United Kingdom" where English is an official language
-rwjobsall$English3 <- ifelse(rwjobsall$English3=="United Kingdom", 1, 0)
+total_ES <- sum(rwjobs2016fl$ES, na.rm = TRUE) / 2 
+ES_percent <- total_ES / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English and English3 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English3[i]=NA
+total_ER <- sum(rwjobs2016fl$ER, na.rm = TRUE) / 2 
+ER_percent <- total_ER / nrow(rwjobs2016fl)
 
-rwjobsall$English4 <- str_match(rwjobsall$country_name, "Ireland") ## when the "country" column mentions "Ireland" where English is an official language
-rwjobsall$English4 <- ifelse(rwjobsall$English4=="Ireland", 1, 0)
+total_EC <- sum(rwjobs2016fl$EC, na.rm = TRUE) / 2 
+EC_percent <- total_EC / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English and English4 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English4[i]=NA
+total_EI <- sum(rwjobs2016fl$EI, na.rm = TRUE) / 2 
+EI_percent <- total_EI / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English3 and English4 columns
-for (i in 1:length(rwjobsall$English3))
-if (!is.na(rwjobsall$English3[i])) rwjobsall$English4[i]=NA
+total_EP <- sum(rwjobs2016fl$EP, na.rm = TRUE) / 2 
+EP_percent <- total_EP / nrow(rwjobs2016fl)
 
-rwjobsall$English5 <- str_match(rwjobsall$country_name, "Philippines") ## when the "country" column mentions "Philippines" where English is commonly used for communication and preparing reports
-rwjobsall$English5 <- ifelse(rwjobsall$English5=="Philippines", 1, 0)
+total_EL <- sum(rwjobs2016fl$EL, na.rm = TRUE) / 2 
+EL_percent <- total_EL / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English and English5 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English5[i]=NA
+total_ESw <- sum(rwjobs2016fl$ESw, na.rm = TRUE) / 2 
+ESw_percent <- total_ESw / nrow(rwjobs2016fl)
 
-rwjobsall$English6 <- str_match(rwjobsall$country_name, "Canada") ## when the "country" column mentions "Canada" where English is an official language
-rwjobsall$English6 <- ifelse(rwjobsall$English6=="Canada", 1, 0)
+total_EU <- sum(rwjobs2016fl$EU, na.rm = TRUE) / 2 
+EU_percent <- total_EU / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English and English6 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English6[i]=NA
+total_EB <- sum(rwjobs2016fl$EB, na.rm = TRUE) / 2 
+EB_percent <- total_EB / nrow(rwjobs2016fl)
 
-rwjobsall$English7 <- str_match(rwjobsall$country_name, "Australia") ## when the "country" column mentions "Australia" where English is an official language
-rwjobsall$English7 <- ifelse(rwjobsall$English7=="Australia", 1, 0)
+total_EH <- sum(rwjobs2016fl$EH, na.rm = TRUE) / 2 
+EH_percent <- total_EH / nrow(rwjobs2016fl)
 
-## Replace matching values of 1 between English and English7 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English7[i]=NA
+total_bilingual <- sum(total_EA, total_EF, total_ES, total_ER, total_EC, total_EI, total_EP, total_EL, total_ESw, total_EU, total_EB, total_EH)
 
-rwjobsall$English8 <- str_match(rwjobsall$country_name, "Nigeria") ## when the "country" column mentions "Nigeria" where English is an official language
-rwjobsall$English8 <- ifelse(rwjobsall$English8=="Nigeria", 1, 0)
-
-## Replace matching values of 1 between English and English8 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English8[i]=NA
-
-rwjobsall$English9 <- str_match(rwjobsall$country_name, "Liberia") ## when the "country" column mentions "Liberia" where English is an official language
-rwjobsall$English9 <- ifelse(rwjobsall$English9=="Liberia", 1, 0)
-
-## Replace matching values of 1 between English and English9 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English9[i]=NA
-
-rwjobsall$English10 <- str_match(rwjobsall$country_name, "Ghana") ## when the "country" column mentions "Ghana" where English is an official language
-rwjobsall$English10 <- ifelse(rwjobsall$English10=="Ghana", 1, 0)
-
-## Replace matching values of 1 between English and English10 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English10[i]=NA
-
-rwjobsall$English11 <- str_match(rwjobsall$country_name, "Gambia") ## when the "country" column mentions "Gambia" where English is an official language
-rwjobsall$English11 <- ifelse(rwjobsall$English11=="Gambia", 1, 0)
-
-## Replace matching values of 1 between English and English11 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English11[i]=NA
-
-rwjobsall$English12 <- str_match(rwjobsall$country_name, "Rwanda") ## when the "country" column mentions "Rwanda" where English is an official language
-rwjobsall$English12 <- ifelse(rwjobsall$English12=="Rwanda", 1, 0)
-
-## Replace matching values of 1 between English and English12 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English12[i]=NA
-
-rwjobsall$English13 <- str_match(rwjobsall$country_name, "Zambia") ## when the "country" column mentions "Zambia" where English is an official language
-rwjobsall$English13 <- ifelse(rwjobsall$English13=="Zambia", 1, 0)
-
-## Replace matching values of 1 between English and English13 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English13[i]=NA
-
-rwjobsall$English14 <- str_match(rwjobsall$country_name, "Uganda") ## when the "country" column mentions "Uganda" where English is an official language
-rwjobsall$English14 <- ifelse(rwjobsall$English14=="Uganda", 1, 0)
-
-## Replace matching values of 1 between English and English14 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English14[i]=NA
-
-rwjobsall$English15 <- str_match(rwjobsall$country_name, "Kenya") ## when the "country" column mentions "Kenya" where English is an official language
-rwjobsall$English15 <- ifelse(rwjobsall$English15=="Kenya", 1, 0)
-
-## Replace matching values of 1 between English and English15 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English15[i]=NA
-
-rwjobsall$English16 <- str_match(rwjobsall$country_name, "Malawi") ## when the "country" column mentions "Malawi" where English is an official language
-rwjobsall$English16 <- ifelse(rwjobsall$English16=="Malawi", 1, 0)
-
-## Replace matching values of 1 between English and English16 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English16[i]=NA
-
-rwjobsall$English17 <- str_match(rwjobsall$country_name, "Sierra Leone") ## when the "country" column mentions "Sierra Leone" where English is an official language
-rwjobsall$English17 <- ifelse(rwjobsall$English17=="Sierra Leone", 1, 0)
-
-## Replace matching values of 1 between English and English17 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English17[i]=NA
-
-rwjobsall$English18 <- str_match(rwjobsall$country_name, "South Africa") ## when the "country" column mentions "South Africa" where English is an official language
-rwjobsall$English18 <- ifelse(rwjobsall$English18=="South Africa", 1, 0)
-
-## Replace matching values of 1 between English and English18 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English18[i]=NA
-
-rwjobsall$English19 <- str_match(rwjobsall$country_name, "Pakistan") ## when the "country" column mentions "Pakistan" where English is an official language
-rwjobsall$English19 <- ifelse(rwjobsall$English19=="Pakistan", 1, 0)
-
-## Replace matching values of 1 between English and English19 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English19[i]=NA
-
-rwjobsall$English20 <- str_match(rwjobsall$country_name, "India") ## when the "country" column mentions "India" where English is a commonly used language and the job ad is written in English
-rwjobsall$English20 <- ifelse(rwjobsall$English20=="India", 1, 0)
-
-## Replace matching values of 1 between English and English20 columns
-for (i in 1:length(rwjobsall$English))
-if (!is.na(rwjobsall$English[i])) rwjobsall$English20[i]=NA
-
-rwjobsall$English21 <- c(NA * 1891) ## a column with NA values that will be replaced by "1" if the remaining job ads (following filtering and if don't have any language associated with them) are written in English  
-
-rwjobsall$French <- str_match(rwjobsall$body, "French") ## when the "body" column mentions "French" 
-rwjobsall$French <- ifelse(rwjobsall$French=="French", 1, 0)
-
-rwjobsall$French2 <- str_match(rwjobsall$body, "pour") ## when the "body" column mentions "pour" which is a common French conjunction/term 
-rwjobsall$French2 <- ifelse(rwjobsall$French2=="pour", 1, 0)
-
-## Replace matching values of 1 between French and French2 columns
-for (i in 1:length(rwjobsall$French))
-if (!is.na(rwjobsall$French[i])) rwjobsall$French2[i]=NA
-
-rwjobsall$French3 <- str_match(rwjobsall$country_name, "France") ## when the "country" column mentions "France" where French is an official language
-rwjobsall$French3 <- ifelse(rwjobsall$French3=="France", 1, 0)
-
-## Replace matching values of 1 between French, French2 and French3 columns
-for (i in 1:length(rwjobsall$French))
-if (!is.na(rwjobsall$French[i])) rwjobsall$French3[i]=NA
-for (i in 1:length(rwjobsall$French2))
-if (!is.na(rwjobsall$French2[i])) rwjobsall$French3[i]=NA
-
-rwjobsall$French4 <- str_match(rwjobsall$country_name, "Chad") ## when the "country" column mentions "Chad" where English is an official language
-rwjobsall$French4 <- ifelse(rwjobsall$French4=="Chad", 1, 0)
-
-## Replace matching values of 1 between French, French2 and French4 columns
-for (i in 1:length(rwjobsall$French))
-if (!is.na(rwjobsall$French[i])) rwjobsall$French4[i]=NA
-for (i in 1:length(rwjobsall$French2))
-if (!is.na(rwjobsall$French2[i])) rwjobsall$French4[i]=NA
-
-rwjobsall$French5 <- str_match(rwjobsall$country_name, "Democratic Republic of the Congo") ## when the "country" column mentions "Democratic Republic of the Congo" where English is an official language
-rwjobsall$French5 <- ifelse(rwjobsall$French5=="Democratic Republic of the Congo", 1, 0)
-
-## Replace matching values of 1 between French, French2 and French5 columns
-for (i in 1:length(rwjobsall$French))
-if (!is.na(rwjobsall$French[i])) rwjobsall$French5[i]=NA
-for (i in 1:length(rwjobsall$French2))
-if (!is.na(rwjobsall$French2[i])) rwjobsall$French5[i]=NA
-
-rwjobsall$French6 <- c(NA * 1891) ## a column with NA values that will be replaced by "1" if the remaining job ads (following filtering and if don't have any language associated with them) are written in French
-
-rwjobsall$Arabic <- str_match(rwjobsall$body, "Arabic") ## when the "body" column mentions "Arabic" 
-rwjobsall$Arabic <- ifelse(rwjobsall$Arabic=="Arabic", 1, 0)
-
-rwjobsall$Spanish <- str_match(rwjobsall$body, "Spanish") ## when the "body" column mentions "Spanish" 
-rwjobsall$Spanish <- ifelse(rwjobsall$Spanish=="Spanish", 1, 0)
-
-rwjobsall$Spanish2 <- str_match(rwjobsall$country_name, "Spain") ## when the "country" column mentions "Spain" where Spanish is an official language
-rwjobsall$Spanish2 <- ifelse(rwjobsall$Spanish2=="Spain", 1, 0)
-
-## Replace matching values of 1 between Spanish and Spanish2 columns
-for (i in 1:length(rwjobsall$Spanish))
-if (!is.na(rwjobsall$Spanish[i])) rwjobsall$Spanish2[i]=NA
-
-rwjobsall$Spanish3 <- str_match(rwjobsall$body, "es una") ## when the "body" column mentions "es una" which is a common Spanish phrase 
-rwjobsall$Spanish3 <- ifelse(rwjobsall$Spanish3=="es una", 1, 0)
-
-## Replace matching values of 1 between Spanish, Spanish2 and Spanish3 columns
-for (i in 1:length(rwjobsall$Spanish))
-if (!is.na(rwjobsall$Spanish[i])) rwjobsall$Spanish3[i]=NA
-for (i in 1:length(rwjobsall$Spanish2))
-if (!is.na(rwjobsall$Spanish2[i])) rwjobsall$Spanish3[i]=NA
-
-rwjobsall$Spanish4 <- str_match(rwjobsall$country_name, "Ecuador") ## when the "country" column mentions "Ecuador" where Spanish is an official language
-rwjobsall$Spanish4 <- ifelse(rwjobsall$Spanish4=="Ecuador", 1, 0)
-
-## Replace matching values of 1 between Spanish, Spanish3 and Spanish4 columns
-for (i in 1:length(rwjobsall$Spanish))
-if (!is.na(rwjobsall$Spanish[i])) rwjobsall$Spanish4[i]=NA
-for (i in 1:length(rwjobsall$Spanish3))
-if (!is.na(rwjobsall$Spanish3[i])) rwjobsall$Spanish4[i]=NA
-
-rwjobsall$Spanish5 <- str_match(rwjobsall$country_name, "Guatemala") ## when the "country" column mentions "Guatemala" where Spanish is an official language
-rwjobsall$Spanish5 <- ifelse(rwjobsall$Spanish5=="Guatemala", 1, 0)
-
-## Replace matching values of 1 between Spanish, Spanish3 and Spanish5 columns
-for (i in 1:length(rwjobsall$Spanish))
-if (!is.na(rwjobsall$Spanish[i])) rwjobsall$Spanish5[i]=NA
-for (i in 1:length(rwjobsall$Spanish3))
-if (!is.na(rwjobsall$Spanish3[i])) rwjobsall$Spanish5[i]=NA
-
-rwjobsall$Spanish6 <- c(NA * 1891) ## a column with NA values that will be replaced by "1" if the remaining job ads (following filtering and if don't have any language associated with them) are written in Spanish
-
-rwjobsall$Italian <- str_match(rwjobsall$body, "Italian") ## when the "body" column mentions "Italian" 
-rwjobsall$Italian <- ifelse(rwjobsall$Italian=="Italian", 1, 0)
-
-rwjobsall$Italian2 <- str_match(rwjobsall$country_name, "Italy") ## when the "country" column mentions "Italy" where Italian is an official language
-rwjobsall$Italian2 <- ifelse(rwjobsall$Italian2=="Italy", 1, 0)
-
-## Replace matching values of 1 between Italian and Italian2 columns
-for (i in 1:length(rwjobsall$Italian))
-if (!is.na(rwjobsall$Italian[i])) rwjobsall$Italian2[i]=NA
-
-rwjobsall$local <- str_match(rwjobsall$body, "local language") ## when the "body" column mentions "local language" 
-rwjobsall$local <- ifelse(rwjobsall$local=="local language", 1, 0)
-
-rwjobsall$local2 <- str_match(rwjobsall$body, "nationals") ## when the "body" column mentions "nationals" which suggests that the person to be hired will speak in the local language 
-rwjobsall$local2 <- ifelse(rwjobsall$local2=="nationals", 1, 0)
-
-## Replace matching values of 1 between local and local2 columns
-for (i in 1:length(rwjobsall$local))
-if (!is.na(rwjobsall$local[i])) rwjobsall$local2[i]=NA
-
-rwjobsall$local3 <- str_match(rwjobsall$body, "Swahili") ## when the "body" column mentions "Swahili" which is a local language in Africa 
-rwjobsall$local3 <- ifelse(rwjobsall$local3=="Swahili", 1, 0)
-
-## Replace matching values of 1 between local and local2 columns
-for (i in 1:length(rwjobsall$local))
-if (!is.na(rwjobsall$local[i])) rwjobsall$local3[i]=NA
-for (i in 1:length(rwjobsall$local2))
-if (!is.na(rwjobsall$local2[i])) rwjobsall$local3[i]=NA
-
-rwjobsall$Russian <- str_match(rwjobsall$body, "Russian") ## when the "body" column mentions "Russian"  
-rwjobsall$Russian <- ifelse(rwjobsall$Russian=="Russian", 1, 0)
-
-rwjobsall$Portuguese <- str_match(rwjobsall$body, "Portuguese") ## when the "body" column mentions "Portuguese"
-rwjobsall$Portuguese <- ifelse(rwjobsall$Portuguese=="Portuguese", 1, 0)
-
-rwjobsall$Portuguese2 <- str_match(rwjobsall$country_name, "Angola") ## when the "country" column mentions "Angol" where Portuguese is an official language
-rwjobsall$Portuguese2 <- ifelse(rwjobsall$Portuguese2=="Angola", 1, 0)
-
-## Replace matching values of 1 between local and local2 columns
-for (i in 1:length(rwjobsall$Portuguese))
-if (!is.na(rwjobsall$Portuguese[i])) rwjobsall$Portuguese2[i]=NA
-
-## Calculate frequncies by row
-rwjobsall$language_freq <- rowSums(rwjobsall[, 12:53], na.rm = TRUE)
-rwjobsall$English_freq <- rowSums(rwjobsall[, 12:32], na.rm = TRUE)
-rwjobsall$French_freq <- rowSums(rwjobsall[, 33:38], na.rm = TRUE)
-rwjobsall$Arabic_freq <- rowsum(rwjobsall[, 39], group = 1:1892, na.rm = TRUE)
-rwjobsall$Spanish_freq <- rowSums(rwjobsall[, 40:45], na.rm = TRUE)
-rwjobsall$Italian_freq <- rowSums(rwjobsall[, 46:47], na.rm = TRUE)
-rwjobsall$local_freq <- rowSums(rwjobsall[, 48:50], na.rm = TRUE)
-rwjobsall$Russian_freq <- rowsum(rwjobsall[, 51], group = 1:1890, na.rm = TRUE)
-rwjobsall$Portuguese_freq <- rowSums(rwjobsall[, 52:53], na.rm = TRUE)
-
-## Determine overall language frequencies
-total_English <- sum(rwjobsall$English_freq)
-English_percentage <- total_English / nrow(rwjobsall)
-
-total_French <- sum(rwjobsall$French_freq)
-French_percentage <- total_French / nrow(rwjobsall)
-
-total_Spanish <- sum(rwjobsall$Spanish_freq)
-Spanish_percentage <- total_Spanish / nrow(rwjobsall)
-
-total_Italian <- sum(rwjobsall$Italian_freq)
-Italian_percentage <- total_Italian / nrow(rwjobsall)
-
-total_Arabic <- sum(rwjobsall$Arabic_freq)
-Arabic_percentage <- total_Arabic / nrow(rwjobsall)
-
-total_Russian <- sum(rwjobsall$Russian_freq)
-Russian_percentage <- total_Russian / nrow(rwjobsall)
-
-total_Portuguese <- sum(rwjobsall$Portuguese_freq)
-Portuguese_percentage <- total_Portuguese / nrow(rwjobsall)
-
-total_local <- sum(rwjobsall$local_freq)
-local_percentage <- total_local / nrow(rwjobsall)
-
-total_language <- sum(rwjobsall$language_freq)
-
-## Count occurences of single and multiple languages
-count_7lang <- count(rwjobsall$language_freq==7)
-count_6lang <- count(rwjobsall$language_freq==6)
-count_5lang <- count(rwjobsall$language_freq==5)
-count_4lang <- count(rwjobsall$language_freq==4)
-count_3lang <- count(rwjobsall$language_freq==3)
-count_2lang <- count(rwjobsall$language_freq==2)
-count_1lang <- count(rwjobsall$language_freq==1)
+total_bilingual_percent <- total_bilingual / nrow(rwjobs2016fl)

@@ -211,7 +211,7 @@ rwjobs2016$Hindi <- unmatrix(rwjobs2016$Hindi)
 
 rwjobs2016$language_total <- rowSums(rwjobs2016[, 17:29], na.rm = TRUE)
 
-## Reassign dataset
+## Remove rows when values of total_English column is zero and  reassign dataset
 rwjobs2016fl <- filter(rwjobs2016, English_total == 1)
 View(rwjobs2016fl)
 

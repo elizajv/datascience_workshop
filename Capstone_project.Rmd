@@ -228,7 +228,6 @@ rwjobs2016fl$EB <- rwjobs2016fl$English_total + rwjobs2016fl$Bahasa
 rwjobs2016fl$EH <- rwjobs2016fl$English_total + rwjobs2016fl$Hindi
 
 ## Determine bilingual frequencies
-## Determine overall bilingual frequencies
 total_EF <- sum(rwjobs2016fl$EF, na.rm = TRUE) / 2
 EF_percent <- total_EF / nrow(rwjobs2016fl)
 

@@ -109,8 +109,6 @@ rwjobs2016 <- rbind(rwjobs1, rwjobs2, rwjobs3, rwjobs4, rwjobs5, rwjobs6, rwjobs
 View(rwjobs2016)
 rwjobsall$X <- NULL
 
-## Create columns for languages
-
 ## Create columns based on language keywords in the "body" and "country_name" columns, with the latter based on which donor countries have made English an official language
 rwjobs2016$English1 <- as.vector(c(NA * 16799))
 rwjobs2016$English1 <- str_match(rwjobs2016$body, "English")

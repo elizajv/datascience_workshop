@@ -9,6 +9,7 @@ library(stringr)
 library(tidyr)
 library(dplyr)
 library(gdata)
+library(scales)
 
 ## Extract data from Reliefweb API
 "rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?offset=9000&limit=1000&preset=analysis&fields[include][]title&fields[include][]=body&fields[include][]=theme&fields[include][]=country&fields[include][]=type&fields[include][]=experience&fields[include][]=career_categories&fields[include][]=date.created")
@@ -107,107 +108,154 @@ rwjobs126 <- read.csv("C:/Users/elizajv/Documents/rwjobs126.csv", 1)
 rwjobs127 <- read.csv("C:/Users/elizajv/Documents/rwjobs127.csv", 1)
 rwjobs2016 <- rbind(rwjobs1, rwjobs2, rwjobs3, rwjobs4, rwjobs5, rwjobs6, rwjobs7, rwjobs9, rwjobs10, rwjobs14, rwjobs20, rwjobs56, rwjobs69, rwjobs70, rwjobs124, rwjobs125, rwjobs126, rwjobs127)
 View(rwjobs2016)
+
+rwjobsall <- rbind(rwjobs2016, rwjobs2015, rwjobs2014, rwjobs2013, rwjobs2012, rwjobs2011)
+View(rwjobsall)
+
+## Remove unnecessary column
+
 rwjobsall$X <- NULL
 
 ## Create columns based on language keywords in the "body" and "country_name" columns, with the latter based on which donor countries have made English an official language
-rwjobs2016$English1 <- as.vector(c(NA * 16799))
-rwjobs2016$English1 <- str_match(rwjobs2016$body, "English")
-rwjobs2016$English1 <- ifelse(rwjobs2016$English1 == "English", 1, 0)
-rwjobs2016$English1 <- unmatrix(rwjobs2016$English1)
+rwjobsall$English1 <- as.vector(c(NA * 130576))
+rwjobsall$English1 <- str_match(rwjobsall$body, "English")
+rwjobsall$English1 <- ifelse(rwjobsall$English1 == "English", 1, 0)
+rwjobsall$English1 <- unmatrix(rwjobsall$English1)
 
-rwjobs2016$English2 <- as.vector(c(NA * 16799))
-rwjobs2016$English2 <- str_match(rwjobs2016$country, "United States")
-rwjobs2016$English2 <- ifelse(rwjobs2016$English2 == "United States", 1, 0)
-rwjobs2016$English2 <- unmatrix(rwjobs2016$English2)
-for (i in 1:length(rwjobs2016$English1))
-if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English2[i]=NA
+rwjobsall$English2 <- as.vector(c(NA * 130576))
+rwjobsall$English2 <- str_match(rwjobsall$country, "United States")
+rwjobsall$English2 <- ifelse(rwjobsall$English2 == "United States", 1, 0)
+rwjobsall$English2 <- unmatrix(rwjobsall$English2)
+for (i in 1:length(rwjobsall$English1))
+if (!is.na(rwjobsall$English1[i])) rwjobsall$English2[i]=NA
 
-rwjobs2016$English3 <- as.vector(c(NA * 16799))
-rwjobs2016$English3 <- str_match(rwjobs2016$country, "United Kingdom")
-rwjobs2016$English3 <- ifelse(rwjobs2016$English3 == "United Kingdom", 1, 0)
-rwjobs2016$English3 <- unmatrix(rwjobs2016$English3)
-for (i in 1:length(rwjobs2016$English1))
-if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English3[i]=NA
+rwjobsall$English3 <- as.vector(c(NA * 130576))
+rwjobsall$English3 <- str_match(rwjobsall$country, "United Kingdom")
+rwjobsall$English3 <- ifelse(rwjobsall$English3 == "United Kingdom", 1, 0)
+rwjobsall$English3 <- unmatrix(rwjobsall$English3)
+for (i in 1:length(rwjobsall$English1))
+if (!is.na(rwjobsall$English1[i])) rwjobsall$English3[i]=NA
 
-rwjobs2016$English4 <- as.vector(c(NA * 16799))
-rwjobs2016$English4 <- str_match(rwjobs2016$country, "Ireland")
-rwjobs2016$English4 <- ifelse(rwjobs2016$English4 == "Ireland", 1, 0)
-rwjobs2016$English4 <- unmatrix(rwjobs2016$English4)
-for (i in 1:length(rwjobs2016$English1))
-if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English4[i]=NA
-for (i in 1:length(rwjobs2016$English3))
-if (!is.na(rwjobs2016$English3[i])) rwjobs2016$English4[i]=NA
+rwjobsall$English4 <- as.vector(c(NA * 130576))
+rwjobsall$English4 <- str_match(rwjobsall$country, "Ireland")
+rwjobsall$English4 <- ifelse(rwjobsall$English4 == "Ireland", 1, 0)
+rwjobsall$English4 <- unmatrix(rwjobsall$English4)
+for (i in 1:length(rwjobsall$English1))
+if (!is.na(rwjobsall$English1[i])) rwjobsall$English4[i]=NA
+for (i in 1:length(rwjobsall$English3))
+if (!is.na(rwjobsall$English3[i])) rwjobsall$English4[i]=NA
 
-rwjobs2016$English5 <- as.vector(c(NA * 16799))
-rwjobs2016$English5 <- str_match(rwjobs2016$country, "Canada")
-rwjobs2016$English5 <- ifelse(rwjobs2016$English5 == "Canada", 1, 0)
-rwjobs2016$English5 <- unmatrix(rwjobs2016$English5)
-for (i in 1:length(rwjobs2016$English1))
-if (!is.na(rwjobs2016$English1[i])) rwjobs2016$English5[i]=NA
+rwjobsall$English5 <- as.vector(c(NA * 130576))
+rwjobsall$English5 <- str_match(rwjobsall$country, "Canada")
+rwjobsall$English5 <- ifelse(rwjobsall$English5 == "Canada", 1, 0)
+rwjobsall$English5 <- unmatrix(rwjobsall$English5)
+for (i in 1:length(rwjobsall$English1))
+if (!is.na(rwjobsall$English1[i])) rwjobsall$English5[i]=NA
 
-rwjobs2016$English_total <- rowSums(rwjobs2016[, 11:16], na.rm = TRUE)
+rwjobsall$English6 <- as.vector(c(NA * 130576))
+rwjobsall$English6 <- str_match(rwjobsall$country, "Australia")
+rwjobsall$English6 <- ifelse(rwjobsall$English6 == "Australia", 1, 0)
+rwjobsall$English6 <- unmatrix(rwjobsall$English6)
+for (i in 1:length(rwjobsall$English1))
+if (!is.na(rwjobsall$English1[i])) rwjobsall$English6[i]=NA
 
-rwjobs2016$French <- as.vector(c(NA * 16799))
-rwjobs2016$French <- str_match(rwjobs2016$body, "French")
-rwjobs2016$French <- ifelse(rwjobs2016$French == "French", 1, 0)
-rwjobs2016$French <- unmatrix(rwjobs2016$French)
+rwjobsall$English_total <- rowSums(rwjobsall[, 11:16], na.rm = TRUE)
 
-rwjobs2016$Arabic <- as.vector(c(NA * 16799))
-rwjobs2016$Arabic <- str_match(rwjobs2016$body, "Arabic") 
-rwjobs2016$Arabic <- ifelse(rwjobs2016$Arabic=="Arabic", 1, 0)
-rwjobs2016$Arabic <- unmatrix(rwjobs2016$Arabic)
+rwjobsall$French <- as.vector(c(NA * 130576))
+rwjobsall$French <- str_match(rwjobsall$body, "French")
+rwjobsall$French <- ifelse(rwjobsall$French == "French", 1, 0)
+rwjobsall$French <- unmatrix(rwjobsall$French)
 
-rwjobs2016$Spanish <- as.vector(c(NA * 16799))
-rwjobs2016$Spanish <- str_match(rwjobs2016$body, "Spanish") 
-rwjobs2016$Spanish <- ifelse(rwjobs2016$Spanish=="Spanish", 1, 0)
-rwjobs2016$Spanish <- unmatrix(rwjobs2016$Spanish)
+rwjobsall$Arabic <- as.vector(c(NA * 130576))
+rwjobsall$Arabic <- str_match(rwjobsall$body, "Arabic") 
+rwjobsall$Arabic <- ifelse(rwjobsall$Arabic=="Arabic", 1, 0)
+rwjobsall$Arabic <- unmatrix(rwjobsall$Arabic)
 
-rwjobs2016$Russian <- as.vector(c(NA * 16799))
-rwjobs2016$Russian <- str_match(rwjobs2016$body, "Russian") 
-rwjobs2016$Russian <- ifelse(rwjobs2016$Russian=="Russian", 1, 0)
-rwjobs2016$Russian <- unmatrix(rwjobs2016$Russian)
+rwjobsall$Spanish <- as.vector(c(NA * 130576))
+rwjobsall$Spanish <- str_match(rwjobsall$body, "Spanish") 
+rwjobsall$Spanish <- ifelse(rwjobsall$Spanish=="Spanish", 1, 0)
+rwjobsall$Spanish <- unmatrix(rwjobsall$Spanish)
 
-rwjobs2016$Chinese <- as.vector(c(NA * 16799))
-rwjobs2016$Chinese <- str_match(rwjobs2016$body, "Chinese") 
-rwjobs2016$Chinese <- ifelse(rwjobs2016$Chinese=="Chinese", 1, 0)
-rwjobs2016$Chinese <- unmatrix(rwjobs2016$Chinese)
+rwjobsall$Russian <- as.vector(c(NA * 130576))
+rwjobsall$Russian <- str_match(rwjobsall$body, "Russian") 
+rwjobsall$Russian <- ifelse(rwjobsall$Russian=="Russian", 1, 0)
+rwjobsall$Russian <- unmatrix(rwjobsall$Russian)
 
-rwjobs2016$Italian <- as.vector(c(NA * 16799))
-rwjobs2016$Italian <- str_match(rwjobs2016$body, "Italian") 
-rwjobs2016$Italian <- ifelse(rwjobs2016$Italian=="Italian", 1, 0)
-rwjobs2016$Italian <- unmatrix(rwjobs2016$Italian)
+rwjobsall$Chinese <- as.vector(c(NA * 130576))
+rwjobsall$Chinese <- str_match(rwjobsall$body, "Chinese") 
+rwjobsall$Chinese <- ifelse(rwjobsall$Chinese=="Chinese", 1, 0)
+rwjobsall$Chinese <- unmatrix(rwjobsall$Chinese)
 
-rwjobs2016$Portuguese <- as.vector(c(NA * 16799))
-rwjobs2016$Portuguese <- str_match(rwjobs2016$body, "Portuguese") 
-rwjobs2016$Portuguese <- ifelse(rwjobs2016$Portuguese=="Portuguese", 1, 0)
-rwjobs2016$Portuguese <- unmatrix(rwjobs2016$Portuguese)
+rwjobsall$Italian <- as.vector(c(NA * 130576))
+rwjobsall$Italian <- str_match(rwjobsall$body, "Italian") 
+rwjobsall$Italian <- ifelse(rwjobsall$Italian=="Italian", 1, 0)
+rwjobsall$Italian <- unmatrix(rwjobsall$Italian)
 
-rwjobs2016$local <- as.vector(c(NA * 16799))
-rwjobs2016$local <- str_match(rwjobs2016$body, "local language") 
-rwjobs2016$local <- ifelse(rwjobs2016$local=="local language", 1, 0)
-rwjobs2016$local <- unmatrix(rwjobs2016$local)
+rwjobsall$Portuguese <- as.vector(c(NA * 130576))
+rwjobsall$Portuguese <- str_match(rwjobsall$body, "Portuguese") 
+rwjobsall$Portuguese <- ifelse(rwjobsall$Portuguese=="Portuguese", 1, 0)
+rwjobsall$Portuguese <- unmatrix(rwjobsall$Portuguese)
 
-rwjobs2016$Swahili <- as.vector(c(NA * 16799))
-rwjobs2016$Swahili <- str_match(rwjobs2016$body, "Swahili") 
-rwjobs2016$Swahili <- ifelse(rwjobs2016$Swahili=="Swahili", 1, 0)
-rwjobs2016$Swahili <- unmatrix(rwjobs2016$Swahili)
+rwjobsall$local <- as.vector(c(NA * 130576))
+rwjobsall$local <- str_match(rwjobsall$body, "local language") 
+rwjobsall$local <- ifelse(rwjobsall$local=="local language", 1, 0)
+rwjobsall$local <- unmatrix(rwjobsall$local)
 
-rwjobs2016$Urdu <- as.vector(c(NA * 16799))
-rwjobs2016$Urdu <- str_match(rwjobs2016$body, "Urdu") 
-rwjobs2016$Urdu <- ifelse(rwjobs2016$Urdu=="Urdu", 1, 0)
-rwjobs2016$Urdu <- unmatrix(rwjobs2016$Urdu)
+rwjobsall$Swahili <- as.vector(c(NA * 130576))
+rwjobsall$Swahili <- str_match(rwjobsall$body, "Swahili") 
+rwjobsall$Swahili <- ifelse(rwjobsall$Swahili=="Swahili", 1, 0)
+rwjobsall$Swahili <- unmatrix(rwjobsall$Swahili)
 
-rwjobs2016$Bahasa <- as.vector(c(NA * 16799))
-rwjobs2016$Bahasa <- str_match(rwjobs2016$body, "Bahasa") 
-rwjobs2016$Bahasa <- ifelse(rwjobs2016$Bahasa=="Bahasa", 1, 0)
-rwjobs2016$Bahasa <- unmatrix(rwjobs2016$Bahasa)
+rwjobsall$Urdu <- as.vector(c(NA * 130576))
+rwjobsall$Urdu <- str_match(rwjobsall$body, "Urdu") 
+rwjobsall$Urdu <- ifelse(rwjobsall$Urdu=="Urdu", 1, 0)
+rwjobsall$Urdu <- unmatrix(rwjobsall$Urdu)
 
-rwjobs2016$Hindi <- as.vector(c(NA * 16799))
-rwjobs2016$Hindi <- str_match(rwjobs2016$body, "Hindi") 
-rwjobs2016$Hindi <- ifelse(rwjobs2016$Hindi=="Hindi", 1, 0)
-rwjobs2016$Hindi <- unmatrix(rwjobs2016$Hindi)
+rwjobsall$Bahasa <- as.vector(c(NA * 130576))
+rwjobsall$Bahasa <- str_match(rwjobsall$body, "Bahasa") 
+rwjobsall$Bahasa <- ifelse(rwjobsall$Bahasa=="Bahasa", 1, 0)
+rwjobsall$Bahasa <- unmatrix(rwjobsall$Bahasa)
 
-rwjobs2016$language_total <- rowSums(rwjobs2016[, 17:29], na.rm = TRUE)
+rwjobsall$Hindi <- as.vector(c(NA * 130576))
+rwjobsall$Hindi <- str_match(rwjobsall$body, "Hindi") 
+rwjobsall$Hindi <- ifelse(rwjobsall$Hindi=="Hindi", 1, 0)
+rwjobsall$Hindi <- unmatrix(rwjobsall$Hindi)
+
+rwjobsall$language_total <- rowSums(rwjobsall[, 17:29], na.rm = TRUE)
+
+rwjobsallfl <- filter(rwjobsall, English_total == 1)
+View(rwjobsallfl)
+
+rwjobsallfl$EF <- rwjobsallfl$English_total + rwjobsallfl$French
+rwjobsallfl$EA <- rwjobsallfl$English_total + rwjobsallfl$Arabic
+rwjobsallfl$ES <- rwjobsallfl$English_total + rwjobsallfl$Spanish
+rwjobsallfl$ER <- rwjobsallfl$English_total + rwjobsallfl$Russian
+rwjobsallfl$EC <- rwjobsallfl$English_total + rwjobsallfl$Chinese
+rwjobsallfl$EI <- rwjobsallfl$English_total + rwjobsallfl$Italian
+rwjobsallfl$EP <- rwjobsallfl$English_total + rwjobsallfl$Portuguese
+rwjobsallfl$EL <- rwjobsallfl$English_total + rwjobsallfl$local
+rwjobsallfl$ESw <- rwjobsallfl$English_total + rwjobsallfl$Swahili
+rwjobsallfl$EU <- rwjobsallfl$English_total + rwjobsallfl$Urdu
+rwjobsallfl$EB <- rwjobsallfl$English_total + rwjobsallfl$Bahasa
+rwjobsallfl$EH <- rwjobsallfl$English_total + rwjobsallfl$Hindi
+
+rwjobsallfl_2016 <- filter(rwjobsallfl, year == 2016) 
+View(rwjobsallfl_2016)
+
+rwjobsallfl_2015 <- filter(rwjobsallfl, year == 2015) 
+View(rwjobsallfl_2015)
+
+rwjobsallfl_2014 <- filter(rwjobsallfl, year == 2014) 
+View(rwjobsallfl_2014)
+
+rwjobsallfl_2013 <- filter(rwjobsallfl, year == 2013) 
+View(rwjobsallfl_2013)
+
+rwjobsallfl_2012 <- filter(rwjobsallfl, year == 2012) 
+View(rwjobsallfl_2012)
+
+rwjobsallfl_2011 <- filter(rwjobsallfl, year == 2011) 
+View(rwjobsallfl_2011)
 
 ## Remove rows when values of total_English column is zero and  reassign dataset
 rwjobs2016fl <- filter(rwjobs2016, English_total == 1)
@@ -228,42 +276,293 @@ rwjobs2016fl$EB <- rwjobs2016fl$English_total + rwjobs2016fl$Bahasa
 rwjobs2016fl$EH <- rwjobs2016fl$English_total + rwjobs2016fl$Hindi
 
 ## Determine bilingual frequencies
-total_EF <- sum(rwjobs2016fl$EF, na.rm = TRUE) / 2
-EF_percent <- total_EF / nrow(rwjobs2016fl)
+2016 dataset
 
-total_EA <- sum(rwjobs2016fl$EA, na.rm = TRUE) / 2 
-EA_percent <- total_EA / nrow(rwjobs2016fl)
+total_EF_16 <- sum(rwjobsallfl_2016$EF, na.rm = TRUE) / 2
+EF_percent_16 <- total_EF_16 / nrow(rwjobsallfl_2016)
 
-total_ES <- sum(rwjobs2016fl$ES, na.rm = TRUE) / 2 
-ES_percent <- total_ES / nrow(rwjobs2016fl)
+total_EA_16 <- sum(rwjobsallfl_2016$EA, na.rm = TRUE) / 2 
+EA_percent_16 <- total_EA_16 / nrow(rwjobsallfl_2016)
 
-total_ER <- sum(rwjobs2016fl$ER, na.rm = TRUE) / 2 
-ER_percent <- total_ER / nrow(rwjobs2016fl)
+total_ES_16 <- sum(rwjobsallfl_2016$ES, na.rm = TRUE) / 2 
+ES_percent_16 <- total_ES_16 / nrow(rwjobsallfl_2016)
 
-total_EC <- sum(rwjobs2016fl$EC, na.rm = TRUE) / 2 
-EC_percent <- total_EC / nrow(rwjobs2016fl)
+total_ER_16 <- sum(rwjobsallfl_2016$ER, na.rm = TRUE) / 2 
+ER_percent_16 <- total_ER_16 / nrow(rwjobsallfl_2016)
 
-total_EI <- sum(rwjobs2016fl$EI, na.rm = TRUE) / 2 
-EI_percent <- total_EI / nrow(rwjobs2016fl)
+total_EC_16 <- sum(rwjobsallfl_2016$EC, na.rm = TRUE) / 2 
+EC_percent_16 <- total_EC_16 / nrow(rwjobsallfl_2016)
 
-total_EP <- sum(rwjobs2016fl$EP, na.rm = TRUE) / 2 
-EP_percent <- total_EP / nrow(rwjobs2016fl)
+total_EI_16 <- sum(rwjobsallfl_2016$EI, na.rm = TRUE) / 2 
+EI_percent_16 <- total_EI_16 / nrow(rwjobsallfl_2016)
 
-total_EL <- sum(rwjobs2016fl$EL, na.rm = TRUE) / 2 
-EL_percent <- total_EL / nrow(rwjobs2016fl)
+total_EP_16 <- sum(rwjobsallfl_2016$EP, na.rm = TRUE) / 2 
+EP_percent_16 <- total_EP_16 / nrow(rwjobsallfl_2016)
 
-total_ESw <- sum(rwjobs2016fl$ESw, na.rm = TRUE) / 2 
-ESw_percent <- total_ESw / nrow(rwjobs2016fl)
+total_EL_16 <- sum(rwjobsallfl_2016$EL, na.rm = TRUE) / 2 
+EL_percent_16 <- total_EL_16 / nrow(rwjobsallfl_2016)
 
-total_EU <- sum(rwjobs2016fl$EU, na.rm = TRUE) / 2 
-EU_percent <- total_EU / nrow(rwjobs2016fl)
+total_ESw_16 <- sum(rwjobsallfl_2016$ESw, na.rm = TRUE) / 2 
+ESw_percent_16 <- total_ESw_16 / nrow(rwjobsallfl_2016)
 
-total_EB <- sum(rwjobs2016fl$EB, na.rm = TRUE) / 2 
-EB_percent <- total_EB / nrow(rwjobs2016fl)
+total_EU_16 <- sum(rwjobsallfl_2016$EU, na.rm = TRUE) / 2 
+EU_percent_16 <- total_EU_16 / nrow(rwjobsallfl_2016)
 
-total_EH <- sum(rwjobs2016fl$EH, na.rm = TRUE) / 2 
-EH_percent <- total_EH / nrow(rwjobs2016fl)
+total_EB_16 <- sum(rwjobsallfl_2016$EB, na.rm = TRUE) / 2 
+EB_percent_16 <- total_EB_16 / nrow(rwjobsallfl_2016)
 
-total_bilingual <- sum(total_EA, total_EF, total_ES, total_ER, total_EC, total_EI, total_EP, total_EL, total_ESw, total_EU, total_EB, total_EH)
+total_EH_16 <- sum(rwjobsallfl_2016$EH, na.rm = TRUE) / 2 
+EH_percent_16 <- total_EH_16 / nrow(rwjobsallfl_2016)
 
-total_bilingual_percent <- total_bilingual / nrow(rwjobs2016fl)
+total_bilingual_16 <- sum(total_EA_16, total_EF_16, total_ES_16, total_ER_16, total_EC_16, total_EI_16, total_EP_16, total_EL_16, total_ESw_16, total_EU_16, total_EB_16, total_EH_16)
+
+total_bilingual_percent_16 <- total_bilingual_16 / nrow(rwjobsallfl_2016)
+
+2015 dataset
+
+total_EF_15 <- sum(rwjobsallfl_2015$EF, na.rm = TRUE) / 2
+EF_percent_15 <- total_EF_15 / nrow(rwjobsallfl_2015)
+
+total_EA_15 <- sum(rwjobsallfl_2015$EA, na.rm = TRUE) / 2 
+EA_percent_15 <- total_EA_15 / nrow(rwjobsallfl_2015)
+
+total_ES_15 <- sum(rwjobsallfl_2015$ES, na.rm = TRUE) / 2 
+ES_percent_15 <- total_ES_15 / nrow(rwjobsallfl_2015)
+
+total_ER_15 <- sum(rwjobsallfl_2015$ER, na.rm = TRUE) / 2 
+ER_percent_15 <- total_ER_15 / nrow(rwjobsallfl_2015)
+
+total_EC_15 <- sum(rwjobsallfl_2015$EC, na.rm = TRUE) / 2 
+EC_percent_15 <- total_EC_15 / nrow(rwjobsallfl_2015)
+
+total_EI_15 <- sum(rwjobsallfl_2015$EI, na.rm = TRUE) / 2 
+EI_percent_15 <- total_EI_15 / nrow(rwjobsallfl_2015)
+
+total_EP_15 <- sum(rwjobsallfl_2015$EP, na.rm = TRUE) / 2 
+EP_percent_15 <- total_EP_15 / nrow(rwjobsallfl_2015)
+
+total_EL_15 <- sum(rwjobsallfl_2015$EL, na.rm = TRUE) / 2 
+EL_percent_15 <- total_EL_15 / nrow(rwjobsallfl_2015)
+
+total_ESw_15 <- sum(rwjobsallfl_2015$ESw, na.rm = TRUE) / 2 
+ESw_percent_15 <- total_ESw_15 / nrow(rwjobsallfl_2015)
+
+total_EU_15 <- sum(rwjobsallfl_2015$EU, na.rm = TRUE) / 2 
+EU_percent_15 <- total_EU_15 / nrow(rwjobsallfl_2015)
+
+total_EB_15 <- sum(rwjobsallfl_2015$EB, na.rm = TRUE) / 2 
+EB_percent_15 <- total_EB_15 / nrow(rwjobsallfl_2015)
+
+total_EH_15 <- sum(rwjobsallfl_2015$EH, na.rm = TRUE) / 2 
+EH_percent_15 <- total_EH_15 / nrow(rwjobsallfl_2015)
+
+total_bilingual_15 <- sum(total_EA_15, total_EF_15, total_ES_15, total_ER_15, total_EC_15, total_EI_15, total_EP_15, total_EL_15, total_ESw_15, total_EU_15, total_EB_15, total_EH_15)
+
+total_bilingual_percent_15 <- total_bilingual_15 / nrow(rwjobsallfl_2015)
+
+2014 dataset
+
+total_EF_14 <- sum(rwjobsallfl_2014$EF, na.rm = TRUE) / 2
+EF_percent_14 <- total_EF_14 / nrow(rwjobsallfl_2014)
+
+total_EA_14 <- sum(rwjobsallfl_2014$EA, na.rm = TRUE) / 2 
+EA_percent_14 <- total_EA_14 / nrow(rwjobsallfl_2014)
+
+total_ES_14 <- sum(rwjobsallfl_2014$ES, na.rm = TRUE) / 2 
+ES_percent_14 <- total_ES_14 / nrow(rwjobsallfl_2014)
+
+total_ER_14 <- sum(rwjobsallfl_2014$ER, na.rm = TRUE) / 2 
+ER_percent_14 <- total_ER_14 / nrow(rwjobsallfl_2014)
+
+total_EC_14 <- sum(rwjobsallfl_2014$EC, na.rm = TRUE) / 2 
+EC_percent_14 <- total_EC_14 / nrow(rwjobsallfl_2014)
+
+total_EI_14 <- sum(rwjobsallfl_2014$EI, na.rm = TRUE) / 2 
+EI_percent_14 <- total_EI_14 / nrow(rwjobsallfl_2014)
+
+total_EP_14 <- sum(rwjobsallfl_2014$EP, na.rm = TRUE) / 2 
+EP_percent_14 <- total_EP_14 / nrow(rwjobsallfl_2014)
+
+total_EL_14 <- sum(rwjobsallfl_2014$EL, na.rm = TRUE) / 2 
+EL_percent_14 <- total_EL_14 / nrow(rwjobsallfl_2014)
+
+total_ESw_14 <- sum(rwjobsallfl_2014$ESw, na.rm = TRUE) / 2 
+ESw_percent_14 <- total_ESw_14 / nrow(rwjobsallfl_2014)
+
+total_EU_14 <- sum(rwjobsallfl_2014$EU, na.rm = TRUE) / 2 
+EU_percent_14 <- total_EU_14 / nrow(rwjobsallfl_2014)
+
+total_EB_14 <- sum(rwjobsallfl_2014$EB, na.rm = TRUE) / 2 
+EB_percent_14 <- total_EB_14 / nrow(rwjobsallfl_2014)
+
+total_EH_14 <- sum(rwjobsallfl_2014$EH, na.rm = TRUE) / 2 
+EH_percent_14 <- total_EH_14 / nrow(rwjobsallfl_2014)
+
+total_bilingual_14 <- sum(total_EA_14, total_EF_14, total_ES_14, total_ER_14, total_EC_14, total_EI_14, total_EP_14, total_EL_14, total_ESw_14, total_EU_14, total_EB_14, total_EH_14)
+
+total_bilingual_percent_14 <- total_bilingual_14 / nrow(rwjobsallfl_2014)
+
+2013 dataset
+
+total_EF_13 <- sum(rwjobsallfl_2013$EF, na.rm = TRUE) / 2
+EF_percent_13 <- total_EF_13 / nrow(rwjobsallfl_2013)
+
+total_EA_13 <- sum(rwjobsallfl_2013$EA, na.rm = TRUE) / 2 
+EA_percent_13 <- total_EA_13 / nrow(rwjobsallfl_2013)
+
+total_ES_13 <- sum(rwjobsallfl_2013$ES, na.rm = TRUE) / 2 
+ES_percent_13 <- total_ES_13 / nrow(rwjobsallfl_2013)
+
+total_ER_13 <- sum(rwjobsallfl_2013$ER, na.rm = TRUE) / 2 
+ER_percent_13 <- total_ER_13 / nrow(rwjobsallfl_2013)
+
+total_EC_13 <- sum(rwjobsallfl_2013$EC, na.rm = TRUE) / 2 
+EC_percent_13 <- total_EC_13 / nrow(rwjobsallfl_2013)
+
+total_EI_13 <- sum(rwjobsallfl_2013$EI, na.rm = TRUE) / 2 
+EI_percent_13 <- total_EI_13 / nrow(rwjobsallfl_2013)
+
+total_EP_13 <- sum(rwjobsallfl_2013$EP, na.rm = TRUE) / 2 
+EP_percent_13 <- total_EP_13 / nrow(rwjobsallfl_2013)
+
+total_EL_13 <- sum(rwjobsallfl_2013$EL, na.rm = TRUE) / 2 
+EL_percent_13 <- total_EL_13 / nrow(rwjobsallfl_2013)
+
+total_ESw_13 <- sum(rwjobsallfl_2013$ESw, na.rm = TRUE) / 2 
+ESw_percent_13 <- total_ESw_13 / nrow(rwjobsallfl_2013)
+
+total_EU_13 <- sum(rwjobsallfl_2013$EU, na.rm = TRUE) / 2 
+EU_percent_13 <- total_EU_13 / nrow(rwjobsallfl_2013)
+
+total_EB_13 <- sum(rwjobsallfl_2013$EB, na.rm = TRUE) / 2 
+EB_percent_13 <- total_EB_13 / nrow(rwjobsallfl_2013)
+
+total_EH_13 <- sum(rwjobsallfl_2013$EH, na.rm = TRUE) / 2 
+EH_percent_13 <- total_EH_13 / nrow(rwjobsallfl_2013)
+
+total_bilingual_13 <- sum(total_EA_13, total_EF_13, total_ES_13, total_ER_13, total_EC_13, total_EI_13, total_EP_13, total_EL_13, total_ESw_13, total_EU_13, total_EB_13, total_EH_13)
+
+total_bilingual_percent_13 <- total_bilingual_13 / nrow(rwjobsallfl_2013)
+
+2012 dataset
+
+total_EF_12 <- sum(rwjobsallfl_2012$EF, na.rm = TRUE) / 2
+EF_percent_12 <- total_EF_12 / nrow(rwjobsallfl_2012)
+
+total_EA_12 <- sum(rwjobsallfl_2012$EA, na.rm = TRUE) / 2 
+EA_percent_12 <- total_EA_12 / nrow(rwjobsallfl_2012)
+
+total_ES_12 <- sum(rwjobsallfl_2012$ES, na.rm = TRUE) / 2 
+ES_percent_12 <- total_ES_12 / nrow(rwjobsallfl_2012)
+
+total_ER_12 <- sum(rwjobsallfl_2012$ER, na.rm = TRUE) / 2 
+ER_percent_12 <- total_ER_12 / nrow(rwjobsallfl_2012)
+
+total_EC_12 <- sum(rwjobsallfl_2012$EC, na.rm = TRUE) / 2 
+EC_percent_12 <- total_EC_12 / nrow(rwjobsallfl_2012)
+
+total_EI_12 <- sum(rwjobsallfl_2012$EI, na.rm = TRUE) / 2 
+EI_percent_12 <- total_EI_12 / nrow(rwjobsallfl_2012)
+
+total_EP_12 <- sum(rwjobsallfl_2012$EP, na.rm = TRUE) / 2 
+EP_percent_12 <- total_EP_12 / nrow(rwjobsallfl_2012)
+
+total_EL_12 <- sum(rwjobsallfl_2012$EL, na.rm = TRUE) / 2 
+EL_percent_12 <- total_EL_12 / nrow(rwjobsallfl_2012)
+
+total_ESw_12 <- sum(rwjobsallfl_2012$ESw, na.rm = TRUE) / 2 
+ESw_percent_12 <- total_ESw_12 / nrow(rwjobsallfl_2012)
+
+total_EU_12 <- sum(rwjobsallfl_2012$EU, na.rm = TRUE) / 2 
+EU_percent_12 <- total_EU_12 / nrow(rwjobsallfl_2012)
+
+total_EB_12 <- sum(rwjobsallfl_2012$EB, na.rm = TRUE) / 2 
+EB_percent_12 <- total_EB_12 / nrow(rwjobsallfl_2012)
+
+total_EH_12 <- sum(rwjobsallfl_2012$EH, na.rm = TRUE) / 2 
+EH_percent_12 <- total_EH_12 / nrow(rwjobsallfl_2012)
+
+total_bilingual_12 <- sum(total_EA_12, total_EF_12, total_ES_12, total_ER_12, total_EC_12, total_EI_12, total_EP_12, total_EL_12, total_ESw_12, total_EU_12, total_EB_12, total_EH_12)
+
+total_bilingual_percent_12 <- total_bilingual_12 / nrow(rwjobsallfl_2012)
+
+2011 dataset
+
+total_EF_11 <- sum(rwjobsallfl_2011$EF, na.rm = TRUE) / 2
+EF_percent_11 <- total_EF_11 / nrow(rwjobsallfl_2011)
+
+total_EA_11 <- sum(rwjobsallfl_2011$EA, na.rm = TRUE) / 2 
+EA_percent_11 <- total_EA_11 / nrow(rwjobsallfl_2011)
+
+total_ES_11 <- sum(rwjobsallfl_2011$ES, na.rm = TRUE) / 2 
+ES_percent_11 <- total_ES_11 / nrow(rwjobsallfl_2011)
+
+total_ER_11 <- sum(rwjobsallfl_2011$ER, na.rm = TRUE) / 2 
+ER_percent_11 <- total_ER_11 / nrow(rwjobsallfl_2011)
+
+total_EC_11 <- sum(rwjobsallfl_2011$EC, na.rm = TRUE) / 2 
+EC_percent_11 <- total_EC_11 / nrow(rwjobsallfl_2011)
+
+total_EI_11 <- sum(rwjobsallfl_2011$EI, na.rm = TRUE) / 2 
+EI_percent_11 <- total_EI_11 / nrow(rwjobsallfl_2011)
+
+total_EP_11 <- sum(rwjobsallfl_2011$EP, na.rm = TRUE) / 2 
+EP_percent_11 <- total_EP_11 / nrow(rwjobsallfl_2011)
+
+total_EL_11 <- sum(rwjobsallfl_2011$EL, na.rm = TRUE) / 2 
+EL_percent_11 <- total_EL_11 / nrow(rwjobsallfl_2011)
+
+total_ESw_11 <- sum(rwjobsallfl_2011$ESw, na.rm = TRUE) / 2 
+ESw_percent_11 <- total_ESw_11 / nrow(rwjobsallfl_2011)
+
+total_EU_11 <- sum(rwjobsallfl_2011$EU, na.rm = TRUE) / 2 
+EU_percent_11 <- total_EU_11 / nrow(rwjobsallfl_2011)
+
+total_EB_11 <- sum(rwjobsallfl_2011$EB, na.rm = TRUE) / 2 
+EB_percent_11 <- total_EB_11 / nrow(rwjobsallfl_2011)
+
+total_EH_11 <- sum(rwjobsallfl_2011$EH, na.rm = TRUE) / 2 
+EH_percent_11 <- total_EH_11 / nrow(rwjobsallfl_2011)
+
+total_bilingual_11 <- sum(total_EA_11, total_EF_11, total_ES_11, total_ER_11, total_EC_11, total_EI_11, total_EP_11, total_EL_11, total_ESw_11, total_EU_11, total_EB_11, total_EH_11)
+
+total_bilingual_percent_11 <- total_bilingual_11 / nrow(rwjobsallfl_2011)
+
+## Combine language proportions
+
+EF_all_percent <- c(EF_percent_11, EF_percent_12, EF_percent_13, EF_percent_14, EF_percent_15, EF_percent_16) 
+EA_all_percent <- c(EA_percent_11, EA_percent_12, EA_percent_13, EA_percent_14, EA_percent_15, EA_percent_16)     
+ES_all_percent <- c(ES_percent_11, ES_percent_12, ES_percent_13, ES_percent_14, ES_percent_15, ES_percent_16)
+ER_all_percent <- c(ER_percent_11, ER_percent_12, ER_percent_13, ER_percent_14, ER_percent_15, ER_percent_16)
+EC_all_percent <- c(EC_percent_11, EC_percent_12, EC_percent_13, EC_percent_14, EC_percent_15, EC_percent_16)
+EP_all_percent <- c(EP_percent_11, EP_percent_12, EP_percent_13, EP_percent_14, EP_percent_15, EP_percent_16)  
+EL_all_percent <- c(EL_percent_11, EL_percent_12, EL_percent_13, EL_percent_14, EL_percent_15, EL_percent_16)
+ESw_all_percent <- c(ESw_percent_11, ESw_percent_12, ESw_percent_13, ESw_percent_14, ESw_percent_15, ESw_percent_16)
+EU_all_percent <- c(EU_percent_11, EU_percent_12, EU_percent_13, EU_percent_14, EU_percent_15, EU_percent_16)  
+EB_all_percent <- c(EB_percent_11, EB_percent_12, EB_percent_13, EB_percent_14, EB_percent_15, EB_percent_16)  
+EH_all_percent <- c(EH_percent_11, EH_percent_12, EH_percent_13, EH_percent_14, EH_percent_15, EH_percent_16)
+total_bilingual_percent <- c(total_bilingual_percent_11, total_bilingual_percent_12, total_bilingual_percent_13, total_bilingual_percent_14, total_bilingual_percent_15, total_bilingual_percent_16)
+
+all_language_proportion <- cbind(cbind(EF_all_percent, EA_all_percent, ES_all_percent, ER_all_percent, EC_all_percent, EP_all_percent, EL_all_percent, ESw_all_percent, EU_all_percent, EB_all_percent, EH_all_percent, total_bilingual_percent) 
+
+all_language_proportion <- as.data.frame(all_language_proportion)
+View(all_language_proportion)
+
+## Show decimals as %
+all_language_proportion$EF_all_percent <- percent(all_language_proportion$EF_all_percent)
+all_language_proportion$EA_all_percent <- percent(all_language_proportion$EA_all_percent)
+all_language_proportion$ES_all_percent <- percent(all_language_proportion$ES_all_percent)
+all_language_proportion$ER_all_percent <- percent(all_language_proportion$Er_all_percent)
+all_language_proportion$ER_all_percent <- percent(all_language_proportion$ER_all_percent)
+all_language_proportion$EC_all_percent <- percent(all_language_proportion$EC_all_percent)
+all_language_proportion$EP_all_percent <- percent(all_language_proportion$EP_all_percent)
+all_language_proportion$EL_all_percent <- percent(all_language_proportion$EL_all_percent)
+all_language_proportion$ESw_all_percent <- percent(all_language_proportion$ESw_all_percent)
+all_language_proportion$EU_all_percent <- percent(all_language_proportion$EU_all_percent)
+all_language_proportion$EB_all_percent <- percent(all_language_proportion$EB_all_percent)
+all_language_proportion$EH_all_percent <- percent(all_language_proportion$EH_all_percent)
+all_language_proportion$total_bilingual_percent <- percent(all_language_proportion$total_bilingual_percent)
+View(all_language_proportion)
+
+## Save dataset
+write.csv(all_language_proportion, "all_language_proportion.csv")

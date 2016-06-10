@@ -49,9 +49,13 @@ anova(EnergyConsumptionPrediction_model2)
 ## Exercise: interactions and factors
 
 ### Add on to the regression equation that you created in exercise 1 by generating an interaction term and testing the interaction.
+
 EnergyConsumptionPrediction_model3 <- lm(energy ~ metro*green, data = states_data)
+
 summary(EnergyConsumptionPrediction_model3)
 
 ### Try adding region to the model. Are there significant differences across the four regions?
+
 EnergyConsumptionPrediction_model4 <- lm(energy ~ metro*green + region, data = states_data)
+
 anova(EnergyConsumptionPrediction_model4) 

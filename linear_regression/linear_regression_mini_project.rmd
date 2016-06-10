@@ -1,0 +1,40 @@
+Exercise: least squares regression
+
+## Use the /states.rds/ data set. 
+states_data <- readRDS("C:/Users/elizajv/Documents/linear_regression/dataSets/states.rds")
+states_data <- as.data.frame(states_data)
+View(states_data)
+
+## Fit a model predicting energy consumed per capita (energy) from the percentage of residents living in metropolitan areas (metro). 
+
+## Be sure to examine/plot the data before fitting the model
+states_energy_metro <- subset(states_data, select = c("metro", "energy"))
+summary(states_energy_metro)
+plot(states_energy_metro)
+cor(states_energy_metro, use = "pairwise")
+
+## Print and interpret the model `summary'
+EnergyConsumptionPrediction_model1 <- lm(energy ~ metro, data = states_data)
+summary(EnergyConsumptionPrediction_model1)
+
+## 'Plot' the model to look for deviations from modeling assumptions
+plot(EnergyConsumptionPrediction_model1)
+
+##  Select one or more additional predictors to add to your model and repeat steps 1-3. Is this model significantly better than the model with /metro/ as the only predictor?
+states_energy_metro_green <- subset(states_data, select = c("energy", "metro", "green"))
+summary(states_energy_metro_green)
+plot(states_energy_metro_green)
+cor(states_energy_metro_green, use = "pairwise")
+EnergyConsumptionPrediction_model2 <- lm(energy ~ metro + green, data = states_data)
+summary(EnergyConsumptionPrediction_model2)
+anova(EnergyConsumptionPrediction_model2)
+
+Exercise: interactions and factors
+
+## Add on to the regression equation that you created in exercise 1 by generating an interaction term and testing the interaction.
+EnergyConsumptionPrediction_model3 <- lm(energy ~ metro*green, data = states_data)
+summary(EnergyConsumptionPrediction_model3)
+
+## Try adding region to the model. Are there significant differences across the four regions?
+EnergyConsumptionPrediction_model4 <- lm(energy ~ metro*green + region, data = states_data)
+anova(EnergyConsumptionPrediction_model4) 

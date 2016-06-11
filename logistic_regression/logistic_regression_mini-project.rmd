@@ -1,0 +1,31 @@
+
+## Exercise: logistic regression
+
+
+### Use the NH11 data set that we loaded earlier.
+
+NH11 <- readRDS("C:/Users/elizajv/Documents/logistic_regression/dataSets/NatHealth2011.rds")
+
+View(NH11)
+
+## Use glm to conduct a logistic regression to predict ever worked (everwrk) using age (age_p) and marital status (r_maritl).
+
+NH11_everwrk_age_marital <- subset(NH11, select = c("everwrk", "age_p", "r_maritl"))
+
+summary(NH11_everwrk_age_marital)
+
+NH11 <- transform(NH11, 
+		  everwrk = factor(everwrk, levels = c("1 Yes", "2 No")), 
+		  r_maritl = droplevels(r_maritl))
+
+everwrk_model <- glm(everwrk ~ age_p + r_maritl, data = NH11, family = "binomial")
+
+summary(everwrk_model)
+
+### Predict the probability of working for each level of marital status.
+
+install.packages("effects")
+
+library(effects)
+
+data.frame(Effect("r_maritl", everwrk_model))

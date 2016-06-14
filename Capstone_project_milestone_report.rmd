@@ -1,0 +1,69 @@
+#### **Career trends in global development: The most important foreign languages for English-speaking job seekers**
+
+Breaking into the field of global development and humanitarian relief can be tough. Employers often ask candidates to have a few years of experience relevant to the organizations’ operations, even for entry-level positions. They also prefer if not require applicants to have foreign language skills, as assignments may entail being deployed overseas.
+
+For English speakers who are serious about joining the global development and humanitarian relief industry, an important question could be which foreign language to invest their time in learning. Knowing the answer can also benefit universities offering courses focused on the sector as this can improve career guidance to students. 
+
+Talking with recruiters could help. But perhaps a more definitive method would be to look at job ads, which this project will endeavor to do. 
+
+This project will rely on data from Reliefweb, a United Nations website that hosts a jobs board with more than 2,000 open ads at any given time. Unlike some to its counterparts that restrict some of their ads to paying members, Reliefweb has made all of its job ads available to the public and allows users to extract data from its archive, which for job ads date from March 2011. 
+
+To determine the extent of hiring demand for English speakers with certain foreign language skills, the project will:
+
+1. Limit the dataset to job ads written in English and those indicating the job location to be in English-speaking donor countries. These countries refer to high-income nations such as the United States, the United Kingdom, Canada, Australia and Ireland which have traditionally provided foreign aid. Foreign aid mainly funds global development and humanitarian relief positions, and these donor countries would likely host organizations that hire people with foreign language skills, whether at headquarters or for their field projects in low-income countries.
+
+2. Look at the proportion of job ads that mention French, Spanish, Arabic, Chinese and Russian, which together with English make up the official languages of the United Nations, as well as Portuguese and “local languages,” which some career advice articles have mentioned.
+
+##### **Data collection**
+
+Gathering the data, i.e., Reliefweb job ads, required running an API search in R using the jsonlite package. It was filtered based on the month and year when the job ads were posted, specifying the following fields and subfields to be extracted, with the aim of using the same extracted data for future data science projects: 
+
+1. id
+2. date.created
+3. title
+4. body, which contains the job description, including foreign language requirements
+5. theme.name, or expertise
+6. experience.name, as expressed by the number of years
+7. country.name
+8. career_categories.name, or job functions
+9. type.name, i.e., whether the position is considered a job, consultancy, internship or volunteer opportuning
+10. source.name, or the name of the employer
+11. source.type.name, or the type of organization hiring for the job
+
+##### **Data wrangling**
+
+The extracted data initially had nested lists, which made it impossible to save the data frame into a csv file. A code using llply() under the plyr package resolved this issue. 
+
+That action, however, resulted in the appearance of unnecessary characters in the strings. Calling the gsub() function removed these characters. 
+
+The strsplit() function was also used to split characters under the “source” column into the “oganization” and “organization_type” columns, and the “date” column into the “year” and “month” columns.
+
+Binary columns were added based on keyword searches of the “body” column and using the str_match() and ifelse() functions. The keywords include:
+
+1. “English” which denotes that the ad is written in English.
+2. “French” which denotes that the ad asks for applicants to be fluent in or knowledge of French.
+3. “Spanish” which denotes that the ad asks for applicants to be fluent in or knowledge of Spanish.
+4. “Arabic” which denotes that the ad asks for applicants to be fluent in or knowledge of Arabic.
+5. “Chinese” which denotes that the ad asks for applicants to be fluent in or knowledge of Chinese.
+6. “Russian” which denotes that the ad asks for applicants to be fluent in or knowledge of Russian.
+7. “Portuguese” which denotes that the ad asks for applicants to be fluent in or knowledge of Portuguese.
+8. “local languages” which denotes that the ad asks for applicants to be fluent in or knowledge of local languages.
+
+Additional binary columns were created based on keyword searches of the “country” column. The keywords include the “United States of America”, the “United Kingdom”, “Canada”, “Australia” and “Ireland”.  These and the “English” binary columns were combined into one column using for loop with if else statement. 
+
+Using the tidyr and dplyr packages, the dataset was filtered, subsetting the rows where the combined English column has the values of 1, and then by year to compare annual trends. 
+
+##### **Data analysis**
+
+To determine the frequency of job ads seeking English-speakers with certain foreign language skills, new columns were created to contain sums of rows under the combined English column and the specific foreign language column, say for French, where the rows for both columns would have the values of 1. The expected values for each row under this new column would be 2.  The sum of the new column divided by 2 indicated the number of job ads seeking bilingual speakers.
+
+To above result was then divided by the number of rows of the dataset to get the proportion of job ads asking for English-speakers with certain foreign language skills.
+
+A preliminary analysis indicates the following:
+
+1. In terms of the extent of demand for foreign language skills, French tops the list, followed by Arabic and Spanish.
+2. There appears to be a declining demand for English speakers with French-language skills and an increasing demand for English-Arabic speakers.
+
+The assumption is that the second trend results from a decline in foreign aid funding for French-speaking countries that speak French and an increase of such funding for Arabic-speaking countries. 
+
+The current dataset however doesn’t have information on foreign aid funding. To remedy this, the plan is to extract data on foreign aid, or the so-called official development assistance from the Organization for Economic Cooperation and Development.  

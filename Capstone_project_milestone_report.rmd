@@ -41,13 +41,13 @@ The strsplit() function was also used to split characters under the “source”
 Binary columns were added based on keyword searches of the “body” column and using the str_match() and ifelse() functions. The keywords include:
 
 1. “English” which denotes that the ad is written in English.
-2. “French” which denotes that the ad asks for applicants to be fluent in or knowledge of French.
-3. “Spanish” which denotes that the ad asks for applicants to be fluent in or knowledge of Spanish.
-4. “Arabic” which denotes that the ad asks for applicants to be fluent in or knowledge of Arabic.
-5. “Chinese” which denotes that the ad asks for applicants to be fluent in or knowledge of Chinese.
-6. “Russian” which denotes that the ad asks for applicants to be fluent in or knowledge of Russian.
-7. “Portuguese” which denotes that the ad asks for applicants to be fluent in or knowledge of Portuguese.
-8. “local languages” which denotes that the ad asks for applicants to be fluent in or knowledge of local languages.
+2. “French” which denotes that the ad asks for applicants to be fluent in or have knowledge of French.
+3. “Spanish” which denotes that the ad asks for applicants to be fluent in or have knowledge of Spanish.
+4. “Arabic” which denotes that the ad asks for applicants to be fluent in or have knowledge of Arabic.
+5. “Chinese” which denotes that the ad asks for applicants to be fluent in or have knowledge of Chinese.
+6. “Russian” which denotes that the ad asks for applicants to be fluent in or have knowledge of Russian.
+7. “Portuguese” which denotes that the ad asks for applicants to be fluent in or have knowledge of Portuguese.
+8. “local languages” which denotes that the ad asks for applicants to be fluent in or have knowledge of local languages.
 
 Additional binary columns were created based on keyword searches of the “country” column. The keywords include the “United States of America”, the “United Kingdom”, “Canada”, “Australia” and “Ireland”.  These and the “English” binary columns were combined into one column using for loop with if else statement. 
 

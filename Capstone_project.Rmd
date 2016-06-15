@@ -2,7 +2,7 @@ This contains codes for my Data Science Workshop capstone project:
 
 ```{r}
 
-## Load packages
+#### Load packages
 library(jsonlite)
 library(plyr)
 library(stringr)
@@ -10,64 +10,44 @@ library(tidyr)
 library(dplyr)
 library(gdata)
 library(scales)
+library(ggplot2)
 
-## Extract data from Reliefweb API
-"rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?offset=9000&limit=1000&preset=analysis&fields[include][]title&fields[include][]=body&fields[include][]=theme&fields[include][]=country&fields[include][]=type&fields[include][]=experience&fields[include][]=career_categories&fields[include][]=date.created")
+#### Extract data from Reliefweb API
+rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?offset=0&limit=1000&preset=analysis&filter[field]=date.created&filter[value][from]=2015-05-01T00:00:00%2B00:00&filter[value][to]=2015-05-31T00:00:00%2B00:00&&fields[include][]title&fields[include][]=body&fields[include][]=theme.name&fields[include][]=country.name&fields[include][]=type.name&fields[include][]=experience.name&fields[include][]=career_categories.name&fields[include][]=date.created&fields[include][]=id&fields[include][]=source.name&fields[include][]=source.type.name")
 
-## Assign data set to "rwjobs1" and view dataset
+#### Assign data set to "rwjobs1" and review column names
 rwjobs1 <- rwjobsraw1$data$fields
 colnames(rwjobs1)
 View(rwjobs1)
 
-## Unlist nested lists
+#### Unlist nested lists
 rwjobs1$theme <- llply(rwjobs1$theme, unlist)
 rwjobs1$type <- llply(rwjobs1$type, unlist)
 rwjobs1$experience <- llply(rwjobs1$experience, unlist)
 rwjobs1$career_categories <- llply(rwjobs1$career_categories, unlist)
 rwjobs1$country <- llply(rwjobs1$country, unlist)
+rwjobs1$date <- llply(rwjobs1$date, unlist)
+rwjobs1$source <- llply(rwjobs1$source, unlist)
 
-## Clean dataset by removing unneccesary characters and splitting strings 
-rwjobs1$type <- gsub("\\c\\(", "", rwjobs1$type)
-rwjobs1$type <- gsub("\"", "", rwjobs1$type)
-rwjobs1$type <- gsub("\\)", "", rwjobs1$type)
-rwjobs1$type <- as.character(rwjobs1$type)
-rwjobs1$type <- gsub("\\d+\\,", "", rwjobs1$type)
-
-rwjobs1$experience <- gsub("\\c\\(", "", rwjobs1$experience)
-rwjobs1$experience <- gsub("\"", "", rwjobs1$experience)
-rwjobs1$experience <- gsub("\\years\\)", "", rwjobs1$experience)
-rwjobs1$experience <- gsub("\\)", "", rwjobs1$experience)
-experience_split <- strsplit(rwjobs1$experience, split = ",")
+#### Clean dataset by removing unneccesary characters and splitting strings 
+rwjobs1$source <- gsub("\\c\\(", "", rwjobs1$source)
+rwjobs1$source <- gsub("\"", "", rwjobs1$source)
+rwjobs1$source <- gsub("\\)", "", rwjobs1$source)
+source_split <- strsplit(rwjobs1$source, split = ",")
 select_el <- function(x, index) {x[index]}
-experience_id <- lapply(experience_split, select_el, index = 1) 
-experience_years <- lapply(experience_split, select_el, index = 2) 
-rwjobs1$experience_id <- as.character(experience_id)
-rwjobs1$experience_years <- as.character(experience_years)
-rwjobs1$experience_id <- NULL
-rwjobs1$experience <- NULL
-
-rwjobs1$country <- gsub("\\c\\(", "", rwjobs1$country)
-rwjobs1$country <- gsub("\"", "", rwjobs1$country)
-rwjobs1$country <- gsub("\\)", "", rwjobs1$country)
-rwjobs1$country <- gsub('http\\S*\\s*', "", rwjobs1$country)
-rwjobs1$country <- as.character(rwjobs1$country)
-country_split <- strsplit(rwjobs1$country, split = ",")
-select_el <- function(x, index) {x[index]}
-country_name <- lapply(country_split, select_el, index = 4)
-rwjobs1$country_name <- as.character(country_name)
-rwjobs1$country <- rwjobs1$country_name
-rwjobs1$country_name <- NULL
-
-rwjobs1$career_categories <- gsub("\\c\\(", "", rwjobs1$career_categories)
-rwjobs1$career_categories <- gsub("\"", "", rwjobs1$career_categories)
-rwjobs1$career_categories <- gsub("\\)", "", rwjobs1$career_categories)
-rwjobs1$career_categories <- as.character(rwjobs1$career_categories)
-rwjobs1$career_categories <- gsub("\\d+\\,", "", rwjobs1$career_categories)
+org_name <- lapply(source_split, select_el, index = 1)
+org_type <- lapply(source_split, select_el, index = 2)
+rwjobs1$organization <- as.character(org_name)
+rwjobs1$organization_type <- as.character(org_type)
+rwjobs1$source <- NULL
 
 rwjobs1$theme <- gsub("\\c\\(", "", rwjobs1$theme)
 rwjobs1$theme <- gsub("\"", "", rwjobs1$theme)
 rwjobs1$theme <- gsub("\\)", "", rwjobs1$theme)
-rwjobs1$theme <- gsub("\\d+\\,", "", rwjobs1$theme)
+
+rwjobs1$career_categories <- gsub("\\c\\(", "", rwjobs1$career_categories)
+rwjobs1$career_categories <- gsub("\"", "", rwjobs1$career_categories)
+rwjobs1$career_categories <- gsub("\\)", "", rwjobs1$career_categories)
 
 rwjobs1$date <- gsub("\\c\\(", "", rwjobs1$date)
 rwjobs1$date <- gsub("\"", "", rwjobs1$date)
@@ -84,516 +64,426 @@ rwjobs1$year[1000]
 rwjobs1$month[1]
 rwjobs1$month[1000]
 
-## Save dataset into a csv file, amending the csv file name depending on the batch of data extracted
-write.csv(rwjobs1, "rwjobs1.csv")
+#### Save dataset into a csv file, amending the csv file name depending on the batch of data extracted
+rwjobs1 <- data.frame(lapply(rwjobs1, as.character), stringsAsFactors=FALSE)
+write.csv(rwjobs1, "rwjobsMay115.csv")
 
-## Combine and view cleaned dataset
-2016
-rwjobs1 <- read.csv("C:/Users/elizajv/Documents/rwjobs1.csv", 1)
-rwjobs2 <- read.csv("C:/Users/elizajv/Documents/rwjobs2.csv", 1)
-rwjobs3 <- read.csv("C:/Users/elizajv/Documents/rwjobs3.csv", 1)
-rwjobs4 <- read.csv("C:/Users/elizajv/Documents/rwjobs4.csv", 1)
-rwjobs5 <- read.csv("C:/Users/elizajv/Documents/rwjobs5.csv", 1)
-rwjobs6 <- read.csv("C:/Users/elizajv/Documents/rwjobs6.csv", 1)
-rwjobs7 <- read.csv("C:/Users/elizajv/Documents/rwjobs7.csv", 1)
-rwjobs9 <- read.csv("C:/Users/elizajv/Documents/rwjobs9.csv", 1)
-rwjobs10 <- read.csv("C:/Users/elizajv/Documents/rwjobs10.csv", 1)
-rwjobs14 <- read.csv("C:/Users/elizajv/Documents/rwjobs14.csv", 1)
-rwjobs20 <- read.csv("C:/Users/elizajv/Documents/rwjobs20.csv", 1)
-rwjobs56 <- read.csv("C:/Users/elizajv/Documents/rwjobs56.csv", 1)
-rwjobs69 <- read.csv("C:/Users/elizajv/Documents/rwjobs69.csv", 1)
-rwjobs70 <- read.csv("C:/Users/elizajv/Documents/rwjobs70.csv", 1)
-rwjobs124 <- read.csv("C:/Users/elizajv/Documents/rwjobs124.csv", 1)
-rwjobs125 <- read.csv("C:/Users/elizajv/Documents/rwjobs125.csv", 1)
-rwjobs126 <- read.csv("C:/Users/elizajv/Documents/rwjobs126.csv", 1)
-rwjobs127 <- read.csv("C:/Users/elizajv/Documents/rwjobs127.csv", 1)
-rwjobs2016 <- rbind(rwjobs1, rwjobs2, rwjobs3, rwjobs4, rwjobs5, rwjobs6, rwjobs7, rwjobs9, rwjobs10, rwjobs14, rwjobs20, rwjobs56, rwjobs69, rwjobs70, rwjobs124, rwjobs125, rwjobs126, rwjobs127)
-View(rwjobs2016)
+#### Combine cleaned dataset
+```{r}
+rwjobsJun116 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun116.csv", 1)
+rwjobsJun216 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun216.csv", 1)
+rwjobsMay116 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay1.csv", 1)
+rwjobsMay216 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay2.csv", 1)
+rwjobsMay316 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay3.csv", 1)
+rwjobsApr116 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr1.csv", 1)
+rwjobsApr216 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr2.csv", 1)
+rwjobsApr316 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr3.csv", 1)
+rwjobsMar116 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar1.csv", 1)
+rwjobsMar216 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar2.csv", 1)
+rwjobsMar316 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar3.csv", 1)
+rwjobsFeb116 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb1.csv", 1)
+rwjobsFeb216 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb2.csv", 1)
+rwjobsFeb316 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb3.csv", 1)
+rwjobsJan116 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan1.csv", 1)
+rwjobsJan216 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan2.csv", 1)
+rwjobsJan316 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan3.csv", 1)
+rwj2016 <- rbind(rwjobsJan116, rwjobsJan216, rwjobsJan316, rwjobsFeb116, rwjobsFeb216, rwjobsFeb316, rwjobsMar116, rwjobsMar216, rwjobsMar316, rwjobsApr116, rwjobsApr216, rwjobsApr316, rwjobsMay116, rwjobsMay216, rwjobsMay316, rwjobsJun116, rwjobsJun216)
+write.csv(rwj2016, "rwj2016.csv")
 
-2015
-rwjobs8 <- read.csv("C:/Users/elizajv/Documents/rwjobs8.csv", 1)
-rwjobs11 <- read.csv("C:/Users/elizajv/Documents/rwjobs11.csv", 1)
-rwjobs12 <- read.csv("C:/Users/elizajv/Documents/rwjobs12.csv", 1)
-rwjobs15 <- read.csv("C:/Users/elizajv/Documents/rwjobs15.csv", 1)
-rwjobs16 <- read.csv("C:/Users/elizajv/Documents/rwjobs16.csv", 1)
-rwjobs17 <- read.csv("C:/Users/elizajv/Documents/rwjobs17.csv", 1)
-rwjobs18 <- read.csv("C:/Users/elizajv/Documents/rwjobs18.csv", 1)
-rwjobs19 <- read.csv("C:/Users/elizajv/Documents/rwjobs19.csv", 1)
-rwjobs21 <- read.csv("C:/Users/elizajv/Documents/rwjobs21.csv", 1)
-rwjobs24 <- read.csv("C:/Users/elizajv/Documents/rwjobs24.csv", 1)
-rwjobs25 <- read.csv("C:/Users/elizajv/Documents/rwjobs25.csv", 1)
-rwjobs26 <- read.csv("C:/Users/elizajv/Documents/rwjobs26.csv", 1)
-rwjobs27 <- read.csv("C:/Users/elizajv/Documents/rwjobs27.csv", 1)
-rwjobs28 <- read.csv("C:/Users/elizajv/Documents/rwjobs28.csv", 1)
-rwjobs29 <- read.csv("C:/Users/elizajv/Documents/rwjobs29.csv", 1)
-rwjobs30 <- read.csv("C:/Users/elizajv/Documents/rwjobs30.csv", 1)
-rwjobs31 <- read.csv("C:/Users/elizajv/Documents/rwjobs31.csv", 1)
-rwjobs32 <- read.csv("C:/Users/elizajv/Documents/rwjobs32.csv", 1)
-rwjobs48 <- read.csv("C:/Users/elizajv/Documents/rwjobs48.csv", 1)
-rwjobs49 <- read.csv("C:/Users/elizajv/Documents/rwjobs49.csv", 1)
-rwjobs52 <- read.csv("C:/Users/elizajv/Documents/rwjobs52.csv", 1)
-rwjobs53 <- read.csv("C:/Users/elizajv/Documents/rwjobs53.csv", 1)
-rwjobs55 <- read.csv("C:/Users/elizajv/Documents/rwjobs55.csv", 1)
-rwjobs65 <- read.csv("C:/Users/elizajv/Documents/rwjobs65.csv", 1)
-rwjobs66 <- read.csv("C:/Users/elizajv/Documents/rwjobs66.csv", 1)
-rwjobs67 <- read.csv("C:/Users/elizajv/Documents/rwjobs67.csv", 1)
-rwjobs71 <- read.csv("C:/Users/elizajv/Documents/rwjobs71.csv", 1)
-rwjobs76 <- read.csv("C:/Users/elizajv/Documents/rwjobs76.csv", 1)
-rwjobs77 <- read.csv("C:/Users/elizajv/Documents/rwjobs77.csv", 1)
-rwjobs79 <- read.csv("C:/Users/elizajv/Documents/rwjobs79.csv", 1)
-rwjobs128 <- read.csv("C:/Users/elizajv/Documents/rwjobs128.csv", 1)
-rwjobs129 <- read.csv("C:/Users/elizajv/Documents/rwjobs129.csv", 1)
-rwjobs130 <- read.csv("C:/Users/elizajv/Documents/rwjobs130.csv", 1)
-rwjobs2015 <- rbind(rwjobs8, rwjobs11, rwjobs12, rwjobs15, rwjobs16, rwjobs17, rwjobs18, rwjobs19, rwjobs21, rwjobs24, rwjobs25, rwjobs26, rwjobs27, rwjobs28, rwjobs29, rwjobs30, rwjobs31, rwjobs32, rwjobs48, rwjobs49, rwjobs52, rwjobs53, rwjobs55, rwjobs65, rwjobs66, rwjobs67, rwjobs71, rwjobs76, rwjobs77, rwjobs79, rwjobs128, rwjobs129, rwjobs130)
-View(rwjobs2015)
+rwjobsJan115 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan115.csv", 1)
+rwjobsJan215 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan215.csv", 1)
+rwjobsJan315 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan315.csv", 1)
+rwjobsFeb115 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb115.csv", 1)
+rwjobsFeb215 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb215.csv", 1)
+rwjobsFeb315 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb315.csv", 1)
+rwjobsMar115 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar115.csv", 1)
+rwjobsMar215 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar215.csv", 1)
+rwjobsMar315 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar315.csv", 1)
+rwjobsApr115 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr115.csv", 1)
+rwjobsApr215 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr215.csv", 1)
+rwjobsApr315 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr315.csv", 1)
+rwjobsMay115 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay115.csv", 1)
+rwjobsMay215 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay215.csv", 1)
+rwjobsMay315 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay315.csv", 1)
+rwjobsJun115 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun115.csv", 1)
+rwjobsJun215 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun215.csv", 1)
+rwjobsJun315 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun315.csv", 1)
+rwjobsJul115 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul115.csv", 1)
+rwjobsJul215 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul215.csv", 1)
+rwjobsJul315 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul315.csv", 1)
+rwjobsAug115 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug115.csv", 1)
+rwjobsAug215 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug215.csv", 1)
+rwjobsAug315 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug315.csv", 1)
+rwjobsSep115 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep115.csv", 1)
+rwjobsSep215 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep215.csv", 1)
+rwjobsSep315 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep315.csv", 1)
+rwjobsOct115 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct115.csv", 1)
+rwjobsOct215 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct215.csv", 1)
+rwjobsOct315 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct315.csv", 1)
+rwjobsNov115 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov115.csv", 1)
+rwjobsNov215 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov215.csv", 1)
+rwjobsNov315 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov315.csv", 1)
+rwjobsDec115 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec115.csv", 1)
+rwjobsDec215 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec215.csv", 1)
+rwjobsDec315 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec315.csv", 1)
+rwj2015 <- rbind(rwjobsJan115, rwjobsJan215, rwjobsJan315, rwjobsFeb115, rwjobsFeb215, rwjobsFeb315, rwjobsMar115, rwjobsMar215, rwjobsMar315, rwjobsApr115, rwjobsApr215, rwjobsApr315, rwjobsMay115, rwjobsMay215, rwjobsMay315, rwjobsJun115, rwjobsJun215, rwjobsJun315, rwjobsJul115, rwjobsJul215, rwjobsJul315, rwjobsAug115, rwjobsAug215, rwjobsAug315, rwjobsSep115, rwjobsSep215, rwjobsSep315, rwjobsOct115, rwjobsOct215, rwjobsOct315, rwjobsNov115, rwjobsNov215, rwjobsNov315, rwjobsDec115, rwjobsDec215, rwjobsDec315)
+write.csv(rwj2015, "rwj2015.csv")
 
-2014
-rwjobs13 <- read.csv("C:/Users/elizajv/Documents/rwjobs13.csv", 1)
-rwjobs22 <- read.csv("C:/Users/elizajv/Documents/rwjobs22.csv", 1)
-rwjobs23 <- read.csv("C:/Users/elizajv/Documents/rwjobs23.csv", 1)
-rwjobs33 <- read.csv("C:/Users/elizajv/Documents/rwjobs33.csv", 1)
-rwjobs34 <- read.csv("C:/Users/elizajv/Documents/rwjobs34.csv", 1)
-rwjobs35 <- read.csv("C:/Users/elizajv/Documents/rwjobs35.csv", 1)
-rwjobs36 <- read.csv("C:/Users/elizajv/Documents/rwjobs36.csv", 1)
-rwjobs37 <- read.csv("C:/Users/elizajv/Documents/rwjobs37.csv", 1)
-rwjobs38 <- read.csv("C:/Users/elizajv/Documents/rwjobs38.csv", 1)
-rwjobs39 <- read.csv("C:/Users/elizajv/Documents/rwjobs39.csv", 1)
-rwjobs40 <- read.csv("C:/Users/elizajv/Documents/rwjobs40.csv", 1)
-rwjobs41 <- read.csv("C:/Users/elizajv/Documents/rwjobs41.csv", 1)
-rwjobs42 <- read.csv("C:/Users/elizajv/Documents/rwjobs42.csv", 1)
-rwjobs43 <- read.csv("C:/Users/elizajv/Documents/rwjobs43.csv", 1)
-rwjobs44 <- read.csv("C:/Users/elizajv/Documents/rwjobs44.csv", 1)
-rwjobs45 <- read.csv("C:/Users/elizajv/Documents/rwjobs45.csv", 1)
-rwjobs46 <- read.csv("C:/Users/elizajv/Documents/rwjobs46.csv", 1)
-rwjobs47 <- read.csv("C:/Users/elizajv/Documents/rwjobs47.csv", 1)
-rwjobs57 <- read.csv("C:/Users/elizajv/Documents/rwjobs57.csv", 1)
-rwjobs58 <- read.csv("C:/Users/elizajv/Documents/rwjobs58.csv", 1)
-rwjobs59 <- read.csv("C:/Users/elizajv/Documents/rwjobs59.csv", 1)
-rwjobs60 <- read.csv("C:/Users/elizajv/Documents/rwjobs60.csv", 1)
-rwjobs62 <- read.csv("C:/Users/elizajv/Documents/rwjobs62.csv", 1)
-rwjobs63 <- read.csv("C:/Users/elizajv/Documents/rwjobs63.csv", 1)
-rwjobs64 <- read.csv("C:/Users/elizajv/Documents/rwjobs64.csv", 1)
-rwjobs68 <- read.csv("C:/Users/elizajv/Documents/rwjobs68.csv", 1)
-rwjobs72 <- read.csv("C:/Users/elizajv/Documents/rwjobs72.csv", 1)
-rwjobs73 <- read.csv("C:/Users/elizajv/Documents/rwjobs73.csv", 1)
-rwjobs2014 <- rbind(rwjobs13, rwjobs22, rwjobs23, rwjobs33, rwjobs34, rwjobs35, rwjobs36, rwjobs37, rwjobs38, rwjobs39, rwjobs40, rwjobs41, rwjobs42, rwjobs43, rwjobs44, rwjobs45, rwjobs46, rwjobs47, rwjobs57, rwjobs58, rwjobs59, rwjobs60, rwjobs62, rwjobs63, rwjobs64, rwjobs68, rwjobs72, rwjobs73)
-View(rwjobs2014)
+rwjobsJan114 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan114.csv", 1)
+rwjobsJan214 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan214.csv", 1)
+rwjobsFeb114 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb114.csv", 1)
+rwjobsFeb214 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb214.csv", 1)
+rwjobsMar114 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar114.csv", 1)
+rwjobsMar214 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar214.csv", 1)
+rwjobsMar314 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar314.csv", 1)
+rwjobsApr114 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr114.csv", 1)
+rwjobsApr214 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr214.csv", 1)
+rwjobsApr314 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr314.csv", 1)
+rwjobsMay114 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay114.csv", 1)
+rwjobsMay214 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay214.csv", 1)
+rwjobsMay314 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay314.csv", 1)
+rwjobsJun114 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun114.csv", 1)
+rwjobsJun214 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun214.csv", 1)
+rwjobsJun314 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun314.csv", 1)
+rwjobsJul114 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul114.csv", 1)
+rwjobsJul214 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul214.csv", 1)
+rwjobsJul314 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul314.csv", 1)
+rwjobsAug114 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug114.csv", 1)
+rwjobsAug214 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug214.csv", 1)
+rwjobsAug314 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug314.csv", 1)
+rwjobsSep114 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep114.csv", 1)
+rwjobsSep214 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep214.csv", 1)
+rwjobsSep314 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep314.csv", 1)
+rwjobsOct114 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct114.csv", 1)
+rwjobsOct214 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct214.csv", 1)
+rwjobsOct314 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct314.csv", 1)
+rwjobsNov114 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov114.csv", 1)
+rwjobsNov214 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov214.csv", 1)
+rwjobsNov314 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov314.csv", 1)
+rwjobsDec114 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec114.csv", 1)
+rwjobsDec214 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec214.csv", 1)
+rwjobsDec314 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec314.csv", 1)
+rwj2014 <- rbind(rwjobsJan114, rwjobsJan214, rwjobsFeb114, rwjobsFeb214, rwjobsMar114, rwjobsMar214, rwjobsMar314, rwjobsApr114, rwjobsApr214, rwjobsApr314, rwjobsMay114, rwjobsMay214, rwjobsMay314, rwjobsJun114, rwjobsJun214, rwjobsJun314, rwjobsJul114, rwjobsJul214, rwjobsJul314, rwjobsAug114, rwjobsAug214, rwjobsAug314, rwjobsSep114, rwjobsSep214, rwjobsSep314, rwjobsOct114, rwjobsOct214, rwjobsOct314, rwjobsNov114, rwjobsNov214, rwjobsNov314, rwjobsDec114, rwjobsDec214, rwjobsDec314)
+write.csv(rwj2014, "rwj2014.csv")
 
-2013
-rwjobs50 <- read.csv("C:/Users/elizajv/Documents/rwjobs50.csv", 1)
-rwjobs51 <- read.csv("C:/Users/elizajv/Documents/rwjobs51.csv", 1)
-rwjobs54 <- read.csv("C:/Users/elizajv/Documents/rwjobs54.csv", 1)
-rwjobs61 <- read.csv("C:/Users/elizajv/Documents/rwjobs61.csv", 1)
-rwjobs74 <- read.csv("C:/Users/elizajv/Documents/rwjobs74.csv", 1)
-rwjobs75 <- read.csv("C:/Users/elizajv/Documents/rwjobs75.csv", 1)
-rwjobs78 <- read.csv("C:/Users/elizajv/Documents/rwjobs78.csv", 1)
-rwjobs80 <- read.csv("C:/Users/elizajv/Documents/rwjobs80.csv", 1)
-rwjobs81 <- read.csv("C:/Users/elizajv/Documents/rwjobs81.csv", 1)
-rwjobs82 <- read.csv("C:/Users/elizajv/Documents/rwjobs82.csv", 1)
-rwjobs84 <- read.csv("C:/Users/elizajv/Documents/rwjobs84.csv", 1)
-rwjobs86 <- read.csv("C:/Users/elizajv/Documents/rwjobs86.csv", 1)
-rwjobs87 <- read.csv("C:/Users/elizajv/Documents/rwjobs87.csv", 1)
-rwjobs88 <- read.csv("C:/Users/elizajv/Documents/rwjobs88.csv", 1)
-rwjobs91 <- read.csv("C:/Users/elizajv/Documents/rwjobs91.csv", 1)
-rwjobs92 <- read.csv("C:/Users/elizajv/Documents/rwjobs92.csv", 1)
-rwjobs94 <- read.csv("C:/Users/elizajv/Documents/rwjobs94.csv", 1)
-rwjobs131 <- read.csv("C:/Users/elizajv/Documents/rwjobs131.csv", 1)
-rwjobs132 <- read.csv("C:/Users/elizajv/Documents/rwjobs132.csv", 1)
-rwjobs2013 <- rbind(rwjobs50, rwjobs51, rwjobs54, rwjobs61, rwjobs74, rwjobs75, rwjobs78, rwjobs80, rwjobs81, rwjobs82, rwjobs84, rwjobs86, rwjobs87, rwjobs88, rwjobs91, rwjobs92, rwjobs94, rwjobs131, rwjobs132)
-View(rwjobs2013)
+rwjobsJan113 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan113.csv", 1)
+rwjobsJan213 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan213.csv", 1)
+rwjobsFeb113 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb113.csv", 1)
+rwjobsFeb213 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb213.csv", 1)
+rwjobsMar113 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar113.csv", 1)
+rwjobsMar213 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar213.csv", 1)
+rwjobsApr113 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr113.csv", 1)
+rwjobsApr213 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr213.csv", 1)
+rwjobsMay113 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay113.csv", 1)
+rwjobsMay213 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay213.csv", 1)
+rwjobsMay313 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay313.csv", 1)
+rwjobsJun113 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun113.csv", 1)
+rwjobsJun213 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun213.csv", 1)
+rwjobsJul113 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul113.csv", 1)
+rwjobsJul213 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul213.csv", 1)
+rwjobsJul313 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul313.csv", 1)
+rwjobsAug113 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug113.csv", 1)
+rwjobsAug213 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug213.csv", 1)
+rwjobsSep113 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep113.csv", 1)
+rwjobsSep213 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep213.csv", 1)
+rwjobsOct113 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct113.csv", 1)
+rwjobsOct213 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct213.csv", 1)
+rwjobsNov113 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov113.csv", 1)
+rwjobsNov213 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov213.csv", 1)
+rwjobsDec113 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec113.csv", 1)
+rwjobsDec213 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec213.csv", 1)
+rwj2013 <- rbind(rwjobsJan113, rwjobsJan213, rwjobsFeb113, rwjobsFeb213, rwjobsMar113, rwjobsMar213, rwjobsApr113, rwjobsApr213, rwjobsMay113, rwjobsMay213, rwjobsMay313, rwjobsJun113, rwjobsJun213, rwjobsJul113, rwjobsJul213, rwjobsJul313, rwjobsAug113, rwjobsAug213, rwjobsSep113, rwjobsSep213, rwjobsOct113, rwjobsOct213, rwjobsNov113, rwjobsNov213, rwjobsDec113, rwjobsDec213)
+write.csv(rwj2013, "rwj2013.csv")
 
-2012
-rwjobs83 <- read.csv("C:/Users/elizajv/Documents/rwjobs83.csv", 1)
-rwjobs85 <- read.csv("C:/Users/elizajv/Documents/rwjobs85.csv", 1)
-rwjobs89 <- read.csv("C:/Users/elizajv/Documents/rwjobs89.csv", 1)
-rwjobs90 <- read.csv("C:/Users/elizajv/Documents/rwjobs90.csv", 1)
-rwjobs93 <- read.csv("C:/Users/elizajv/Documents/rwjobs93.csv", 1)
-rwjobs95 <- read.csv("C:/Users/elizajv/Documents/rwjobs95.csv", 1)
-rwjobs96 <- read.csv("C:/Users/elizajv/Documents/rwjobs96.csv", 1)
-rwjobs99 <- read.csv("C:/Users/elizajv/Documents/rwjobs99.csv", 1)
-rwjobs101 <- read.csv("C:/Users/elizajv/Documents/rwjobs101.csv", 1)
-rwjobs103 <- read.csv("C:/Users/elizajv/Documents/rwjobs103.csv", 1)
-rwjobs104 <- read.csv("C:/Users/elizajv/Documents/rwjobs104.csv", 1)
-rwjobs105 <- read.csv("C:/Users/elizajv/Documents/rwjobs105.csv", 1)
-rwjobs106 <- read.csv("C:/Users/elizajv/Documents/rwjobs106.csv", 1)
-rwjobs107 <- read.csv("C:/Users/elizajv/Documents/rwjobs107.csv", 1)
-rwjobs108 <- read.csv("C:/Users/elizajv/Documents/rwjobs108.csv", 1)
-rwjobs109 <- read.csv("C:/Users/elizajv/Documents/rwjobs109.csv", 1)
-rwjobs114 <- read.csv("C:/Users/elizajv/Documents/rwjobs114.csv", 1)
-rwjobs115 <- read.csv("C:/Users/elizajv/Documents/rwjobs115.csv", 1)
-rwjobs116 <- read.csv("C:/Users/elizajv/Documents/rwjobs116.csv", 1)
-rwjobs117 <- read.csv("C:/Users/elizajv/Documents/rwjobs117.csv", 1)
-rwjobs118 <- read.csv("C:/Users/elizajv/Documents/rwjobs118.csv", 1)
-rwjobs2012 <- rbind(rwjobs83, rwjobs85, rwjobs89, rwjobs90, rwjobs93, rwjobs95, rwjobs96, rwjobs99, rwjobs101, rwjobs103, rwjobs104, rwjobs105, rwjobs106, rwjobs107, rwjobs108, rwjobs109, rwjobs114, rwjobs115, rwjobs116, rwjobs117, rwjobs118)
-View(rwjobs2012)
+rwjobsJan112 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan112.csv", 1)
+rwjobsJan212 <- read.csv("C:/Users/elizajv/Documents/rwjobsJan212.csv", 1)
+rwjobsFeb112 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb112.csv", 1)
+rwjobsFeb212 <- read.csv("C:/Users/elizajv/Documents/rwjobsFeb212.csv", 1)
+rwjobsMar112 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar112.csv", 1)
+rwjobsMar212 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar212.csv", 1)
+rwjobsApr112 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr112.csv", 1)
+rwjobsApr212 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr212.csv", 1)
+rwjobsMay112 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay112.csv", 1)
+rwjobsMay212 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay212.csv", 1)
+rwjobsJun112 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun112.csv", 1)
+rwjobsJun212 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun212.csv", 1)
+rwjobsJul112 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul112.csv", 1)
+rwjobsJul212 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul212.csv", 1)
+rwjobsAug112 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug112.csv", 1)
+rwjobsAug212 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug212.csv", 1)
+rwjobsSep112 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep112.csv", 1)
+rwjobsSep212 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep212.csv", 1)
+rwjobsOct112 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct112.csv", 1)
+rwjobsOct212 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct212.csv", 1)
+rwjobsNov112 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov112.csv", 1)
+rwjobsNov212 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov212.csv", 1)
+rwjobsDec112 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec112.csv", 1)
+rwjobsDec212 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec212.csv", 1)
+rwj2012 <- rbind(rwjobsJan112, rwjobsJan212, rwjobsFeb112, rwjobsFeb212, rwjobsMar112, rwjobsMar212, rwjobsApr112, rwjobsApr212, rwjobsMay112, rwjobsMay212,rwjobsJun112, rwjobsJun212, rwjobsJul112, rwjobsJul212, rwjobsAug112, rwjobsAug212, rwjobsSep112, rwjobsSep212, rwjobsOct112, rwjobsOct212, rwjobsNov112, rwjobsNov212, rwjobsDec112, rwjobsDec212)
+write.csv(rwj2012, "rwj2012.csv")
 
-2011
-rwjobs97 <- read.csv("C:/Users/elizajv/Documents/rwjobs97.csv", 1)
-rwjobs98 <- read.csv("C:/Users/elizajv/Documents/rwjobs98.csv", 1)
-rwjobs100 <- read.csv("C:/Users/elizajv/Documents/rwjobs100.csv", 1)
-rwjobs102 <- read.csv("C:/Users/elizajv/Documents/rwjobs102.csv", 1)
-rwjobs110 <- read.csv("C:/Users/elizajv/Documents/rwjobs110.csv", 1)
-rwjobs111 <- read.csv("C:/Users/elizajv/Documents/rwjobs111.csv", 1)
-rwjobs112 <- read.csv("C:/Users/elizajv/Documents/rwjobs112.csv", 1)
-rwjobs113 <- read.csv("C:/Users/elizajv/Documents/rwjobs113.csv", 1)
-rwjobs119 <- read.csv("C:/Users/elizajv/Documents/rwjobs119.csv", 1)
-rwjobs120 <- read.csv("C:/Users/elizajv/Documents/rwjobs120.csv", 1)
-rwjobs121 <- read.csv("C:/Users/elizajv/Documents/rwjobs121.csv", 1)
-rwjobs122 <- read.csv("C:/Users/elizajv/Documents/rwjobs122.csv", 1)
-rwjobs123 <- read.csv("C:/Users/elizajv/Documents/rwjobs123.csv", 1)
-rwjobs133 <- read.csv("C:/Users/elizajv/Documents/rwjobs133.csv", 1)
-rwjobs134 <- read.csv("C:/Users/elizajv/Documents/rwjobs134.csv", 1)
-rwjobs2011 <- rbind(rwjobs97, rwjobs98, rwjobs100, rwjobs102, rwjobs110, rwjobs111, rwjobs112, rwjobs113, rwjobs116, rwjobs119, rwjobs121, rwjobs122, rwjobs123, rwjobs133, rwjobs134)
-View(rwjobs2011)
+rwjobsMar111 <- read.csv("C:/Users/elizajv/Documents/rwjobsMar111.csv", 1)
+rwjobsApr111 <- read.csv("C:/Users/elizajv/Documents/rwjobsApr111.csv", 1)
+rwjobsMay111 <- read.csv("C:/Users/elizajv/Documents/rwjobsMay111.csv", 1)
+rwjobsJun111 <- read.csv("C:/Users/elizajv/Documents/rwjobsJun111.csv", 1)
+rwjobsJul111 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul111.csv", 1)
+rwjobsJul211 <- read.csv("C:/Users/elizajv/Documents/rwjobsJul211.csv", 1)
+rwjobsAug111 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug111.csv", 1)
+rwjobsAug211 <- read.csv("C:/Users/elizajv/Documents/rwjobsAug211.csv", 1)
+rwjobsSep111 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep111.csv", 1)
+rwjobsSep211 <- read.csv("C:/Users/elizajv/Documents/rwjobsSep211.csv", 1)
+rwjobsOct111 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct111.csv", 1)
+rwjobsOct211 <- read.csv("C:/Users/elizajv/Documents/rwjobsOct211.csv", 1)
+rwjobsNov111 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov111.csv", 1)
+rwjobsNov211 <- read.csv("C:/Users/elizajv/Documents/rwjobsNov211.csv", 1)
+rwjobsDec111 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec111.csv", 1)
+rwjobsDec211 <- read.csv("C:/Users/elizajv/Documents/rwjobsDec211.csv", 1)
+rwj2011 <- rbind(rwjobsMar111, rwjobsApr111, rwjobsMay111, rwjobsJun111, rwjobsJul111, rwjobsJul211, rwjobsAug111, rwjobsAug211, rwjobsSep111, rwjobsSep211, rwjobsOct111, rwjobsOct211, rwjobsNov111, rwjobsNov211, rwjobsDec111, rwjobsDec211)
+write.csv(rwj2011, "rwj2011.csv")
+rwjAll <- rbind(rwj2011, rwj2012, rwj2013, rwj2014, rwj2015, rwj2016)
+write.csv(rwjAll, "rwjAll.csv")
 
-## Combine 2011-2016 datasets
-rwjobsall <- rbind(rwjobs2016, rwjobs2015, rwjobs2014, rwjobs2013, rwjobs2012, rwjobs2011)
-View(rwjobsall)
+#### Remove duplicate values and unnecessary column
+rwjAll <- rwjAll[!duplicated(rwjAll), ]
+rwjAll$X <- NULL
+View(rwjAll)
 
-## Remove unnecessary column
-rwjobsall$X <- NULL
+#### Create columns based on language keywords in the "body" and "country_name" columns, with the latter based on which donor countries have made English an official language
+rwjAll$English1 <- as.vector(c(NA * 117598))
+rwjAll$English1 <- str_match(rwjAll$body, "English")
+rwjAll$English1 <- ifelse(rwjAll$English1 == "English", 1, 0)
+rwjAll$English1 <- unmatrix(rwjAll$English1)
 
-## Create columns based on language keywords in the "body" and "country_name" columns, with the latter based on which donor countries have made English an official language
-rwjobsall$English1 <- as.vector(c(NA * 130576))
-rwjobsall$English1 <- str_match(rwjobsall$body, "English")
-rwjobsall$English1 <- ifelse(rwjobsall$English1 == "English", 1, 0)
-rwjobsall$English1 <- unmatrix(rwjobsall$English1)
+rwjAll$English2 <- as.vector(c(NA * 117598))
+rwjAll$English2 <- str_match(rwjAll$country, "United States")
+rwjAll$English2 <- ifelse(rwjAll$English2 == "United States", 1, 0)
+rwjAll$English2 <- unmatrix(rwjAll$English2)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English2[i]=NA
 
-rwjobsall$English2 <- as.vector(c(NA * 130576))
-rwjobsall$English2 <- str_match(rwjobsall$country, "United States")
-rwjobsall$English2 <- ifelse(rwjobsall$English2 == "United States", 1, 0)
-rwjobsall$English2 <- unmatrix(rwjobsall$English2)
-for (i in 1:length(rwjobsall$English1))
-if (!is.na(rwjobsall$English1[i])) rwjobsall$English2[i]=NA
+rwjAll$English3 <- as.vector(c(NA * 117598))
+rwjAll$English3 <- str_match(rwjAll$country, "United Kingdom")
+rwjAll$English3 <- ifelse(rwjAll$English3 == "United Kingdom", 1, 0)
+rwjAll$English3 <- unmatrix(rwjAll$English3)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English3[i]=NA
 
-rwjobsall$English3 <- as.vector(c(NA * 130576))
-rwjobsall$English3 <- str_match(rwjobsall$country, "United Kingdom")
-rwjobsall$English3 <- ifelse(rwjobsall$English3 == "United Kingdom", 1, 0)
-rwjobsall$English3 <- unmatrix(rwjobsall$English3)
-for (i in 1:length(rwjobsall$English1))
-if (!is.na(rwjobsall$English1[i])) rwjobsall$English3[i]=NA
+rwjAll$English4 <- as.vector(c(NA * 117598))
+rwjAll$English4 <- str_match(rwjAll$country, "Ireland")
+rwjAll$English4 <- ifelse(rwjAll$English4 == "Ireland", 1, 0)
+rwjAll$English4 <- unmatrix(rwjAll$English4)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English4[i]=NA
+for (i in 1:length(rwjAll$English3))
+if (!is.na(rwjAll$English3[i])) rwjAll$English4[i]=NA
 
-rwjobsall$English4 <- as.vector(c(NA * 130576))
-rwjobsall$English4 <- str_match(rwjobsall$country, "Ireland")
-rwjobsall$English4 <- ifelse(rwjobsall$English4 == "Ireland", 1, 0)
-rwjobsall$English4 <- unmatrix(rwjobsall$English4)
-for (i in 1:length(rwjobsall$English1))
-if (!is.na(rwjobsall$English1[i])) rwjobsall$English4[i]=NA
-for (i in 1:length(rwjobsall$English3))
-if (!is.na(rwjobsall$English3[i])) rwjobsall$English4[i]=NA
+rwjAll$English5 <- as.vector(c(NA * 117598))
+rwjAll$English5 <- str_match(rwjAll$country, "Canada")
+rwjAll$English5 <- ifelse(rwjAll$English5 == "Canada", 1, 0)
+rwjAll$English5 <- unmatrix(rwjAll$English5)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English5[i]=NA
 
-rwjobsall$English5 <- as.vector(c(NA * 130576))
-rwjobsall$English5 <- str_match(rwjobsall$country, "Canada")
-rwjobsall$English5 <- ifelse(rwjobsall$English5 == "Canada", 1, 0)
-rwjobsall$English5 <- unmatrix(rwjobsall$English5)
-for (i in 1:length(rwjobsall$English1))
-if (!is.na(rwjobsall$English1[i])) rwjobsall$English5[i]=NA
+rwjAll$English6 <- as.vector(c(NA * 117598))
+rwjAll$English6 <- str_match(rwjAll$country, "Australia")
+rwjAll$English6 <- ifelse(rwjAll$English6 == "Australia", 1, 0)
+rwjAll$English6 <- unmatrix(rwjAll$English6)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English6[i]=NA
 
-rwjobsall$English6 <- as.vector(c(NA * 130576))
-rwjobsall$English6 <- str_match(rwjobsall$country, "Australia")
-rwjobsall$English6 <- ifelse(rwjobsall$English6 == "Australia", 1, 0)
-rwjobsall$English6 <- unmatrix(rwjobsall$English6)
-for (i in 1:length(rwjobsall$English1))
-if (!is.na(rwjobsall$English1[i])) rwjobsall$English6[i]=NA
+rwjAll$English_total <- rowSums(rwjAll[, 13:18], na.rm = TRUE)
 
-rwjobsall$English_total <- rowSums(rwjobsall[, 11:16], na.rm = TRUE)
+rwjAll$French <- as.vector(c(NA * 117598))
+rwjAll$French <- str_match(rwjAll$body, "French")
+rwjAll$French <- ifelse(rwjAll$French == "French", 1, 0)
+rwjAll$French <- unmatrix(rwjAll$French)
 
-rwjobsall$French <- as.vector(c(NA * 130576))
-rwjobsall$French <- str_match(rwjobsall$body, "French")
-rwjobsall$French <- ifelse(rwjobsall$French == "French", 1, 0)
-rwjobsall$French <- unmatrix(rwjobsall$French)
+rwjAll$Arabic <- as.vector(c(NA * 117598))
+rwjAll$Arabic <- str_match(rwjAll$body, "Arabic") 
+rwjAll$Arabic <- ifelse(rwjAll$Arabic=="Arabic", 1, 0)
+rwjAll$Arabic <- unmatrix(rwjAll$Arabic)
 
-rwjobsall$Arabic <- as.vector(c(NA * 130576))
-rwjobsall$Arabic <- str_match(rwjobsall$body, "Arabic") 
-rwjobsall$Arabic <- ifelse(rwjobsall$Arabic=="Arabic", 1, 0)
-rwjobsall$Arabic <- unmatrix(rwjobsall$Arabic)
+rwjAll$Spanish <- as.vector(c(NA * 117598))
+rwjAll$Spanish <- str_match(rwjAll$body, "Spanish") 
+rwjAll$Spanish <- ifelse(rwjAll$Spanish=="Spanish", 1, 0)
+rwjAll$Spanish <- unmatrix(rwjAll$Spanish)
 
-rwjobsall$Spanish <- as.vector(c(NA * 130576))
-rwjobsall$Spanish <- str_match(rwjobsall$body, "Spanish") 
-rwjobsall$Spanish <- ifelse(rwjobsall$Spanish=="Spanish", 1, 0)
-rwjobsall$Spanish <- unmatrix(rwjobsall$Spanish)
+rwjAll$Russian <- as.vector(c(NA * 117598))
+rwjAll$Russian <- str_match(rwjAll$body, "Russian") 
+rwjAll$Russian <- ifelse(rwjAll$Russian=="Russian", 1, 0)
+rwjAll$Russian <- unmatrix(rwjAll$Russian)
 
-rwjobsall$Russian <- as.vector(c(NA * 130576))
-rwjobsall$Russian <- str_match(rwjobsall$body, "Russian") 
-rwjobsall$Russian <- ifelse(rwjobsall$Russian=="Russian", 1, 0)
-rwjobsall$Russian <- unmatrix(rwjobsall$Russian)
+rwjAll$Chinese <- as.vector(c(NA * 117598))
+rwjAll$Chinese <- str_match(rwjAll$body, "Chinese") 
+rwjAll$Chinese <- ifelse(rwjAll$Chinese=="Chinese", 1, 0)
+rwjAll$Chinese <- unmatrix(rwjAll$Chinese)
 
-rwjobsall$Chinese <- as.vector(c(NA * 130576))
-rwjobsall$Chinese <- str_match(rwjobsall$body, "Chinese") 
-rwjobsall$Chinese <- ifelse(rwjobsall$Chinese=="Chinese", 1, 0)
-rwjobsall$Chinese <- unmatrix(rwjobsall$Chinese)
+rwjAll$Portuguese <- as.vector(c(NA * 117598))
+rwjAll$Portuguese <- str_match(rwjAll$body, "Portuguese") 
+rwjAll$Portuguese <- ifelse(rwjAll$Portuguese=="Portuguese", 1, 0)
+rwjAll$Portuguese <- unmatrix(rwjAll$Portuguese)
 
-rwjobsall$Italian <- as.vector(c(NA * 130576))
-rwjobsall$Italian <- str_match(rwjobsall$body, "Italian") 
-rwjobsall$Italian <- ifelse(rwjobsall$Italian=="Italian", 1, 0)
-rwjobsall$Italian <- unmatrix(rwjobsall$Italian)
+rwjAll$local <- as.vector(c(NA * 117598))
+rwjAll$local <- str_match(rwjAll$body, "local language") 
+rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
+rwjAll$local <- unmatrix(rwjAll$local)
 
-rwjobsall$Portuguese <- as.vector(c(NA * 130576))
-rwjobsall$Portuguese <- str_match(rwjobsall$body, "Portuguese") 
-rwjobsall$Portuguese <- ifelse(rwjobsall$Portuguese=="Portuguese", 1, 0)
-rwjobsall$Portuguese <- unmatrix(rwjobsall$Portuguese)
+rwjAll_bil <- filter(rwjAll, English_total == 1)
+View(rwjAll_bil)
 
-rwjobsall$local <- as.vector(c(NA * 130576))
-rwjobsall$local <- str_match(rwjobsall$body, "local language") 
-rwjobsall$local <- ifelse(rwjobsall$local=="local language", 1, 0)
-rwjobsall$local <- unmatrix(rwjobsall$local)
+rwjAll_bil$EF <- rwjAll_bil$English_total + rwjAll_bil$French
+rwjAll_bil$EA <- rwjAll_bil$English_total + rwjAll_bil$Arabic
+rwjAll_bil$ES <- rwjAll_bil$English_total + rwjAll_bil$Spanish
+rwjAll_bil$ER <- rwjAll_bil$English_total + rwjAll_bil$Russian
+rwjAll_bil$EC <- rwjAll_bil$English_total + rwjAll_bil$Chinese
+rwjAll_bil$EP <- rwjAll_bil$English_total + rwjAll_bil$Portuguese
+rwjAll_bil$EL <- rwjAll_bil$English_total + rwjAll_bil$local
 
-rwjobsall$Swahili <- as.vector(c(NA * 130576))
-rwjobsall$Swahili <- str_match(rwjobsall$body, "Swahili") 
-rwjobsall$Swahili <- ifelse(rwjobsall$Swahili=="Swahili", 1, 0)
-rwjobsall$Swahili <- unmatrix(rwjobsall$Swahili)
+#### Determine overall bilingual frequencies
 
-rwjobsall$Urdu <- as.vector(c(NA * 130576))
-rwjobsall$Urdu <- str_match(rwjobsall$body, "Urdu") 
-rwjobsall$Urdu <- ifelse(rwjobsall$Urdu=="Urdu", 1, 0)
-rwjobsall$Urdu <- unmatrix(rwjobsall$Urdu)
+rwjAll_bil16 <- filter(rwjAll_bil, year == 2016) 
+View(rwjAll_bil16)
+total_EF_16 <- sum(rwjAll_bil16$EF, na.rm = TRUE) / 2
+EF_percent_16 <- total_EF_16 / nrow(rwjAll_bil16)
+total_EA_16 <- sum(rwjAll_bil16$EA, na.rm = TRUE) / 2 
+EA_percent_16 <- total_EA_16 / nrow(rwjAll_bil16)
+total_ES_16 <- sum(rwjAll_bil16$ES, na.rm = TRUE) / 2 
+ES_percent_16 <- total_ES_16 / nrow(rwjAll_bil16)
+total_ER_16 <- sum(rwjAll_bil16$ER, na.rm = TRUE) / 2 
+ER_percent_16 <- total_ER_16 / nrow(rwjAll_bil16)
+total_EC_16 <- sum(rwjAll_bil16$EC, na.rm = TRUE) / 2 
+EC_percent_16 <- total_EC_16 / nrow(rwjAll_bil16)
+total_EP_16 <- sum(rwjAll_bil16$EP, na.rm = TRUE) / 2 
+EP_percent_16 <- total_EP_16 / nrow(rwjAll_bil16)
+total_EL_16 <- sum(rwjAll_bil16$EL, na.rm = TRUE) / 2 
+EL_percent_16 <- total_EL_16 / nrow(rwjAll_bil16)
 
-rwjobsall$Bahasa <- as.vector(c(NA * 130576))
-rwjobsall$Bahasa <- str_match(rwjobsall$body, "Bahasa") 
-rwjobsall$Bahasa <- ifelse(rwjobsall$Bahasa=="Bahasa", 1, 0)
-rwjobsall$Bahasa <- unmatrix(rwjobsall$Bahasa)
+rwjAll_bil15 <- filter(rwjAll_bil, year == 2015) 
+View(rwjAll_bil15)
+total_EF_15 <- sum(rwjAll_bil15$EF, na.rm = TRUE) / 2
+EF_percent_15 <- total_EF_15 / nrow(rwjAll_bil15)
+total_EA_15 <- sum(rwjAll_bil15$EA, na.rm = TRUE) / 2 
+EA_percent_15 <- total_EA_15 / nrow(rwjAll_bil15)
+total_ES_15 <- sum(rwjAll_bil15$ES, na.rm = TRUE) / 2 
+ES_percent_15 <- total_ES_15 / nrow(rwjAll_bil15)
+total_ER_15 <- sum(rwjAll_bil15$ER, na.rm = TRUE) / 2 
+ER_percent_15 <- total_ER_15 / nrow(rwjAll_bil15)
+total_EC_15 <- sum(rwjAll_bil15$EC, na.rm = TRUE) / 2 
+EC_percent_15 <- total_EC_15 / nrow(rwjAll_bil15)
+total_EP_15 <- sum(rwjAll_bil15$EP, na.rm = TRUE) / 2 
+EP_percent_15 <- total_EP_15 / nrow(rwjAll_bil15)
+total_EL_15 <- sum(rwjAll_bil15$EL, na.rm = TRUE) / 2 
+EL_percent_15 <- total_EL_15 / nrow(rwjAll_bil15)
 
-rwjobsall$Hindi <- as.vector(c(NA * 130576))
-rwjobsall$Hindi <- str_match(rwjobsall$body, "Hindi") 
-rwjobsall$Hindi <- ifelse(rwjobsall$Hindi=="Hindi", 1, 0)
-rwjobsall$Hindi <- unmatrix(rwjobsall$Hindi)
+rwjAll_bil14 <- filter(rwjAll_bil, year == 2014) 
+View(rwjAll_bil14)
+total_EF_14 <- sum(rwjAll_bil14$EF, na.rm = TRUE) / 2
+EF_percent_14 <- total_EF_14 / nrow(rwjAll_bil14)
+total_EA_14 <- sum(rwjAll_bil14$EA, na.rm = TRUE) / 2 
+EA_percent_14 <- total_EA_14 / nrow(rwjAll_bil14)
+total_ES_14 <- sum(rwjAll_bil14$ES, na.rm = TRUE) / 2 
+ES_percent_14 <- total_ES_14 / nrow(rwjAll_bil14)
+total_ER_14 <- sum(rwjAll_bil14$ER, na.rm = TRUE) / 2 
+ER_percent_14 <- total_ER_14 / nrow(rwjAll_bil14)
+total_EC_14 <- sum(rwjAll_bil14$EC, na.rm = TRUE) / 2 
+EC_percent_14 <- total_EC_14 / nrow(rwjAll_bil14)
+total_EP_14 <- sum(rwjAll_bil14$EP, na.rm = TRUE) / 2 
+EP_percent_14 <- total_EP_14 / nrow(rwjAll_bil14)
+total_EL_14 <- sum(rwjAll_bil14$EL, na.rm = TRUE) / 2 
+EL_percent_14 <- total_EL_14 / nrow(rwjAll_bil14)
 
-rwjobsall$language_total <- rowSums(rwjobsall[, 17:29], na.rm = TRUE)
+rwjAll_bil13 <- filter(rwjAll_bil, year == 2013) 
+View(rwjAll_bil13)
+total_EF_13 <- sum(rwjAll_bil13$EF, na.rm = TRUE) / 2
+EF_percent_13 <- total_EF_13 / nrow(rwjAll_bil13)
+total_EA_13 <- sum(rwjAll_bil13$EA, na.rm = TRUE) / 2 
+EA_percent_13 <- total_EA_13 / nrow(rwjAll_bil13)
+total_ES_13 <- sum(rwjAll_bil13$ES, na.rm = TRUE) / 2 
+ES_percent_13 <- total_ES_13 / nrow(rwjAll_bil13)
+total_ER_13 <- sum(rwjAll_bil13$ER, na.rm = TRUE) / 2 
+ER_percent_13 <- total_ER_13 / nrow(rwjAll_bil13)
+total_EC_13 <- sum(rwjAll_bil13$EC, na.rm = TRUE) / 2 
+EC_percent_13 <- total_EC_13 / nrow(rwjAll_bil13)
+total_EP_13 <- sum(rwjAll_bil13$EP, na.rm = TRUE) / 2 
+EP_percent_13 <- total_EP_13 / nrow(rwjAll_bil13)
+total_EL_13 <- sum(rwjAll_bil13$EL, na.rm = TRUE) / 2 
+EL_percent_13 <- total_EL_13 / nrow(rwjAll_bil13)
 
-## Filter dataset to only include all data entries when the valus of the English_total column is 1
-rwjobsallfl <- filter(rwjobsall, English_total == 1)
-View(rwjobsallfl)
+rwjAll_bil12 <- filter(rwjAll_bil, year == 2012) 
+View(rwjAll_bil12)
+total_EF_12 <- sum(rwjAll_bil12$EF, na.rm = TRUE) / 2
+EF_percent_12 <- total_EF_12 / nrow(rwjAll_bil12)
+total_EA_12 <- sum(rwjAll_bil12$EA, na.rm = TRUE) / 2 
+EA_percent_12 <- total_EA_12 / nrow(rwjAll_bil12)
+total_ES_12 <- sum(rwjAll_bil12$ES, na.rm = TRUE) / 2 
+ES_percent_12 <- total_ES_12 / nrow(rwjAll_bil12)
+total_ER_12 <- sum(rwjAll_bil12$ER, na.rm = TRUE) / 2 
+ER_percent_12 <- total_ER_12 / nrow(rwjAll_bil12)
+total_EC_12 <- sum(rwjAll_bil12$EC, na.rm = TRUE) / 2 
+EC_percent_12 <- total_EC_12 / nrow(rwjAll_bil12)
+total_EP_12 <- sum(rwjAll_bil12$EP, na.rm = TRUE) / 2 
+EP_percent_12 <- total_EP_12 / nrow(rwjAll_bil12)
+total_EL_12 <- sum(rwjAll_bil12$EL, na.rm = TRUE) / 2 
+EL_percent_12 <- total_EL_12 / nrow(rwjAll_bil12)
 
-## Create columns combining values of English and another language
-rwjobsallfl$EF <- rwjobsallfl$English_total + rwjobsallfl$French
-rwjobsallfl$EA <- rwjobsallfl$English_total + rwjobsallfl$Arabic
-rwjobsallfl$ES <- rwjobsallfl$English_total + rwjobsallfl$Spanish
-rwjobsallfl$ER <- rwjobsallfl$English_total + rwjobsallfl$Russian
-rwjobsallfl$EC <- rwjobsallfl$English_total + rwjobsallfl$Chinese
-rwjobsallfl$EI <- rwjobsallfl$English_total + rwjobsallfl$Italian
-rwjobsallfl$EP <- rwjobsallfl$English_total + rwjobsallfl$Portuguese
-rwjobsallfl$EL <- rwjobsallfl$English_total + rwjobsallfl$local
-rwjobsallfl$ESw <- rwjobsallfl$English_total + rwjobsallfl$Swahili
-rwjobsallfl$EU <- rwjobsallfl$English_total + rwjobsallfl$Urdu
-rwjobsallfl$EB <- rwjobsallfl$English_total + rwjobsallfl$Bahasa
-rwjobsallfl$EH <- rwjobsallfl$English_total + rwjobsallfl$Hindi
+rwjAll_bil11 <- filter(rwjAll_bil, year == 2011) 
+View(rwjAll_bil11)
+total_EF_11 <- sum(rwjAll_bil11$EF, na.rm = TRUE) / 2
+EF_percent_11 <- total_EF_11 / nrow(rwjAll_bil11)
+total_EA_11 <- sum(rwjAll_bil11$EA, na.rm = TRUE) / 2 
+EA_percent_11 <- total_EA_11 / nrow(rwjAll_bil11)
+total_ES_11 <- sum(rwjAll_bil11$ES, na.rm = TRUE) / 2 
+ES_percent_11 <- total_ES_11 / nrow(rwjAll_bil11)
+total_ER_11 <- sum(rwjAll_bil11$ER, na.rm = TRUE) / 2 
+ER_percent_11 <- total_ER_11 / nrow(rwjAll_bil11)
+total_EC_11 <- sum(rwjAll_bil11$EC, na.rm = TRUE) / 2 
+EC_percent_11 <- total_EC_11 / nrow(rwjAll_bil11)
+total_EP_11 <- sum(rwjAll_bil11$EP, na.rm = TRUE) / 2 
+EP_percent_11 <- total_EP_11 / nrow(rwjAll_bil11)
+total_EL_11 <- sum(rwjAll_bil11$EL, na.rm = TRUE) / 2 
+EL_percent_11 <- total_EL_11 / nrow(rwjAll_bil11)
 
-## Remove rows when values of total_English column is zero and  reassign dataset
-rwjobsallfl_2016 <- filter(rwjobsallfl, year == 2016) 
-View(rwjobsallfl_2016)
-rwjobsallfl_2015 <- filter(rwjobsallfl, year == 2015) 
-View(rwjobsallfl_2015)
-rwjobsallfl_2014 <- filter(rwjobsallfl, year == 2014) 
-View(rwjobsallfl_2014)
-rwjobsallfl_2013 <- filter(rwjobsallfl, year == 2013) 
-View(rwjobsallfl_2013)
-rwjobsallfl_2012 <- filter(rwjobsallfl, year == 2012) 
-View(rwjobsallfl_2012)
-rwjobsallfl_2011 <- filter(rwjobsallfl, year == 2011) 
-View(rwjobsallfl_2011)
 
-## Determine bilingual frequencies
-2016 dataset
-total_EF_16 <- sum(rwjobsallfl_2016$EF, na.rm = TRUE) / 2
-EF_percent_16 <- total_EF_16 / nrow(rwjobsallfl_2016)
-total_EA_16 <- sum(rwjobsallfl_2016$EA, na.rm = TRUE) / 2 
-EA_percent_16 <- total_EA_16 / nrow(rwjobsallfl_2016)
-total_ES_16 <- sum(rwjobsallfl_2016$ES, na.rm = TRUE) / 2 
-ES_percent_16 <- total_ES_16 / nrow(rwjobsallfl_2016)
-total_ER_16 <- sum(rwjobsallfl_2016$ER, na.rm = TRUE) / 2 
-ER_percent_16 <- total_ER_16 / nrow(rwjobsallfl_2016)
-total_EC_16 <- sum(rwjobsallfl_2016$EC, na.rm = TRUE) / 2 
-EC_percent_16 <- total_EC_16 / nrow(rwjobsallfl_2016)
-total_EI_16 <- sum(rwjobsallfl_2016$EI, na.rm = TRUE) / 2 
-EI_percent_16 <- total_EI_16 / nrow(rwjobsallfl_2016)
-total_EP_16 <- sum(rwjobsallfl_2016$EP, na.rm = TRUE) / 2 
-EP_percent_16 <- total_EP_16 / nrow(rwjobsallfl_2016)
-total_EL_16 <- sum(rwjobsallfl_2016$EL, na.rm = TRUE) / 2 
-EL_percent_16 <- total_EL_16 / nrow(rwjobsallfl_2016)
-total_ESw_16 <- sum(rwjobsallfl_2016$ESw, na.rm = TRUE) / 2 
-ESw_percent_16 <- total_ESw_16 / nrow(rwjobsallfl_2016)
-total_EU_16 <- sum(rwjobsallfl_2016$EU, na.rm = TRUE) / 2 
-EU_percent_16 <- total_EU_16 / nrow(rwjobsallfl_2016)
-total_EB_16 <- sum(rwjobsallfl_2016$EB, na.rm = TRUE) / 2 
-EB_percent_16 <- total_EB_16 / nrow(rwjobsallfl_2016)
-total_EH_16 <- sum(rwjobsallfl_2016$EH, na.rm = TRUE) / 2 
-EH_percent_16 <- total_EH_16 / nrow(rwjobsallfl_2016)
-total_bilingual_16 <- sum(total_EA_16, total_EF_16, total_ES_16, total_ER_16, total_EC_16, total_EI_16, total_EP_16, total_EL_16, total_ESw_16, total_EU_16, total_EB_16, total_EH_16)
-total_bilingual_percent_16 <- total_bilingual_16 / nrow(rwjobsallfl_2016)
-
-2015 dataset
-total_EF_15 <- sum(rwjobsallfl_2015$EF, na.rm = TRUE) / 2
-EF_percent_15 <- total_EF_15 / nrow(rwjobsallfl_2015)
-total_EA_15 <- sum(rwjobsallfl_2015$EA, na.rm = TRUE) / 2 
-EA_percent_15 <- total_EA_15 / nrow(rwjobsallfl_2015)
-total_ES_15 <- sum(rwjobsallfl_2015$ES, na.rm = TRUE) / 2 
-ES_percent_15 <- total_ES_15 / nrow(rwjobsallfl_2015)
-total_ER_15 <- sum(rwjobsallfl_2015$ER, na.rm = TRUE) / 2 
-ER_percent_15 <- total_ER_15 / nrow(rwjobsallfl_2015)
-total_EC_15 <- sum(rwjobsallfl_2015$EC, na.rm = TRUE) / 2 
-EC_percent_15 <- total_EC_15 / nrow(rwjobsallfl_2015)
-total_EI_15 <- sum(rwjobsallfl_2015$EI, na.rm = TRUE) / 2 
-EI_percent_15 <- total_EI_15 / nrow(rwjobsallfl_2015)
-total_EP_15 <- sum(rwjobsallfl_2015$EP, na.rm = TRUE) / 2 
-EP_percent_15 <- total_EP_15 / nrow(rwjobsallfl_2015)
-total_EL_15 <- sum(rwjobsallfl_2015$EL, na.rm = TRUE) / 2 
-EL_percent_15 <- total_EL_15 / nrow(rwjobsallfl_2015)
-total_ESw_15 <- sum(rwjobsallfl_2015$ESw, na.rm = TRUE) / 2 
-ESw_percent_15 <- total_ESw_15 / nrow(rwjobsallfl_2015)
-total_EU_15 <- sum(rwjobsallfl_2015$EU, na.rm = TRUE) / 2 
-EU_percent_15 <- total_EU_15 / nrow(rwjobsallfl_2015)
-total_EB_15 <- sum(rwjobsallfl_2015$EB, na.rm = TRUE) / 2 
-EB_percent_15 <- total_EB_15 / nrow(rwjobsallfl_2015)
-total_EH_15 <- sum(rwjobsallfl_2015$EH, na.rm = TRUE) / 2 
-EH_percent_15 <- total_EH_15 / nrow(rwjobsallfl_2015)
-total_bilingual_15 <- sum(total_EA_15, total_EF_15, total_ES_15, total_ER_15, total_EC_15, total_EI_15, total_EP_15, total_EL_15, total_ESw_15, total_EU_15, total_EB_15, total_EH_15)
-total_bilingual_percent_15 <- total_bilingual_15 / nrow(rwjobsallfl_2015)
-
-2014 dataset
-total_EF_14 <- sum(rwjobsallfl_2014$EF, na.rm = TRUE) / 2
-EF_percent_14 <- total_EF_14 / nrow(rwjobsallfl_2014)
-total_EA_14 <- sum(rwjobsallfl_2014$EA, na.rm = TRUE) / 2 
-EA_percent_14 <- total_EA_14 / nrow(rwjobsallfl_2014)
-total_ES_14 <- sum(rwjobsallfl_2014$ES, na.rm = TRUE) / 2 
-ES_percent_14 <- total_ES_14 / nrow(rwjobsallfl_2014)
-total_ER_14 <- sum(rwjobsallfl_2014$ER, na.rm = TRUE) / 2 
-ER_percent_14 <- total_ER_14 / nrow(rwjobsallfl_2014)
-total_EC_14 <- sum(rwjobsallfl_2014$EC, na.rm = TRUE) / 2 
-EC_percent_14 <- total_EC_14 / nrow(rwjobsallfl_2014)
-total_EI_14 <- sum(rwjobsallfl_2014$EI, na.rm = TRUE) / 2 
-EI_percent_14 <- total_EI_14 / nrow(rwjobsallfl_2014)
-total_EP_14 <- sum(rwjobsallfl_2014$EP, na.rm = TRUE) / 2 
-EP_percent_14 <- total_EP_14 / nrow(rwjobsallfl_2014)
-total_EL_14 <- sum(rwjobsallfl_2014$EL, na.rm = TRUE) / 2 
-EL_percent_14 <- total_EL_14 / nrow(rwjobsallfl_2014)
-total_ESw_14 <- sum(rwjobsallfl_2014$ESw, na.rm = TRUE) / 2 
-ESw_percent_14 <- total_ESw_14 / nrow(rwjobsallfl_2014)
-total_EU_14 <- sum(rwjobsallfl_2014$EU, na.rm = TRUE) / 2 
-EU_percent_14 <- total_EU_14 / nrow(rwjobsallfl_2014)
-total_EB_14 <- sum(rwjobsallfl_2014$EB, na.rm = TRUE) / 2 
-EB_percent_14 <- total_EB_14 / nrow(rwjobsallfl_2014)
-total_EH_14 <- sum(rwjobsallfl_2014$EH, na.rm = TRUE) / 2 
-EH_percent_14 <- total_EH_14 / nrow(rwjobsallfl_2014)
-total_bilingual_14 <- sum(total_EA_14, total_EF_14, total_ES_14, total_ER_14, total_EC_14, total_EI_14, total_EP_14, total_EL_14, total_ESw_14, total_EU_14, total_EB_14, total_EH_14)
-total_bilingual_percent_14 <- total_bilingual_14 / nrow(rwjobsallfl_2014)
-
-2013 dataset
-total_EF_13 <- sum(rwjobsallfl_2013$EF, na.rm = TRUE) / 2
-EF_percent_13 <- total_EF_13 / nrow(rwjobsallfl_2013)
-total_EA_13 <- sum(rwjobsallfl_2013$EA, na.rm = TRUE) / 2 
-EA_percent_13 <- total_EA_13 / nrow(rwjobsallfl_2013)
-total_ES_13 <- sum(rwjobsallfl_2013$ES, na.rm = TRUE) / 2 
-ES_percent_13 <- total_ES_13 / nrow(rwjobsallfl_2013)
-total_ER_13 <- sum(rwjobsallfl_2013$ER, na.rm = TRUE) / 2 
-ER_percent_13 <- total_ER_13 / nrow(rwjobsallfl_2013)
-total_EC_13 <- sum(rwjobsallfl_2013$EC, na.rm = TRUE) / 2 
-EC_percent_13 <- total_EC_13 / nrow(rwjobsallfl_2013)
-total_EI_13 <- sum(rwjobsallfl_2013$EI, na.rm = TRUE) / 2 
-EI_percent_13 <- total_EI_13 / nrow(rwjobsallfl_2013)
-total_EP_13 <- sum(rwjobsallfl_2013$EP, na.rm = TRUE) / 2 
-EP_percent_13 <- total_EP_13 / nrow(rwjobsallfl_2013)
-total_EL_13 <- sum(rwjobsallfl_2013$EL, na.rm = TRUE) / 2 
-EL_percent_13 <- total_EL_13 / nrow(rwjobsallfl_2013)
-total_ESw_13 <- sum(rwjobsallfl_2013$ESw, na.rm = TRUE) / 2 
-ESw_percent_13 <- total_ESw_13 / nrow(rwjobsallfl_2013)
-total_EU_13 <- sum(rwjobsallfl_2013$EU, na.rm = TRUE) / 2 
-EU_percent_13 <- total_EU_13 / nrow(rwjobsallfl_2013)
-total_EB_13 <- sum(rwjobsallfl_2013$EB, na.rm = TRUE) / 2 
-EB_percent_13 <- total_EB_13 / nrow(rwjobsallfl_2013)
-total_EH_13 <- sum(rwjobsallfl_2013$EH, na.rm = TRUE) / 2 
-EH_percent_13 <- total_EH_13 / nrow(rwjobsallfl_2013)
-total_bilingual_13 <- sum(total_EA_13, total_EF_13, total_ES_13, total_ER_13, total_EC_13, total_EI_13, total_EP_13, total_EL_13, total_ESw_13, total_EU_13, total_EB_13, total_EH_13)
-total_bilingual_percent_13 <- total_bilingual_13 / nrow(rwjobsallfl_2013)
-
-2012 dataset
-total_EF_12 <- sum(rwjobsallfl_2012$EF, na.rm = TRUE) / 2
-EF_percent_12 <- total_EF_12 / nrow(rwjobsallfl_2012)
-total_EA_12 <- sum(rwjobsallfl_2012$EA, na.rm = TRUE) / 2 
-EA_percent_12 <- total_EA_12 / nrow(rwjobsallfl_2012)
-total_ES_12 <- sum(rwjobsallfl_2012$ES, na.rm = TRUE) / 2 
-ES_percent_12 <- total_ES_12 / nrow(rwjobsallfl_2012)
-total_ER_12 <- sum(rwjobsallfl_2012$ER, na.rm = TRUE) / 2 
-ER_percent_12 <- total_ER_12 / nrow(rwjobsallfl_2012)
-total_EC_12 <- sum(rwjobsallfl_2012$EC, na.rm = TRUE) / 2 
-EC_percent_12 <- total_EC_12 / nrow(rwjobsallfl_2012)
-total_EI_12 <- sum(rwjobsallfl_2012$EI, na.rm = TRUE) / 2 
-EI_percent_12 <- total_EI_12 / nrow(rwjobsallfl_2012)
-total_EP_12 <- sum(rwjobsallfl_2012$EP, na.rm = TRUE) / 2 
-EP_percent_12 <- total_EP_12 / nrow(rwjobsallfl_2012)
-total_EL_12 <- sum(rwjobsallfl_2012$EL, na.rm = TRUE) / 2 
-EL_percent_12 <- total_EL_12 / nrow(rwjobsallfl_2012)
-total_ESw_12 <- sum(rwjobsallfl_2012$ESw, na.rm = TRUE) / 2 
-ESw_percent_12 <- total_ESw_12 / nrow(rwjobsallfl_2012)
-total_EU_12 <- sum(rwjobsallfl_2012$EU, na.rm = TRUE) / 2 
-EU_percent_12 <- total_EU_12 / nrow(rwjobsallfl_2012)
-total_EB_12 <- sum(rwjobsallfl_2012$EB, na.rm = TRUE) / 2 
-EB_percent_12 <- total_EB_12 / nrow(rwjobsallfl_2012)
-total_EH_12 <- sum(rwjobsallfl_2012$EH, na.rm = TRUE) / 2 
-EH_percent_12 <- total_EH_12 / nrow(rwjobsallfl_2012)
-total_bilingual_12 <- sum(total_EA_12, total_EF_12, total_ES_12, total_ER_12, total_EC_12, total_EI_12, total_EP_12, total_EL_12, total_ESw_12, total_EU_12, total_EB_12, total_EH_12)
-total_bilingual_percent_12 <- total_bilingual_12 / nrow(rwjobsallfl_2012)
-
-2011 dataset
-total_EF_11 <- sum(rwjobsallfl_2011$EF, na.rm = TRUE) / 2
-EF_percent_11 <- total_EF_11 / nrow(rwjobsallfl_2011)
-total_EA_11 <- sum(rwjobsallfl_2011$EA, na.rm = TRUE) / 2 
-EA_percent_11 <- total_EA_11 / nrow(rwjobsallfl_2011)
-total_ES_11 <- sum(rwjobsallfl_2011$ES, na.rm = TRUE) / 2 
-ES_percent_11 <- total_ES_11 / nrow(rwjobsallfl_2011)
-total_ER_11 <- sum(rwjobsallfl_2011$ER, na.rm = TRUE) / 2 
-ER_percent_11 <- total_ER_11 / nrow(rwjobsallfl_2011)
-total_EC_11 <- sum(rwjobsallfl_2011$EC, na.rm = TRUE) / 2 
-EC_percent_11 <- total_EC_11 / nrow(rwjobsallfl_2011)
-total_EI_11 <- sum(rwjobsallfl_2011$EI, na.rm = TRUE) / 2 
-EI_percent_11 <- total_EI_11 / nrow(rwjobsallfl_2011)
-total_EP_11 <- sum(rwjobsallfl_2011$EP, na.rm = TRUE) / 2 
-EP_percent_11 <- total_EP_11 / nrow(rwjobsallfl_2011)
-total_EL_11 <- sum(rwjobsallfl_2011$EL, na.rm = TRUE) / 2 
-EL_percent_11 <- total_EL_11 / nrow(rwjobsallfl_2011)
-total_ESw_11 <- sum(rwjobsallfl_2011$ESw, na.rm = TRUE) / 2 
-ESw_percent_11 <- total_ESw_11 / nrow(rwjobsallfl_2011)
-total_EU_11 <- sum(rwjobsallfl_2011$EU, na.rm = TRUE) / 2 
-EU_percent_11 <- total_EU_11 / nrow(rwjobsallfl_2011)
-total_EB_11 <- sum(rwjobsallfl_2011$EB, na.rm = TRUE) / 2 
-EB_percent_11 <- total_EB_11 / nrow(rwjobsallfl_2011)
-total_EH_11 <- sum(rwjobsallfl_2011$EH, na.rm = TRUE) / 2 
-EH_percent_11 <- total_EH_11 / nrow(rwjobsallfl_2011)
-total_bilingual_11 <- sum(total_EA_11, total_EF_11, total_ES_11, total_ER_11, total_EC_11, total_EI_11, total_EP_11, total_EL_11, total_ESw_11, total_EU_11, total_EB_11, total_EH_11)
-total_bilingual_percent_11 <- total_bilingual_11 / nrow(rwjobsallfl_2011)
-
-## Combine language proportions
+#### Create dataset showing bilingual comparisons 
 year <- c(2011, 2012, 2013, 2014, 2015, 2016)
-EF_all_percent <- c(EF_percent_11, EF_percent_12, EF_percent_13, EF_percent_14, EF_percent_15, EF_percent_16) 
-EA_all_percent <- c(EA_percent_11, EA_percent_12, EA_percent_13, EA_percent_14, EA_percent_15, EA_percent_16)     
-ES_all_percent <- c(ES_percent_11, ES_percent_12, ES_percent_13, ES_percent_14, ES_percent_15, ES_percent_16)
-ER_all_percent <- c(ER_percent_11, ER_percent_12, ER_percent_13, ER_percent_14, ER_percent_15, ER_percent_16)
-EC_all_percent <- c(EC_percent_11, EC_percent_12, EC_percent_13, EC_percent_14, EC_percent_15, EC_percent_16)
-EP_all_percent <- c(EP_percent_11, EP_percent_12, EP_percent_13, EP_percent_14, EP_percent_15, EP_percent_16)  
-EL_all_percent <- c(EL_percent_11, EL_percent_12, EL_percent_13, EL_percent_14, EL_percent_15, EL_percent_16)
-ESw_all_percent <- c(ESw_percent_11, ESw_percent_12, ESw_percent_13, ESw_percent_14, ESw_percent_15, ESw_percent_16)
-EU_all_percent <- c(EU_percent_11, EU_percent_12, EU_percent_13, EU_percent_14, EU_percent_15, EU_percent_16)  
-EB_all_percent <- c(EB_percent_11, EB_percent_12, EB_percent_13, EB_percent_14, EB_percent_15, EB_percent_16)  
-EH_all_percent <- c(EH_percent_11, EH_percent_12, EH_percent_13, EH_percent_14, EH_percent_15, EH_percent_16)
-total_bilingual_percent <- c(total_bilingual_percent_11, total_bilingual_percent_12, total_bilingual_percent_13, total_bilingual_percent_14, total_bilingual_percent_15, total_bilingual_percent_16)
-all_language_proportion <- cbind(cbind(EF_all_percent, EA_all_percent, ES_all_percent, ER_all_percent, EC_all_percent, EP_all_percent, EL_all_percent, ESw_all_percent, EU_all_percent, EB_all_percent, EH_all_percent, total_bilingual_percent) 
-all_language_proportion <- as.data.frame(all_language_proportion)
-View(all_language_proportion)
+English_French <- c(EF_percent_11, EF_percent_12, EF_percent_13, EF_percent_14, EF_percent_15, EF_percent_16) 
+English_Arabic <- c(EA_percent_11, EA_percent_12, EA_percent_13, EA_percent_14, EA_percent_15, EA_percent_16)     
+English_Spanish <- c(ES_percent_11, ES_percent_12, ES_percent_13, ES_percent_14, ES_percent_15, ES_percent_16)
+English_Russian <- c(ER_percent_11, ER_percent_12, ER_percent_13, ER_percent_14, ER_percent_15, ER_percent_16)
+English_Chinese <- c(EC_percent_11, EC_percent_12, EC_percent_13, EC_percent_14, EC_percent_15, EC_percent_16)
+English_Portuguese <- c(EP_percent_11, EP_percent_12, EP_percent_13, EP_percent_14, EP_percent_15, EP_percent_16)  
+English_local <- c(EL_percent_11, EL_percent_12, EL_percent_13, EL_percent_14, EL_percent_15, EL_percent_16)
 
-## Show decimals as %
-all_language_proportion$EF_all_percent <- percent(all_language_proportion$EF_all_percent)
-all_language_proportion$EA_all_percent <- percent(all_language_proportion$EA_all_percent)
-all_language_proportion$ES_all_percent <- percent(all_language_proportion$ES_all_percent)
-all_language_proportion$ER_all_percent <- percent(all_language_proportion$Er_all_percent)
-all_language_proportion$ER_all_percent <- percent(all_language_proportion$ER_all_percent)
-all_language_proportion$EC_all_percent <- percent(all_language_proportion$EC_all_percent)
-all_language_proportion$EP_all_percent <- percent(all_language_proportion$EP_all_percent)
-all_language_proportion$EL_all_percent <- percent(all_language_proportion$EL_all_percent)
-all_language_proportion$ESw_all_percent <- percent(all_language_proportion$ESw_all_percent)
-all_language_proportion$EU_all_percent <- percent(all_language_proportion$EU_all_percent)
-all_language_proportion$EB_all_percent <- percent(all_language_proportion$EB_all_percent)
-all_language_proportion$EH_all_percent <- percent(all_language_proportion$EH_all_percent)
-all_language_proportion$total_bilingual_percent <- percent(all_language_proportion$total_bilingual_percent)
-View(all_language_proportion)
+bi_lang_pct <- cbind(year, English_French, English_Arabic, English_Spanish, English_Russian, English_Chinese, English_Portuguese, English_local)
+bi_lang_pct <- as.data.frame(bi_lang_pct)
+bi_lang_pct$English_French <- bi_lang_pct$English_French * 100
+bi_lang_pct$English_French <- round(bi_lang_pct$English_French, digits = 2)
+bi_lang_pct$English_Arabic <- bi_lang_pct$English_Arabic * 100
+bi_lang_pct$English_Arabic <- round(bi_lang_pct$English_Arabic, digits = 2)
+bi_lang_pct$English_Spanish <- bi_lang_pct$English_Spanish * 100
+bi_lang_pct$English_Spanish <- round(bi_lang_pct$English_Spanish, digits = 2)
+bi_lang_pct$English_Russian <- bi_lang_pct$English_Russian * 100
+bi_lang_pct$English_Russian <- round(bi_lang_pct$English_Russian, digits = 2)
+bi_lang_pct$English_Chinese <- bi_lang_pct$English_Chinese * 100
+bi_lang_pct$English_Chinese <- round(bi_lang_pct$English_Chinese, digits = 2)
+bi_lang_pct$English_Portuguese <- bi_lang_pct$English_Portuguese * 100
+bi_lang_pct$English_Portuguese <- round(bi_lang_pct$English_Portuguese, digits = 2)
+bi_lang_pct$English_local <- bi_lang_pct$English_local * 100
+bi_lang_pct$English_local <- round(bi_lang_pct$English_local, digits = 2)
+write.csv(bi_lang_pct, "bi_lang_pct.csv")
 
-## Save dataset
-write.csv(all_language_proportion, "all_language_proportion.csv")
+#### Reshape and plot data frame 
+bil_comb <- bi_lang_pct %>% gather(bilingual_combination, percentage, 2:8) 
+View(bil_comb) 
+
+ggplot(bil_comb, aes(x = year, y = percentage, color = bilingual_combination)) + geom_point() + geom_line(size = 2)
+
+#### Perform one sample t-tests
+EF_tTest <- t.test(bi_lang_pct$English_French, mu=25)
+EA_tTest <- t.test(bi_lang_pct$English_Arabic, mu=15)
+ES_tTest <- t.test(bi_lang_pct$English_Spanish, mu=15)
+EC_tTest <- t.test(bi_lang_pct$English_Chinese, mu=3)
+ER_tTest <- t.test(bi_lang_pct$English_Russian, mu=2)
+EP_tTest <- t.test(bi_lang_pct$English_Portuguese, mu=3)
+EL_tTest <- t.test(bi_lang_pct$English_local, mu=2)
+```

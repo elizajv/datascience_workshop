@@ -1,4 +1,4 @@
-This contains codes for my Data Science Workshop capstone project:
+## Code for capstone project: The most important foreign languages for English-speaking job seekers in global development
 
 ```{r}
 
@@ -12,6 +12,7 @@ library(dplyr)
 library(gdata)
 library(scales)
 library(ggplot2)
+library(BSDA)
 
 #### Extract data from Reliefweb via API
 

@@ -66,4 +66,4 @@ A preliminary analysis indicates the following:
 
 The assumption is that the second trend results from a decline in foreign aid funding for French-speaking countries and an increase of such funding for Arabic-speaking countries. 
 
-The current dataset however doesn’t have information on foreign aid funding. To remedy this, the plan is to extract data on foreign aid, or the so-called official development assistance from the Organization for Economic Cooperation and Development, dating from 2009 to 2014. One study indicates that funding commitments take two years to be disbursed, so funding commitments in 2014 could potentially affect hiring in 2016. 
+The current dataset however doesn’t have information on foreign aid funding. To remedy this, the plan is to extract data on foreign aid, or the so-called official development assistance from the Organization for Economic Cooperation and Development. 

@@ -545,7 +545,8 @@ plot1 <- ggplot(ml_comb, aes(x = year, y = percentage, color = bilingual_combina
          geom_point(shape = 17, size = 2) + 
          geom_line(size = 0.5, alpha = 0.5) +
          scale_y_continuous(name="percentage of job ads", breaks = c(5, 10, 15, 20, 25, 30,                             35, 40, 45, 50, 55, 60, 65)) + 
-         scale_color_discrete(breaks = c("English_French_Arabic_Spanish",     
+         scale_color_discrete(name = "Language combination",
+                            breaks = c("English_French_Arabic_Spanish",     
                             "English_French_Arabic", "English_French_Spanish", 
                             "English_French", "English_Arabic", "English_Spanish", 
                             "English_Portuguese", "English_local", "English_Russian", 

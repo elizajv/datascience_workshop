@@ -1,30 +1,17 @@
 ## Code for capstone project: The most important foreign languages for English-speaking job seekers in global development
 
 ```{r}
-
-#### Load packages
-
-library(jsonlite)
-library(plyr)
-library(stringr)
-library(tidyr)
-library(dplyr)
-library(gdata)
-library(scales)
-library(ggplot2)
-library(BSDA)
-
 #### Extract data from Reliefweb via API
 
+library(jsonlite)
 rwjobsraw1 <- fromJSON("http://api.reliefweb.int/v1/jobs?offset=0&limit=1000&preset=analysis&filter[field]=date.created&filter[value][from]=2015-05-01T00:00:00%2B00:00&filter[value][to]=2015-05-31T00:00:00%2B00:00&&fields[include][]title&fields[include][]=body&fields[include][]=theme.name&fields[include][]=country.name&fields[include][]=type.name&fields[include][]=experience.name&fields[include][]=career_categories.name&fields[include][]=date.created&fields[include][]=id&fields[include][]=source.name&fields[include][]=source.type.name")
 rwjobs1 <- rwjobsraw1$data$fields
 colnames(rwjobs1)
 View(rwjobs1)
 
-#### Clean data
+#### Clean data by unnesting nested lists
 
-##### Unlist nested lists
-
+library(plyr)
 rwjobs1$theme <- llply(rwjobs1$theme, unlist)
 rwjobs1$type <- llply(rwjobs1$type, unlist)
 rwjobs1$experience <- llply(rwjobs1$experience, unlist)
@@ -33,8 +20,9 @@ rwjobs1$country <- llply(rwjobs1$country, unlist)
 rwjobs1$date <- llply(rwjobs1$date, unlist)
 rwjobs1$source <- llply(rwjobs1$source, unlist)
 
-##### Remove unneccesary characters and split strings 
+#### Remove unneccesary characters and split strings 
 
+library(stringr)
 rwjobs1$source <- gsub("\\c\\(", "", rwjobs1$source)
 rwjobs1$source <- gsub("\"", "", rwjobs1$source)
 rwjobs1$source <- gsub("\\)", "", rwjobs1$source)
@@ -45,15 +33,12 @@ org_type <- lapply(source_split, select_el, index = 2)
 rwjobs1$organization <- as.character(org_name)
 rwjobs1$organization_type <- as.character(org_type)
 rwjobs1$source <- NULL
-
 rwjobs1$theme <- gsub("\\c\\(", "", rwjobs1$theme)
 rwjobs1$theme <- gsub("\"", "", rwjobs1$theme)
 rwjobs1$theme <- gsub("\\)", "", rwjobs1$theme)
-
 rwjobs1$career_categories <- gsub("\\c\\(", "", rwjobs1$career_categories)
 rwjobs1$career_categories <- gsub("\"", "", rwjobs1$career_categories)
 rwjobs1$career_categories <- gsub("\\)", "", rwjobs1$career_categories)
-
 rwjobs1$date <- gsub("\\c\\(", "", rwjobs1$date)
 rwjobs1$date <- gsub("\"", "", rwjobs1$date)
 date_split <- strsplit(rwjobs1$date, split = "-")
@@ -69,54 +54,48 @@ rwjobs1$year[1000]
 rwjobs1$month[1]
 rwjobs1$month[1000]
 
-##### Save dataset into a csv file, amending the csv file name depending on the batch of data extracted
+#### Save dataset into a csv file, amending the csv file name depending on the batch of data extracted
 
 rwjobs1 <- data.frame(lapply(rwjobs1, as.character), stringsAsFactors=FALSE)
 write.csv(rwjobs1, "rwjobsJun116.csv")
 
-##### Combine cleaned dataset
+#### Combine cleaned dataset 
 
-##### The below is a sample of the dataset
-
-rwj2016 <- rbind(rwjobsJan116, rwjobsJan216, rwjobsJan316, rwjobsFeb116, rwjobsFeb216, rwjobsFeb316, rwjobsMar116, rwjobsMar216, rwjobsMar316, rwjobsApr116, rwjobsApr216, rwjobsApr316, rwjobsMay116, rwjobsMay216, rwjobsMay316, rwjobsJun116, rwjobsJun216)
+rwj2016 <- rbind(rwjobsJan116, rwjobsJan216, rwjobsJan316, rwjobsFeb116, rwjobsFeb216, rwjobsFeb316, rwjobsMar116, rwjobsMar216, rwjobsMar316, rwjobsApr116, rwjobsApr216, rwjobsApr316, rwjobsMay116, rwjobsMay216, rwjobsMay316, rwjobsJun116, rwjobsJun216) ## a sample
 rwjAll <- rbind(rwj2011, rwj2012, rwj2013, rwj2014, rwj2015, rwj2016)
 write.csv(rwjAll, "rwjAll.csv")
 
-##### Remove duplicate values and unnecessary column
+#### Remove duplicate values and unnecessary columns
 
-rwjAll <- rwjAll[!duplicated(rwjAll), ]
 rwjAll$X <- NULL
+rwjAll$X.1 <- NULL
+rwjAll <- rwjAll[!duplicated(rwjAll), ]
 
-##### Create binomial values for job and organization types
+#### Clean organization_type and type columns
 
+library(gdata)
 rwjAll$jobType1 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$jobType1 <- str_match(rwjAll$type, "Consultancy")
 rwjAll$jobType1 <- ifelse(rwjAll$jobType1=="Consultancy", 1, 0)
 rwjAll$jobType1 <- unmatrix(rwjAll$jobType1)
-
 rwjAll$jobType2 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$jobType2 <- str_match(rwjAll$type, "Internship")
 rwjAll$jobType2 <- ifelse(rwjAll$jobType2=="Internship", 2, 0)
 rwjAll$jobType2 <- unmatrix(rwjAll$jobType2)
-
 rwjAll$jobType3 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$jobType3 <- str_match(rwjAll$type, "Job")
 rwjAll$jobType3 <- ifelse(rwjAll$jobType3=="Job", 3, 0)
 rwjAll$jobType3 <- unmatrix(rwjAll$jobType3)
-
 rwjAll$jobType4 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$jobType4 <- str_match(rwjAll$type, "Volunteer Opportunity")
 rwjAll$jobType4 <- ifelse(rwjAll$jobType4=="Volunteer Opportunity", 4, 0)
 rwjAll$jobType4 <- unmatrix(rwjAll$jobType4)
-
 rwjAll$jobTypeAll <- rowSums(rwjAll[, 13:16], na.rm = TRUE)
-
-rwjAll$jobTypeAll[rwjAll$jobTypeAll==1] <- "1 Consultancy"
-rwjAll$jobTypeAll[rwjAll$jobTypeAll==2] <- "2 Internship"
-rwjAll$jobTypeAll[rwjAll$jobTypeAll==3] <- "3 Job"
-rwjAll$jobTypeAll[rwjAll$jobTypeAll==4] <- "4 Volunteer Opportunity"
-rwjAll$jobTypeAll[rwjAll$jobTypeAll==0] <- "5 Other"
-
+rwjAll$jobTypeAll[rwjAll$jobTypeAll==1] <- "Consultancy"
+rwjAll$jobTypeAll[rwjAll$jobTypeAll==2] <- "Internship"
+rwjAll$jobTypeAll[rwjAll$jobTypeAll==3] <- "Job"
+rwjAll$jobTypeAll[rwjAll$jobTypeAll==4] <- "Volunteer Opportunity"
+rwjAll$jobTypeAll[rwjAll$jobTypeAll==0] <- "Other"
 rwjAll$jobType1 <- NULL
 rwjAll$jobType2 <- NULL
 rwjAll$jobType3 <- NULL
@@ -124,59 +103,48 @@ rwjAll$jobType4 <- NULL
 rwjAll$jobType5 <- NULL
 rwjAll$type <- NULL
 names(rwjAll)[names(rwjAll)=="jobTypeAll"] <- "job_type"
-
 rwjAll$orgType1 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType1 <- str_match(rwjAll$organization_type, "Academic and Research Institution")
 rwjAll$orgType1 <- ifelse(rwjAll$orgType1=="Academic and Research Institution", 1, 0)
 rwjAll$orgType1 <- unmatrix(rwjAll$orgType1)
-
 rwjAll$orgType2 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType2 <- str_match(rwjAll$organization_type, "Inc")
 rwjAll$orgType2 <- ifelse(rwjAll$orgType2=="Inc", 2, 0)
 rwjAll$orgType2 <- unmatrix(rwjAll$orgType2)
-
 rwjAll$orgType3 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType3 <- str_match(rwjAll$organization_type, "Government")
 rwjAll$orgType3 <- ifelse(rwjAll$orgType3=="Government", 3, 0)
 rwjAll$orgType3 <- unmatrix(rwjAll$orgType3)
-
 rwjAll$orgType4 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType4 <- str_match(rwjAll$organization_type, "Media")
 rwjAll$orgType4 <- ifelse(rwjAll$orgType4=="Media", 4, 0)
 rwjAll$orgType4 <- unmatrix(rwjAll$orgType4)
-
 rwjAll$orgType5 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType5 <- str_match(rwjAll$organization_type, "Non-governmental Organization")
 rwjAll$orgType5 <- ifelse(rwjAll$orgType5=="Non-governmental Organization", 5, 0)
 rwjAll$orgType5 <- unmatrix(rwjAll$orgType5)
-
 rwjAll$orgType6 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType6 <- str_match(rwjAll$organization_type, "Red Cross/Red Crescent Movement")
 rwjAll$orgType6 <- ifelse(rwjAll$orgType6=="Red Cross/Red Crescent Movement", 6, 0)
 rwjAll$orgType6 <- unmatrix(rwjAll$orgType6)
-
 rwjAll$orgType7 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType7 <- str_match(rwjAll$organization_type, "International Organization")
 rwjAll$orgType7 <- ifelse(rwjAll$orgType7=="International Organization", 7, 0)
 rwjAll$orgType7 <- unmatrix(rwjAll$orgType7)
-
 rwjAll$orgType8 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$orgType8 <- str_match(rwjAll$organization_type, "Other")
 rwjAll$orgType8 <- ifelse(rwjAll$orgType8=="Other", 8, 0)
 rwjAll$orgType8 <- unmatrix(rwjAll$orgType8)
-
-rwjAll$orgTypeAll <- rowSums(rwjAll[, 18:25], na.rm = TRUE)
-
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==1] <- "1 Academic and Research Institution"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==2] <- "2 Consultancy"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==3] <- "3 Government"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==4] <- "4 Media"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==5] <- "5 Non-governmental Organization"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==6] <- "6 Red Cross/Red Crescent Movement"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==7] <- "7 International Organization"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==8] <- "8 Other"
-rwjAll$orgTypeAll[rwjAll$orgTypeAll==0] <- "8 Other"
-
+rwjAll$orgTypeAll <- rowSums(rwjAll[, 13:20], na.rm = TRUE)
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==1] <- "Academic and Research Institution"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==2] <- "Consultancy"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==3] <- "Government"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==4] <- "Media"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==5] <- "Non-governmental Organization"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==6] <- "Red Cross/Red Crescent Movement"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==7] <- "International Organization"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==8] <- "Other"
+rwjAll$orgTypeAll[rwjAll$orgTypeAll==0] <- "Other"
 rwjAll$orgType1 <- NULL
 rwjAll$orgType2 <- NULL
 rwjAll$orgType3 <- NULL
@@ -187,156 +155,79 @@ rwjAll$orgType7 <- NULL
 rwjAll$orgType8 <- NULL
 rwjAll$organization_type <- NULL
 names(rwjAll)[names(rwjAll)=="orgTypeAll"] <- "organization_type"
+rwjAll$experience <- as.character(rwjAll$experience)
+rwjAll$experience[rwjAll$experience=="NULL"] <- "Other"
+rwjAll$experience[rwjAll$experience=="N/A"] <- "Other"
 
-rwjAllTest <- as.data.frame(rwjAll)
-rwjAllTest$experience <- as.character(rwjAllTest$experience)
-rwjAllTest$experience[rwjAllTest$experience=="NULL"] <- "Other"
-rwjAllTest$experience[rwjAllTest$experience=="N/A"] <- "Other"
-rwjall <- as.data.frame(rwjAllTest)
+#### Create columns based on language keywords in the "body" and "country" columns, with the latter based on which donor countries have made English an official language
 
-##### Replace values
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Management Systems International", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Montrose", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="PRASOL Training and Consulting Ltd", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="International Conflict and Security Consulting", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Tsamota", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Tetra Tech", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="JaRco Consulting", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Social Impact", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Resource Consulting Services", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Macfadden", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Micro Investment Consultancy Services", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="ILC Africa", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="University Research Co.", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Checchi", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Options Consultancy Services", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Adam Smith International", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Notio Partners", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="INTEGRITY", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Security Governance Group", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Crown Agents USA", str_replace(as.character(rwjAll$organization_type), "8 Other", "2 Consultancy"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Pact", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Population Services International", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Global Health Corps", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Organization for Refuge", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="FHI 360", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="Center for Reproductive Rights", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-rwjAll$organization_type <- ifelse(rwjAll$organization=="World Vision", str_replace(as.character(rwjAll$organization_type), "8 Other", "5 Non-governmental Organization"), as.character(rwjAll$organization_type))
-
-#### Analyze demand for bilingual and multilingual speakers
-
-##### Create columns based on language keywords in the "body" and "country_name" columns, with the latter based on which donor countries have made English an official language
-
-rwjall$English1 <- as.vector(c(NA * nrow(rwjall)))
-rwjall$English1 <- str_match(rwjall$body, "English")
-rwjall$English1 <- ifelse(rwjall$English1 == "English", 1, 0)
-rwjall$English1 <- unmatrix(rwjall$English1)
-
-rwjall$English2 <- as.vector(c(NA * nrow(rwjall)))
-rwjall$English2 <- str_match(rwjall$country, "United States")
-rwjall$English2 <- ifelse(rwjall$English2 == "United States", 1, 0)
-rwjall$English2 <- unmatrix(rwjall$English2)
-for (i in 1:length(rwjall$English1))
-if (!is.na(rwjall$English1[i])) rwjall$English2[i]=NA
-
-rwjall$English3 <- as.vector(c(NA * nrow(rwjall)))
-rwjall$English3 <- str_match(rwjall$country, "United Kingdom")
-rwjall$English3 <- ifelse(rwjall$English3 == "United Kingdom", 1, 0)
-rwjall$English3 <- unmatrix(rwjall$English3)
-for (i in 1:length(rwjall$English1))
-if (!is.na(rwjall$English1[i])) rwjall$English3[i]=NA
-
-rwjall$English4 <- as.vector(c(NA * nrow(rwjall)))
-rwjall$English4 <- str_match(rwjall$country, "Ireland")
-rwjall$English4 <- ifelse(rwjall$English4 == "Ireland", 1, 0)
-rwjall$English4 <- unmatrix(rwjall$English4)
-for (i in 1:length(rwjall$English1))
-if (!is.na(rwjall$English1[i])) rwjall$English4[i]=NA
-for (i in 1:length(rwjall$English3))
-if (!is.na(rwjall$English3[i])) rwjall$English4[i]=NA
-
-rwjall$English5 <- as.vector(c(NA * nrow(rwjall)))
-rwjall$English5 <- str_match(rwjall$country, "Canada")
-rwjall$English5 <- ifelse(rwjall$English5 == "Canada", 1, 0)
-rwjall$English5 <- unmatrix(rwjall$English5)
-for (i in 1:length(rwjall$English1))
-if (!is.na(rwjall$English1[i])) rwjall$English5[i]=NA
-
-rwjall$English6 <- as.vector(c(NA * nrow(rwjall)))
-rwjall$English6 <- str_match(rwjall$country, "Australia")
-rwjall$English6 <- ifelse(rwjall$English6 == "Australia", 1, 0)
-rwjall$English6 <- unmatrix(rwjall$English6)
-for (i in 1:length(rwjall$English1))
-if (!is.na(rwjall$English1[i])) rwjall$English6[i]=NA
-
-rwjall$English_total <- rowSums(rwjall[, 13:18], na.rm = TRUE)
-
-rwjall$French <- as.vector(c(NA * nrow(rwjall)))
-rwjall$French <- str_match(rwjall$body, "French")
-rwjall$French <- ifelse(rwjall$French == "French", 1, 0)
-rwjall$French <- unmatrix(rwjall$French)
-
-rwjall$Arabic <- as.vector(c(NA * nrow(rwjall)))
-rwjall$Arabic <- str_match(rwjall$body, "Arabic") 
-rwjall$Arabic <- ifelse(rwjall$Arabic=="Arabic", 1, 0)
-rwjall$Arabic <- unmatrix(rwjall$Arabic)
-
-rwjall$Spanish <- as.vector(c(NA * nrow(rwjall)))
-rwjall$Spanish <- str_match(rwjall$body, "Spanish") 
-rwjall$Spanish <- ifelse(rwjall$Spanish=="Spanish", 1, 0)
-rwjall$Spanish <- unmatrix(rwjall$Spanish)
-
-rwjall$Russian <- as.vector(c(NA * nrow(rwjall)))
-rwjall$Russian <- str_match(rwjall$body, "Russian") 
-rwjall$Russian <- ifelse(rwjall$Russian=="Russian", 1, 0)
-rwjall$Russian <- unmatrix(rwjall$Russian)
-
-rwjall$Chinese <- as.vector(c(NA * nrow(rwjAll)))
-rwjall$Chinese <- str_match(rwjall$body, "Chinese") 
-rwjall$Chinese <- ifelse(rwjall$Chinese=="Chinese", 1, 0)
-rwjall$Chinese <- unmatrix(rwjall$Chinese)
-
-rwjall$Portuguese <- as.vector(c(NA * nrow(rwjAll)))
-rwjall$Portuguese <- str_match(rwjall$body, "Portuguese") 
-rwjall$Portuguese <- ifelse(rwjall$Portuguese=="Portuguese", 1, 0)
-rwjall$Portuguese <- unmatrix(rwjall$Portuguese)
-
-rwjall$local <- as.vector(c(NA * nrow(rwjAll)))
-rwjall$local <- str_match(rwjall$body, "local language") 
-rwjall$local <- ifelse(rwjall$local=="local language", 1, 0)
-rwjall$local <- unmatrix(rwjall$local)
-
-rwjAll_bil <- filter(rwjall, English_total == 1)
+rwjAll$English1 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English1 <- str_match(rwjAll$body, "English")
+rwjAll$English1 <- ifelse(rwjAll$English1 == "English", 1, 0)
+rwjAll$English1 <- unmatrix(rwjAll$English1)
+rwjAll$English2 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English2 <- str_match(rwjAll$country, "United States")
+rwjAll$English2 <- ifelse(rwjAll$English2 == "United States", 1, 0)
+rwjAll$English2 <- unmatrix(rwjAll$English2)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English2[i]=NA
+rwjAll$English3 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English3 <- str_match(rwjAll$country, "United Kingdom")
+rwjAll$English3 <- ifelse(rwjAll$English3 == "United Kingdom", 1, 0)
+rwjAll$English3 <- unmatrix(rwjAll$English3)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English3[i]=NA
+rwjAll$English4 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English4 <- str_match(rwjAll$country, "Ireland")
+rwjAll$English4 <- ifelse(rwjAll$English4 == "Ireland", 1, 0)
+rwjAll$English4 <- unmatrix(rwjAll$English4)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English4[i]=NA
+for (i in 1:length(rwjAll$English3))
+if (!is.na(rwjAll$English3[i])) rwjAll$English4[i]=NA
+rwjAll$English5 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English5 <- str_match(rwjAll$country, "Canada")
+rwjAll$English5 <- ifelse(rwjAll$English5 == "Canada", 1, 0)
+rwjAll$English5 <- unmatrix(rwjAll$English5)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English5[i]=NA
+rwjAll$English6 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English6 <- str_match(rwjAll$country, "Australia")
+rwjAll$English6 <- ifelse(rwjAll$English6 == "Australia", 1, 0)
+rwjAll$English6 <- unmatrix(rwjAll$English6)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English6[i]=NA
+rwjAll$English_total <- rowSums(rwjAll[, 13:18], na.rm = TRUE)
+rwjAll$French <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$French <- str_match(rwjAll$body, "French")
+rwjAll$French <- ifelse(rwjAll$French == "French", 1, 0)
+rwjAll$French <- unmatrix(rwjAll$French)
+rwjAll$Arabic <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Arabic <- str_match(rwjAll$body, "Arabic") 
+rwjAll$Arabic <- ifelse(rwjAll$Arabic=="Arabic", 1, 0)
+rwjAll$Arabic <- unmatrix(rwjAll$Arabic)
+rwjAll$Spanish <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Spanish <- str_match(rwjAll$body, "Spanish") 
+rwjAll$Spanish <- ifelse(rwjAll$Spanish=="Spanish", 1, 0)
+rwjAll$Spanish <- unmatrix(rwjAll$Spanish)
+rwjAll$Russian <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Russian <- str_match(rwjAll$body, "Russian") 
+rwjAll$Russian <- ifelse(rwjAll$Russian=="Russian", 1, 0)
+rwjAll$Russian <- unmatrix(rwjAll$Russian)
+rwjAll$Chinese <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Chinese <- str_match(rwjAll$body, "Chinese") 
+rwjAll$Chinese <- ifelse(rwjAll$Chinese=="Chinese", 1, 0)
+rwjAll$Chinese <- unmatrix(rwjAll$Chinese)
+rwjAll$Portuguese <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Portuguese <- str_match(rwjAll$body, "Portuguese") 
+rwjAll$Portuguese <- ifelse(rwjAll$Portuguese=="Portuguese", 1, 0)
+rwjAll$Portuguese <- unmatrix(rwjAll$Portuguese)
+rwjAll$local <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$local <- str_match(rwjAll$body, "local language") 
+rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
+rwjAll$local <- unmatrix(rwjAll$local)
+rwjAll_bil <- filter(rwjAll, English_total == 1)
 rwjAll_bil <- rwjAll_bil[!duplicated(rwjAll_bil), ]
-View(rwjAll_bil)
-
 rwjAll_bil$EF <- rwjAll_bil$English_total + rwjAll_bil$French
 rwjAll_bil$EA <- rwjAll_bil$English_total + rwjAll_bil$Arabic
 rwjAll_bil$ES <- rwjAll_bil$English_total + rwjAll_bil$Spanish
@@ -347,8 +238,6 @@ rwjAll_bil$EL <- rwjAll_bil$English_total + rwjAll_bil$local
 rwjAll_bil$EFA <- rowSums(rwjAll_bil[, 28:29], na.rm = TRUE)
 rwjAll_bil$EFS <- rowSums(rwjAll_bil[, c("EF", "ES")], na.rm = TRUE)
 rwjAll_bil$EFAS <- rowSums(rwjAll_bil[, 28:30], na.rm = TRUE)
-
-
 rwjAll_bil$EF[rwjAll_bil$EF==2] <- 1
 rwjAll_bil$EA[rwjAll_bil$EA==2] <- 1
 rwjAll_bil$ES[rwjAll_bil$ES==2] <- 1
@@ -360,8 +249,10 @@ rwjAll_bil$EFA[rwjAll_bil$EFA==2] <- 1
 rwjAll_bil$EFS[rwjAll_bil$EFS==2] <- 1
 rwjAll_bil$EFAS[rwjAll_bil$EFA==3] <- 1
 
-##### Determine frequencies of the demand for bilingual and multilingual speakers
+#### Determine frequencies of the demand for bilingual and multilingual speakers
 
+library(tidyr)
+library(dplyr)
 rwjAll_bil16 <- filter(rwjAll_bil, year == 2016) 
 total_EF_16 <- sum(rwjAll_bil16$EF, na.rm = TRUE)
 EF_percent_16 <- total_EF_16 / nrow(rwjAll_bil16)
@@ -384,7 +275,6 @@ EFS_percent_16 <- total_EFS_16 / nrow(rwjAll_bil16)
 total_EFAS_16 <- sum(rwjAll_bil16$EFAS, na.rm = TRUE) 
 EFAS_percent_16 <- total_EFAS_16 / nrow(rwjAll_bil16)
 write.csv(rwjAll_bil16, "rwjAll_bil16.csv")
-
 rwjAll_bil15 <- filter(rwjAll_bil, year == 2015) 
 total_EF_15 <- sum(rwjAll_bil15$EF, na.rm = TRUE)
 EF_percent_15 <- total_EF_15 / nrow(rwjAll_bil15)
@@ -407,7 +297,6 @@ EFS_percent_15 <- total_EFS_15 / nrow(rwjAll_bil15)
 total_EFAS_15 <- sum(rwjAll_bil15$EFAS, na.rm = TRUE) 
 EFAS_percent_15 <- total_EFAS_15 / nrow(rwjAll_bil15)
 write.csv(rwjAll_bil15, "rwjAll_bil15.csv")
-
 rwjAll_bil14 <- filter(rwjAll_bil, year == 2014) 
 total_EF_14 <- sum(rwjAll_bil14$EF, na.rm = TRUE)
 EF_percent_14 <- total_EF_14 / nrow(rwjAll_bil14)
@@ -430,7 +319,6 @@ EFS_percent_14 <- total_EFS_14 / nrow(rwjAll_bil14)
 total_EFAS_14 <- sum(rwjAll_bil14$EFAS, na.rm = TRUE) 
 EFAS_percent_14 <- total_EFAS_14 / nrow(rwjAll_bil14)
 write.csv(rwjAll_bil14, "rwjAll_bil14.csv")
-
 rwjAll_bil13 <- filter(rwjAll_bil, year == 2013) 
 total_EF_13 <- sum(rwjAll_bil13$EF, na.rm = TRUE)
 EF_percent_13 <- total_EF_13 / nrow(rwjAll_bil13)
@@ -453,7 +341,6 @@ EFS_percent_13 <- total_EFS_13 / nrow(rwjAll_bil13)
 total_EFAS_13 <- sum(rwjAll_bil13$EFAS, na.rm = TRUE) 
 EFAS_percent_13 <- total_EFAS_13 / nrow(rwjAll_bil13)
 write.csv(rwjAll_bil13, "rwjAll_bil13.csv")
-
 rwjAll_bil12 <- filter(rwjAll_bil, year == 2012) 
 total_EF_12 <- sum(rwjAll_bil12$EF, na.rm = TRUE)
 EF_percent_12 <- total_EF_12 / nrow(rwjAll_bil12)
@@ -476,7 +363,6 @@ EFS_percent_12 <- total_EFS_12 / nrow(rwjAll_bil12)
 total_EFAS_12 <- sum(rwjAll_bil12$EFAS, na.rm = TRUE) 
 EFAS_percent_12 <- total_EFAS_12 / nrow(rwjAll_bil12)
 write.csv(rwjAll_bil12, "rwjAll_bil12.csv")
-
 rwjAll_bil11 <- filter(rwjAll_bil, year == 2011) 
 total_EF_11 <- sum(rwjAll_bil11$EF, na.rm = TRUE)
 EF_percent_11 <- total_EF_11 / nrow(rwjAll_bil11)
@@ -500,7 +386,8 @@ total_EFAS_11 <- sum(rwjAll_bil11$EFAS, na.rm = TRUE)
 EFAS_percent_11 <- total_EFAS_11 / nrow(rwjAll_bil11)
 write.csv(rwjAll_bil11, "rwjAll_bil11.csv")
 
-##### Create dataset comparing demand for bilingual and multilingual speakers 
+#### Create dataset comparing demand for bilingual and multilingual speakers 
+
 year <- c(2011, 2012, 2013, 2014, 2015, 2016)
 English_French <- c(EF_percent_11, EF_percent_12, EF_percent_13, EF_percent_14, EF_percent_15, EF_percent_16) 
 English_Arabic <- c(EA_percent_11, EA_percent_12, EA_percent_13, EA_percent_14, EA_percent_15, EA_percent_16)     
@@ -512,7 +399,6 @@ English_local <- c(EL_percent_11, EL_percent_12, EL_percent_13, EL_percent_14, E
 English_French_Arabic <- c(EFA_percent_11, EFA_percent_12, EFA_percent_13, EFA_percent_14, EFA_percent_15, EFA_percent_16)
 English_French_Spanish <- c(EFS_percent_11, EFS_percent_12, EFS_percent_13, EFS_percent_14, EFS_percent_15, EFS_percent_16)
 English_French_Arabic_Spanish <- c(EFAS_percent_11, EFAS_percent_12, EFAS_percent_13, EFAS_percent_14, EFAS_percent_15, EFAS_percent_16)
-
 bi_lang_pct <- cbind(year, English_French, English_Arabic, English_Spanish, English_Russian, English_Chinese, English_Portuguese, English_local, English_French_Arabic, English_French_Spanish, English_French_Arabic_Spanish)
 bi_lang_pct <- as.data.frame(bi_lang_pct)
 bi_lang_pct$English_French <- bi_lang_pct$English_French * 100
@@ -537,14 +423,15 @@ bi_lang_pct$English_French_Arabic_Spanish <- bi_lang_pct$English_French_Arabic_S
 bi_lang_pct$English_French_Arabic_Spanish <- round(bi_lang_pct$English_French_Arabic_Spanish, digits = 2)
 write.csv(bi_lang_pct, "bi_lang_pct.csv")
 
-##### Reshape and plot data frame 
+#### Reshape and plot data frame 
 
+library(ggplot2)
 ml_comb <- bi_lang_pct %>% gather(bilingual_combination, percentage, 2:11) 
-
 plot1 <- ggplot(ml_comb, aes(x = year, y = percentage, color = bilingual_combination)) +
          geom_point(shape = 17, size = 2) + 
          geom_line(size = 0.5, alpha = 0.5) +
-         scale_y_continuous(name="percentage of job ads", breaks = c(5, 10, 15, 20, 25, 30,                             35, 40, 45, 50, 55, 60, 65)) + 
+         scale_y_continuous(name="percentage of job ads", breaks = c(5, 10, 15, 20, 25, 30,                             
+                            35, 40, 45, 50, 55, 60, 65)) + 
          scale_color_discrete(name = "Language combination",
                             breaks = c("English_French_Arabic_Spanish",     
                             "English_French_Arabic", "English_French_Spanish", 
@@ -552,302 +439,232 @@ plot1 <- ggplot(ml_comb, aes(x = year, y = percentage, color = bilingual_combina
                             "English_Portuguese", "English_local", "English_Russian", 
                             "English_Chinese"))
 
-##### Perform one sample t-tests
+#### Perform one sample t-tests
 
 EF_tTest <- t.test(bi_lang_pct$English_French, mu=25)
 EA_tTest <- t.test(bi_lang_pct$English_Arabic, mu=15)
-ES_tTest <- t.test(bi_lang_pct$English_Spanish, mu=15)
-EC_tTest <- t.test(bi_lang_pct$English_Chinese, mu=3)
-ER_tTest <- t.test(bi_lang_pct$English_Russian, mu=2)
+ES_tTest <- t.test(bi_lang_pct$English_Spanish, mu=9)
+EC_tTest <- t.test(bi_lang_pct$English_Chinese, mu=1.5)
+ER_tTest <- t.test(bi_lang_pct$English_Russian, mu=3)
 EP_tTest <- t.test(bi_lang_pct$English_Portuguese, mu=3)
 EL_tTest <- t.test(bi_lang_pct$English_local, mu=2)
+EFA_tTest <- t.test(bi_lang_pct$English_French_Arabic, mu=40)
+EFS_tTest <- t.test(bi_lang_pct$English_French_Spanish, mu=30)
+EFAS_tTest <- t.test(bi_lang_pct$English_French_Arabic_Spanish, mu=55)
 
-##### Perform a two-sample test
-EF_EA_tTEst <- t.test(bi_lang_pct$English_French, bi_lang_pct$English_Arabic)
+#### Perform a two-sample z- test using monthly frequencies of job ads seeking English-Portuguese and English-local language speakers
 
-##### Perform a z test
+library(BSDA)
 bidem_jan16 <- filter(rwjAll_bil16, month == 1) 
 jan16_EP <- sum(bidem_jan16$EP, na.rm = TRUE)
 jan16_EL <- sum(bidem_jan16$EL, na.rm = TRUE) 
-
 bidem_feb16 <- filter(rwjAll_bil16, month == 2)
 feb16_EP <- sum(bidem_feb16$EP, na.rm = TRUE) 
 feb16_EL <- sum(bidem_feb16$EL, na.rm = TRUE) 
-
 bidem_mar16 <- filter(rwjAll_bil16, month == 3)
 mar16_EP <- sum(bidem_mar16$EP, na.rm = TRUE) 
 mar16_EL <- sum(bidem_mar16$EL, na.rm = TRUE) 
-
 bidem_apr16 <- filter(rwjAll_bil16, month == 4)
 apr16_EP <- sum(bidem_apr16$EP, na.rm = TRUE) 
 apr16_EL <- sum(bidem_apr16$EL, na.rm = TRUE) 
-
 bidem_may16 <- filter(rwjAll_bil16, month == 5)
 may16_EP <- sum(bidem_may16$EP, na.rm = TRUE) 
 may16_EL <- sum(bidem_may16$EL, na.rm = TRUE) 
-
 bidem_jun16 <- filter(rwjAll_bil16, month == 6)
 jun16_EP <- sum(bidem_jun16$EP, na.rm = TRUE) 
 jun16_EL <- sum(bidem_jun16$EL, na.rm = TRUE) 
-
 bidem_jan15 <- filter(rwjAll_bil15, month == 1) 
 jan15_EP <- sum(bidem_jan15$EP, na.rm = TRUE) 
 jan15_EL <- sum(bidem_jan15$EL, na.rm = TRUE) 
-
 bidem_feb15 <- filter(rwjAll_bil15, month == 2)
 feb15_EP <- sum(bidem_feb15$EP, na.rm = TRUE) 
 feb15_EL <- sum(bidem_feb15$EL, na.rm = TRUE) 
-
 bidem_mar15 <- filter(rwjAll_bil15, month == 3)
 mar15_EP <- sum(bidem_mar15$EP, na.rm = TRUE) 
 mar15_EL <- sum(bidem_mar15$EL, na.rm = TRUE) 
-
 bidem_apr15 <- filter(rwjAll_bil15, month == 4)
 apr15_EP <- sum(bidem_apr15$EP, na.rm = TRUE) 
 apr15_EL <- sum(bidem_apr15$EL, na.rm = TRUE) 
-
 bidem_may15 <- filter(rwjAll_bil15, month == 5)
 may15_EP <- sum(bidem_may15$EP, na.rm = TRUE) 
 may15_EL <- sum(bidem_may15$EL, na.rm = TRUE) 
-
 bidem_jun15 <- filter(rwjAll_bil15, month == 6)
 jun15_EP <- sum(bidem_jun15$EP, na.rm = TRUE) 
 jun15_EL <- sum(bidem_jun15$EL, na.rm = TRUE) 
-
 bidem_jul15 <- filter(rwjAll_bil15, month == 7)
 jul15_EP <- sum(bidem_jul15$EP, na.rm = TRUE) 
 jul15_EL <- sum(bidem_jul15$EL, na.rm = TRUE) 
-
 bidem_aug15 <- filter(rwjAll_bil15, month == 8)
 aug15_EP <- sum(bidem_aug15$EP, na.rm = TRUE) 
 aug15_EL <- sum(bidem_aug15$EL, na.rm = TRUE) 
-
 bidem_sep15 <- filter(rwjAll_bil15, month == 9)
 sep15_EP <- sum(bidem_sep15$EP, na.rm = TRUE) 
 sep15_EL <- sum(bidem_sep15$EL, na.rm = TRUE) 
-
 bidem_oct15 <- filter(rwjAll_bil15, month == 10)
 oct15_EP <- sum(bidem_oct15$EP, na.rm = TRUE) 
 oct15_EL <- sum(bidem_oct15$EL, na.rm = TRUE) 
-
 bidem_nov15 <- filter(rwjAll_bil15, month == 11)
 nov15_EP <- sum(bidem_nov15$EP, na.rm = TRUE) 
 nov15_EL <- sum(bidem_nov15$EL, na.rm = TRUE) 
-
 bidem_dec15 <- filter(rwjAll_bil15, month == 12)
 dec15_EP <- sum(bidem_dec15$EP, na.rm = TRUE) 
 dec15_EL <- sum(bidem_dec15$EL, na.rm = TRUE) 
-
 bidem_jan14 <- filter(rwjAll_bil14, month == 1) 
 jan14_EP <- sum(bidem_jan14$EP, na.rm = TRUE) 
 jan14_EL <- sum(bidem_jan14$EL, na.rm = TRUE) 
-
 bidem_feb14 <- filter(rwjAll_bil14, month == 2)
 feb14_EP <- sum(bidem_feb14$EP, na.rm = TRUE) 
 feb14_EL <- sum(bidem_feb14$EL, na.rm = TRUE) 
-
 bidem_mar14 <- filter(rwjAll_bil14, month == 3)
 mar14_EP <- sum(bidem_mar14$EP, na.rm = TRUE) 
 mar14_EL <- sum(bidem_mar14$EL, na.rm = TRUE) 
-
 bidem_apr14 <- filter(rwjAll_bil14, month == 4)
 apr14_EP <- sum(bidem_apr14$EP, na.rm = TRUE) 
 apr14_EL <- sum(bidem_apr14$EL, na.rm = TRUE) 
-
 bidem_may14 <- filter(rwjAll_bil14, month == 5)
 may14_EP <- sum(bidem_may14$EP, na.rm = TRUE) 
 may14_EL <- sum(bidem_may14$EL, na.rm = TRUE) 
-
 bidem_jun14 <- filter(rwjAll_bil14, month == 6)
 jun14_EP <- sum(bidem_jun14$EP, na.rm = TRUE) 
 jun14_EL <- sum(bidem_jun14$EL, na.rm = TRUE) 
-
 bidem_jul14 <- filter(rwjAll_bil14, month == 7)
 jul14_EP <- sum(bidem_jul14$EP, na.rm = TRUE) 
 jul14_EL <- sum(bidem_jul14$EL, na.rm = TRUE) 
-
 bidem_aug14 <- filter(rwjAll_bil14, month == 8)
 aug14_EP <- sum(bidem_aug14$EP, na.rm = TRUE) 
 aug14_EL <- sum(bidem_aug14$EL, na.rm = TRUE) 
-
 bidem_sep14 <- filter(rwjAll_bil14, month == 9)
 sep14_EP <- sum(bidem_sep14$EP, na.rm = TRUE) 
 sep14_EL <- sum(bidem_sep14$EL, na.rm = TRUE) 
-
 bidem_oct14 <- filter(rwjAll_bil14, month == 10)
 oct14_EP <- sum(bidem_oct14$EP, na.rm = TRUE) 
 oct14_EL <- sum(bidem_oct14$EL, na.rm = TRUE) 
-
 bidem_nov14 <- filter(rwjAll_bil14, month == 11)
 nov14_EP <- sum(bidem_nov14$EP, na.rm = TRUE) 
 nov14_EL <- sum(bidem_nov14$EL, na.rm = TRUE) 
-
 bidem_dec14 <- filter(rwjAll_bil14, month == 12)
 dec14_EP <- sum(bidem_dec14$EP, na.rm = TRUE) 
 dec14_EL <- sum(bidem_dec14$EL, na.rm = TRUE) 
-
 bidem_jan13 <- filter(rwjAll_bil13, month == 1)
 jan13_EP <- sum(bidem_jan13$EP, na.rm = TRUE) 
 jan13_EL <- sum(bidem_jan13$EL, na.rm = TRUE) 
-
 bidem_feb13 <- filter(rwjAll_bil13, month == 2)
 feb13_EP <- sum(bidem_feb13$EP, na.rm = TRUE) 
 feb13_EL <- sum(bidem_feb13$EL, na.rm = TRUE) 
-
 bidem_mar13 <- filter(rwjAll_bil13, month == 3)
 mar13_EP <- sum(bidem_mar13$EP, na.rm = TRUE) 
 mar13_EL <- sum(bidem_mar13$EL, na.rm = TRUE) 
-
 bidem_apr13 <- filter(rwjAll_bil13, month == 4)
 apr13_EP <- sum(bidem_apr13$EP, na.rm = TRUE) 
 apr13_EL <- sum(bidem_apr13$EL, na.rm = TRUE) 
-
 bidem_may13 <- filter(rwjAll_bil13, month == 5)
 may13_EP <- sum(bidem_may13$EP, na.rm = TRUE) 
 may13_EL <- sum(bidem_may13$EL, na.rm = TRUE) 
-
 bidem_jun13 <- filter(rwjAll_bil13, month == 6)
 jun13_EP <- sum(bidem_jun13$EP, na.rm = TRUE) 
 jun13_EL <- sum(bidem_jun13$EL, na.rm = TRUE) 
-
 bidem_jul13 <- filter(rwjAll_bil13, month == 7)
 jul13_EP <- sum(bidem_jul13$EP, na.rm = TRUE) 
 jul13_EL <- sum(bidem_jul13$EL, na.rm = TRUE) 
-
 bidem_aug13 <- filter(rwjAll_bil13, month == 8)
 aug13_EP <- sum(bidem_aug13$EP, na.rm = TRUE) 
 aug13_EL <- sum(bidem_aug13$EL, na.rm = TRUE) 
-
 bidem_sep13 <- filter(rwjAll_bil13, month == 9)
 sep13_EP <- sum(bidem_sep13$EP, na.rm = TRUE) 
 sep13_EL <- sum(bidem_sep13$EL, na.rm = TRUE) 
-
 bidem_oct13 <- filter(rwjAll_bil13, month == 10)
 oct13_EP <- sum(bidem_oct13$EP, na.rm = TRUE) 
 oct13_EL <- sum(bidem_oct13$EL, na.rm = TRUE) 
-
 bidem_nov13 <- filter(rwjAll_bil13, month == 11)
 nov13_EP <- sum(bidem_nov13$EP, na.rm = TRUE) 
 nov13_EL <- sum(bidem_nov13$EL, na.rm = TRUE) 
-
 bidem_dec13 <- filter(rwjAll_bil13, month == 12)
 dec13_EP <- sum(bidem_dec13$EP, na.rm = TRUE) 
 dec13_EL <- sum(bidem_dec13$EL, na.rm = TRUE) 
-
 bidem_jan12 <- filter(rwjAll_bil12, month == 1) 
 jan12_EP <- sum(bidem_jan12$EP, na.rm = TRUE) 
 jan12_EL <- sum(bidem_jan12$EL, na.rm = TRUE) 
-
 bidem_feb12 <- filter(rwjAll_bil12, month == 2)
 feb12_EP <- sum(bidem_feb12$EP, na.rm = TRUE) 
 feb12_EL <- sum(bidem_feb12$EL, na.rm = TRUE) 
-
 bidem_mar12 <- filter(rwjAll_bil12, month == 3)
 mar12_EP <- sum(bidem_mar12$EP, na.rm = TRUE) 
 mar12_EL <- sum(bidem_mar12$EL, na.rm = TRUE) 
-
 bidem_apr12 <- filter(rwjAll_bil12, month == 4)
 apr12_EP <- sum(bidem_apr12$EP, na.rm = TRUE) 
 apr12_EL <- sum(bidem_apr12$EL, na.rm = TRUE) 
-
 bidem_may12 <- filter(rwjAll_bil12, month == 5)
 may12_EP <- sum(bidem_may12$EP, na.rm = TRUE) 
 may12_EL <- sum(bidem_may12$EL, na.rm = TRUE) 
-
 bidem_jun12 <- filter(rwjAll_bil12, month == 6)
 jun12_EP <- sum(bidem_jun12$EP, na.rm = TRUE) 
 jun12_EL <- sum(bidem_jun12$EL, na.rm = TRUE) 
-
 bidem_jul12 <- filter(rwjAll_bil12, month == 7)
 jul12_EP <- sum(bidem_jul12$EP, na.rm = TRUE) 
 jul12_EL <- sum(bidem_jul12$EL, na.rm = TRUE) 
-
 bidem_aug12 <- filter(rwjAll_bil12, month == 8)
 aug12_EP <- sum(bidem_aug12$EP, na.rm = TRUE) 
 aug12_EL <- sum(bidem_aug12$EL, na.rm = TRUE) 
-
 bidem_sep12 <- filter(rwjAll_bil12, month == 9)
 sep12_EP <- sum(bidem_sep12$EP, na.rm = TRUE) 
 sep12_EL <- sum(bidem_sep12$EL, na.rm = TRUE) 
-
 bidem_oct12 <- filter(rwjAll_bil12, month == 10)
 oct12_EP <- sum(bidem_oct12$EP, na.rm = TRUE) 
 oct12_EL <- sum(bidem_oct12$EL, na.rm = TRUE) 
-
 bidem_nov12 <- filter(rwjAll_bil12, month == 11)
 nov12_EP <- sum(bidem_nov12$EP, na.rm = TRUE) 
 nov12_EL <- sum(bidem_nov12$EL, na.rm = TRUE) 
-
 bidem_dec12 <- filter(rwjAll_bil12, month == 12)
 dec12_EP <- sum(bidem_dec12$EP, na.rm = TRUE) 
 dec12_EL <- sum(bidem_dec12$EL, na.rm = TRUE) 
-
 bidem_mar11 <- filter(rwjAll_bil11, month == 3)
 mar11_EP <- sum(bidem_mar11$EP, na.rm = TRUE) 
 mar11_EL <- sum(bidem_mar11$EL, na.rm = TRUE) 
-
 bidem_apr11 <- filter(rwjAll_bil11, month == 4)
 apr11_EP <- sum(bidem_apr11$EP, na.rm = TRUE) 
 apr11_EL <- sum(bidem_apr11$EL, na.rm = TRUE) 
-
 bidem_may11 <- filter(rwjAll_bil11, month == 5)
 may11_EP <- sum(bidem_may11$EP, na.rm = TRUE) 
 may11_EL <- sum(bidem_may11$EL, na.rm = TRUE) 
-
 bidem_jun11 <- filter(rwjAll_bil11, month == 6)
 jun11_EP <- sum(bidem_jun11$EP, na.rm = TRUE) 
 jun11_EL <- sum(bidem_jun11$EL, na.rm = TRUE) 
-
 bidem_jul11 <- filter(rwjAll_bil11, month == 7)
 jul11_EP <- sum(bidem_jul11$EP, na.rm = TRUE) 
 jul11_EL <- sum(bidem_jul11$EL, na.rm = TRUE) 
-
 bidem_aug11 <- filter(rwjAll_bil11, month == 8)
 aug11_EP <- sum(bidem_aug11$EP, na.rm = TRUE) 
 aug11_EL <- sum(bidem_aug11$EL, na.rm = TRUE) 
-
 bidem_sep11 <- filter(rwjAll_bil11, month == 9)
 sep11_EP <- sum(bidem_sep11$EP, na.rm = TRUE) 
 sep11_EL <- sum(bidem_sep11$EL, na.rm = TRUE) 
-
 bidem_oct11 <- filter(rwjAll_bil11, month == 10)
 oct11_EP <- sum(bidem_oct11$EP, na.rm = TRUE) 
 oct11_EL <- sum(bidem_oct11$EL, na.rm = TRUE) 
-
 bidem_nov11 <- filter(rwjAll_bil11, month == 11)
 nov11_EP <- sum(bidem_nov11$EP, na.rm = TRUE) 
 nov11_EL <- sum(bidem_nov11$EL, na.rm = TRUE) 
-
 bidem_dec11 <- filter(rwjAll_bil11, month == 12)
 dec11_EP <- sum(bidem_dec11$EP, na.rm = TRUE) 
 dec11_EL <- sum(bidem_dec11$EL, na.rm = TRUE) 
-
 Year <- c(2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2012, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2015, 2016, 2016, 2016, 2016, 2016, 2016)
-
 Month <- c(03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06)   
-
 English_Portuguese <- c(mar11_EP, apr11_EP, may11_EP, jun11_EP, jul11_EP, aug11_EP, sep11_EP, oct11_EP, nov11_EP, dec11_EP, jan12_EP, feb12_EP, mar12_EP, apr12_EP, may12_EP, jun12_EP, jul12_EP, aug12_EP, sep12_EP, oct12_EP, nov12_EP, dec12_EP, jan13_EP, feb13_EP, mar13_EP, apr13_EP, may13_EP, jun13_EP, jul13_EP, aug13_EP, sep13_EP, oct13_EP, nov13_EP, dec13_EP, jan14_EP, feb14_EP, mar14_EP, apr14_EP, may14_EP, jun14_EP, jul14_EP, aug14_EP, sep14_EP, oct14_EP, nov14_EP, dec14_EP, jan15_EP, feb15_EP, mar15_EP, apr15_EP, may15_EP, jun15_EP, jul15_EP, aug15_EP, sep15_EP, oct15_EP, nov15_EP, dec15_EP, jan16_EP, feb16_EP, mar16_EP, apr16_EP, may16_EP, jun16_EP)
-
 English_local <- c(mar11_EL, apr11_EL, may11_EL, jun11_EL, jul11_EL, aug11_EL, sep11_EL, oct11_EL, nov11_EL, dec11_EL, jan12_EL, feb12_EL, mar12_EL, apr12_EL, may12_EL, jun12_EL, jul12_EL, aug12_EL, sep12_EL, oct12_EL, nov12_EL, dec12_EL, jan13_EL, feb13_EL, mar13_EL, apr13_EL, may13_EL, jun13_EL, jul13_EL, aug13_EL, sep13_EL, oct13_EL, nov13_EL, dec13_EL, jan14_EL, feb14_EL, mar14_EL, apr14_EL, may14_EL, jun14_EL, jul14_EL, aug14_EL, sep14_EL, oct14_EL, nov14_EL, dec14_EL, jan15_EL, feb15_EL, mar15_EL, apr15_EL, may15_EL, jun15_EL, jul15_EL, aug15_EL, sep15_EL, oct15_EL, nov15_EL, dec15_EL, jan16_EL, feb16_EL, mar16_EL, apr16_EL, may16_EL, jun16_EL)
-
 zTestdf <- cbind(Year, Month, English_Portuguese, English_local)
 zTestdf <- as.data.frame(zTestdf)
-View(zTestdf)
-
 sd(zTestdf$English_Portuguese)
 sd(zTestdf$English_local)
 z.test(zTestdf$English_Portuguese, zTestdf$English_local, sigma.x = sd(zTestdf$English_Portuguese), sigma.y = sd(zTestdf$English_local), conf.level = 0.95)
+cor(zTestdf$English_Portuguese, zTestdf$English_local)
 
-##### Perform linear modeling for the demand for English-French speakers using foreign aid commitments and disbursements as predictor variable
+#### Perform linear modeling focused on the demand for English-French speakers using foreign aid commitments and disbursements as predictor variables
 
 French_speaking_countries <- c("Benin", "Burkina Faso", "Burundi", "Cameroon", "Central African Republic", "Chad", "Comoros", "Democratic Republic of the Congo", "Congo", "CÃ´te d'Ivoire", "Djibouti", "Equatorial Guinea", "Gabon", "Guinea", "Madagascar", "Mali", "Mauritius", "Morocco", "Niger", "Rwanda", "Senegal", "Togo", "Haiti", "Vanuatu")
-
 English_donors <- c("United States", "United Kingdom", "Canada", "Ireland", "Australia")
-
 ODA_commitments <- read.csv("C:/Users/elizajv/Documents/ODA_commitments.csv", 1)
-View(ODA_commitments)
-ODA_commitments_09_14 <- filter(ODA_commitments, Year >= 2009)
-ODA_commitments_French_speaking <- ODA_commitments_09_14[ODA_commitments_09_14$Donor %in% English_donors,]
+ODA_commitments_11_14 <- filter(ODA_commitments, Year >= 2011)
+ODA_commitments_French_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Donor %in% English_donors,]
 ODA_commitments_French_speaking <- ODA_commitments_French_speaking[ODA_commitments_French_speaking$Recipient %in% French_speaking_countries,]
 ODA_commitments_French_speaking <- filter(ODA_commitments_French_speaking, Aid.type == "Total Commitments")
 ODA_commitments_French_speaking$DONOR <- NULL
@@ -863,26 +680,17 @@ ODA_commitments_French_speaking$Reference.Period.Code <- NULL
 ODA_commitments_French_speaking$Flag.Codes <- NULL
 ODA_commitments_French_speaking$Flags <- NULL
 ODA_commitments_French_speaking$Part <- NULL
-
-ODA_commitments_French_speaking_09 <- filter(ODA_commitments_French_speaking, Year == 2009)
-ODA_commitments_French_speaking_10 <- filter(ODA_commitments_French_speaking, Year == 2010)
 ODA_commitments_French_speaking_11 <- filter(ODA_commitments_French_speaking, Year == 2011)
 ODA_commitments_French_speaking_12 <- filter(ODA_commitments_French_speaking, Year == 2012)
 ODA_commitments_French_speaking_13 <- filter(ODA_commitments_French_speaking, Year == 2013)
 ODA_commitments_French_speaking_14 <- filter(ODA_commitments_French_speaking, Year == 2014)
-
-ESC_FS_09 <- sum(ODA_commitments_French_speaking_09$Value)
-ESC_FS_10 <- sum(ODA_commitments_French_speaking_10$Value)
 ESC_FS_11 <- sum(ODA_commitments_French_speaking_11$Value)
 ESC_FS_12 <- sum(ODA_commitments_French_speaking_12$Value)
 ESC_FS_13 <- sum(ODA_commitments_French_speaking_13$Value)
 ESC_FS_14 <- sum(ODA_commitments_French_speaking_14$Value)
-
 ODA_disbursements <- read.csv("C:/Users/elizajv/Documents/ODA_disbursements.csv", 1)
-ODA_disbursements_10_14 <- filter(ODA_disbursements, Year >= 2010)
-write.csv(ODA_disbursements_10_14, "ODA_disbursements_10_14.csv")
-View(ODA_disbursements_10_14)
-ODA_disbursements_French_speaking <- ODA_disbursements_10_14[ODA_disbursements_10_14$Donor %in% English_donors,]
+ODA_disbursements_11_14 <- filter(ODA_disbursements, Year >= 2011)
+ODA_disbursements_French_speaking <- ODA_disbursements_11_14[ODA_disbursements_11_14$Donor %in% English_donors,]
 ODA_disbursements_French_speaking <- ODA_disbursements_French_speaking[ODA_disbursements_French_speaking$Recipient %in% French_speaking_countries,]
 ODA_disbursements_type1 <- filter(ODA_disbursements_French_speaking, Aid.type == "Grants, Total")
 ODA_disbursements_type2 <- filter(ODA_disbursements_French_speaking, Aid.type == "Technical Cooperation")
@@ -901,17 +709,14 @@ ODA_disbursements_French_speaking$Reference.Period.Code <- NULL
 ODA_disbursements_French_speaking$Flag.Codes <- NULL
 ODA_disbursements_French_speaking$Flags <- NULL
 ODA_disbursements_French_speaking$Part <- NULL
-
 ODA_disbursements_French_speaking_11 <- filter(ODA_disbursements_French_speaking, Year == 2011)
 ODA_disbursements_French_speaking_12 <- filter(ODA_disbursements_French_speaking, Year == 2012)
 ODA_disbursements_French_speaking_13 <- filter(ODA_disbursements_French_speaking, Year == 2013)
 ODA_disbursements_French_speaking_14 <- filter(ODA_disbursements_French_speaking, Year == 2014)
-
 ESD_FS_11 <- sum(ODA_disbursements_French_speaking_11$Value)
 ESD_FS_12 <- sum(ODA_disbursements_French_speaking_12$Value)
 ESD_FS_13 <- sum(ODA_disbursements_French_speaking_13$Value)
 ESD_FS_14 <- sum(ODA_disbursements_French_speaking_14$Value)
-
 Year <- c(2011, 2012, 2013, 2014)
 ODAcommitments_FS <- c(ESC_FS_11, ESC_FS_12, ESC_FS_13, ESC_FS_14)
 ODAdisbursements_FS <- c(ESD_FS_11, ESD_FS_12, ESD_FS_13, ESD_FS_14)
@@ -920,11 +725,10 @@ ODAvsEFjobs <- data.frame(Year, ODAcommitments_FS, ODAdisbursements_FS, EnglishF
 ODAvsEFjobs <- as.data.frame(ODAvsEFjobs)
 ODAvsEFjobs$EnglishFrench_pct <- ODAvsEFjobs$EnglishFrench_pct * 100
 ODAvsEFjobs$EnglishFrench_pct <- round(ODAvsEFjobs$EnglishFrench_pct, digits = 2)
-
 model1 <- lm(EnglishFrench_pct ~ ODAdisbursements_FS + ODAcommitments_FS, data = ODAvsEFjobs)
 model2 <- lm(EnglishFrench_pct ~ ODAcommitments_FS, data = ODAvsEFjobs)
 model3 <- lm(EnglishFrench_pct ~ ODAdisbursements_FS, data = ODAvsEFjobs)
-
 cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAdisbursements_FS)
+cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAcommitments_FS)
 ```
 

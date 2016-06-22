@@ -719,9 +719,7 @@ cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAdisbursements_FS)
 cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAcommitments_FS)
 
 Arabic_speaking_countries <- c("Benin", "Chad", "Comoros", "Djibouti", "Egypt", "Eritrea", "Libya", "Mauritania", "Morocco", "Sudan", "Tunisia", "Tanzania", "Iraq", "Jordan", "Lebanon", "Oman", "West Bank and Gaza Strip", "Syrian Arab Republic", "Yemen")
-> English_donors <- c("United States", "United Kingdom", "Canada", "Ireland", "Australia")
 ODA_commitments <- read.csv("C:/Users/elizajv/Documents/ODA_commitments.csv", 1)
-View(ODA_commitments)
 ODA_commitments_11_14 <- filter(ODA_commitments, Year >= 2011)
 ODA_commitments_Arabic_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Donor %in% English_donors,]
 ODA_commitments_Arabic_speaking <- ODA_commitments_Arabic_speaking[ODA_commitments_Arabic_speaking$Recipient %in% Arabic_speaking_countries,]

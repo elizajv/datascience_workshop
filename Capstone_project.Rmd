@@ -226,163 +226,150 @@ rwjAll$local <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$local <- str_match(rwjAll$body, "local language") 
 rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
 rwjAll$local <- unmatrix(rwjAll$local)
+rwjAll$French_Arabic <- rowSums(rwjAll[, 20:21], na.rm = TRUE)
+rwjAll$French_Spanish <- rowSums(rwjAll[, c("French", "Spanish")], na.rm = TRUE)
+rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, 20:22], na.rm = TRUE)
+rwjAll$French_Arabic[rwjAll$French_Arabic==2] <- 1
+rwjAll$French_Spanish[rwjAll$French_Spanish==2] <- 1
+rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
+rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
 rwjAll_bil <- filter(rwjAll, English_total == 1)
 rwjAll_bil <- rwjAll_bil[!duplicated(rwjAll_bil), ]
-rwjAll_bil$EF <- rwjAll_bil$English_total + rwjAll_bil$French
-rwjAll_bil$EA <- rwjAll_bil$English_total + rwjAll_bil$Arabic
-rwjAll_bil$ES <- rwjAll_bil$English_total + rwjAll_bil$Spanish
-rwjAll_bil$ER <- rwjAll_bil$English_total + rwjAll_bil$Russian
-rwjAll_bil$EC <- rwjAll_bil$English_total + rwjAll_bil$Chinese
-rwjAll_bil$EP <- rwjAll_bil$English_total + rwjAll_bil$Portuguese
-rwjAll_bil$EL <- rwjAll_bil$English_total + rwjAll_bil$local
-rwjAll_bil$EFA <- rowSums(rwjAll_bil[, 28:29], na.rm = TRUE)
-rwjAll_bil$EFS <- rowSums(rwjAll_bil[, c("EF", "ES")], na.rm = TRUE)
-rwjAll_bil$EFAS <- rowSums(rwjAll_bil[, 28:30], na.rm = TRUE)
-rwjAll_bil$EF[rwjAll_bil$EF==2] <- 1
-rwjAll_bil$EA[rwjAll_bil$EA==2] <- 1
-rwjAll_bil$ES[rwjAll_bil$ES==2] <- 1
-rwjAll_bil$ER[rwjAll_bil$ER==2] <- 1
-rwjAll_bil$EC[rwjAll_bil$EC==2] <- 1
-rwjAll_bil$EP[rwjAll_bil$EP==2] <- 1
-rwjAll_bil$EL[rwjAll_bil$EL==2] <- 1
-rwjAll_bil$EFA[rwjAll_bil$EFA==2] <- 1
-rwjAll_bil$EFS[rwjAll_bil$EFS==2] <- 1
-rwjAll_bil$EFAS[rwjAll_bil$EFA==3] <- 1
 
 #### Determine frequencies of the demand for bilingual and multilingual speakers
 
 library(tidyr)
 library(dplyr)
 rwjAll_bil16 <- filter(rwjAll_bil, year == 2016) 
-total_EF_16 <- sum(rwjAll_bil16$EF, na.rm = TRUE)
+total_EF_16 <- sum(rwjAll_bil16$French, na.rm = TRUE)
 EF_percent_16 <- total_EF_16 / nrow(rwjAll_bil16)
-total_EA_16 <- sum(rwjAll_bil16$EA, na.rm = TRUE) 
+total_EA_16 <- sum(rwjAll_bil16$Arabic, na.rm = TRUE) 
 EA_percent_16 <- total_EA_16 / nrow(rwjAll_bil16)
-total_ES_16 <- sum(rwjAll_bil16$ES, na.rm = TRUE) 
+total_ES_16 <- sum(rwjAll_bil16$Spanish, na.rm = TRUE) 
 ES_percent_16 <- total_ES_16 / nrow(rwjAll_bil16)
-total_ER_16 <- sum(rwjAll_bil16$ER, na.rm = TRUE) 
+total_ER_16 <- sum(rwjAll_bil16$Russian, na.rm = TRUE) 
 ER_percent_16 <- total_ER_16 / nrow(rwjAll_bil16)
-total_EC_16 <- sum(rwjAll_bil16$EC, na.rm = TRUE) 
+total_EC_16 <- sum(rwjAll_bil16$Chinese, na.rm = TRUE) 
 EC_percent_16 <- total_EC_16 / nrow(rwjAll_bil16)
-total_EP_16 <- sum(rwjAll_bil16$EP, na.rm = TRUE) 
+total_EP_16 <- sum(rwjAll_bil16$Portuguese, na.rm = TRUE) 
 EP_percent_16 <- total_EP_16 / nrow(rwjAll_bil16)
-total_EL_16 <- sum(rwjAll_bil16$EL, na.rm = TRUE) 
+total_EL_16 <- sum(rwjAll_bil16$local, na.rm = TRUE) 
 EL_percent_16 <- total_EL_16 / nrow(rwjAll_bil16)
-total_EFA_16 <- sum(rwjAll_bil16$EFA, na.rm = TRUE) 
+total_EFA_16 <- sum(rwjAll_bil16$French_Arabic, na.rm = TRUE) 
 EFA_percent_16 <- total_EFA_16 / nrow(rwjAll_bil16)
-total_EFS_16 <- sum(rwjAll_bil16$EFS, na.rm = TRUE) 
+total_EFS_16 <- sum(rwjAll_bil16$French_Spanish, na.rm = TRUE) 
 EFS_percent_16 <- total_EFS_16 / nrow(rwjAll_bil16)
-total_EFAS_16 <- sum(rwjAll_bil16$EFAS, na.rm = TRUE) 
+total_EFAS_16 <- sum(rwjAll_bil16$French_Arabic_Spanish, na.rm = TRUE) 
 EFAS_percent_16 <- total_EFAS_16 / nrow(rwjAll_bil16)
 write.csv(rwjAll_bil16, "rwjAll_bil16.csv")
 rwjAll_bil15 <- filter(rwjAll_bil, year == 2015) 
-total_EF_15 <- sum(rwjAll_bil15$EF, na.rm = TRUE)
+total_EF_15 <- sum(rwjAll_bil15$French, na.rm = TRUE)
 EF_percent_15 <- total_EF_15 / nrow(rwjAll_bil15)
-total_EA_15 <- sum(rwjAll_bil15$EA, na.rm = TRUE) 
+total_EA_15 <- sum(rwjAll_bil15$Arabic, na.rm = TRUE) 
 EA_percent_15 <- total_EA_15 / nrow(rwjAll_bil15)
-total_ES_15 <- sum(rwjAll_bil15$ES, na.rm = TRUE) 
+total_ES_15 <- sum(rwjAll_bil15$Spanish, na.rm = TRUE) 
 ES_percent_15 <- total_ES_15 / nrow(rwjAll_bil15)
-total_ER_15 <- sum(rwjAll_bil15$ER, na.rm = TRUE) 
+total_ER_15 <- sum(rwjAll_bil15$Russian, na.rm = TRUE) 
 ER_percent_15 <- total_ER_15 / nrow(rwjAll_bil15)
-total_EC_15 <- sum(rwjAll_bil15$EC, na.rm = TRUE) 
+total_EC_15 <- sum(rwjAll_bil15$Chinese, na.rm = TRUE) 
 EC_percent_15 <- total_EC_15 / nrow(rwjAll_bil15)
-total_EP_15 <- sum(rwjAll_bil15$EP, na.rm = TRUE) 
+total_EP_15 <- sum(rwjAll_bil15$Portuguese, na.rm = TRUE) 
 EP_percent_15 <- total_EP_15 / nrow(rwjAll_bil15)
-total_EL_15 <- sum(rwjAll_bil15$EL, na.rm = TRUE) 
+total_EL_15 <- sum(rwjAll_bil15$local, na.rm = TRUE) 
 EL_percent_15 <- total_EL_15 / nrow(rwjAll_bil15)
-total_EFA_15 <- sum(rwjAll_bil15$EFA, na.rm = TRUE) 
+total_EFA_15 <- sum(rwjAll_bil15$French_Arabic, na.rm = TRUE) 
 EFA_percent_15 <- total_EFA_15 / nrow(rwjAll_bil15)
-total_EFS_15 <- sum(rwjAll_bil15$EFS, na.rm = TRUE) 
+total_EFS_15 <- sum(rwjAll_bil15$French_Spanish, na.rm = TRUE) 
 EFS_percent_15 <- total_EFS_15 / nrow(rwjAll_bil15)
-total_EFAS_15 <- sum(rwjAll_bil15$EFAS, na.rm = TRUE) 
+total_EFAS_15 <- sum(rwjAll_bil15$French_Arabic_Spanish, na.rm = TRUE) 
 EFAS_percent_15 <- total_EFAS_15 / nrow(rwjAll_bil15)
 write.csv(rwjAll_bil15, "rwjAll_bil15.csv")
 rwjAll_bil14 <- filter(rwjAll_bil, year == 2014) 
-total_EF_14 <- sum(rwjAll_bil14$EF, na.rm = TRUE)
+total_EF_14 <- sum(rwjAll_bil14$French, na.rm = TRUE)
 EF_percent_14 <- total_EF_14 / nrow(rwjAll_bil14)
-total_EA_14 <- sum(rwjAll_bil14$EA, na.rm = TRUE) 
+total_EA_14 <- sum(rwjAll_bil14$Arabic, na.rm = TRUE) 
 EA_percent_14 <- total_EA_14 / nrow(rwjAll_bil14)
-total_ES_14 <- sum(rwjAll_bil14$ES, na.rm = TRUE) 
+total_ES_14 <- sum(rwjAll_bil14$Spanish, na.rm = TRUE) 
 ES_percent_14 <- total_ES_14 / nrow(rwjAll_bil14)
-total_ER_14 <- sum(rwjAll_bil14$ER, na.rm = TRUE) 
+total_ER_14 <- sum(rwjAll_bil14$Russian, na.rm = TRUE) 
 ER_percent_14 <- total_ER_14 / nrow(rwjAll_bil14)
-total_EC_14 <- sum(rwjAll_bil14$EC, na.rm = TRUE) 
+total_EC_14 <- sum(rwjAll_bil14$Chinese, na.rm = TRUE) 
 EC_percent_14 <- total_EC_14 / nrow(rwjAll_bil14)
-total_EP_14 <- sum(rwjAll_bil14$EP, na.rm = TRUE) 
+total_EP_14 <- sum(rwjAll_bil14$Portuguese, na.rm = TRUE) 
 EP_percent_14 <- total_EP_14 / nrow(rwjAll_bil14)
-total_EL_14 <- sum(rwjAll_bil14$EL, na.rm = TRUE) 
+total_EL_14 <- sum(rwjAll_bil14$local, na.rm = TRUE) 
 EL_percent_14 <- total_EL_14 / nrow(rwjAll_bil14)
-total_EFA_14 <- sum(rwjAll_bil14$EFA, na.rm = TRUE) 
+total_EFA_14 <- sum(rwjAll_bil14$French_Arabic, na.rm = TRUE) 
 EFA_percent_14 <- total_EFA_14 / nrow(rwjAll_bil14)
-total_EFS_14 <- sum(rwjAll_bil14$EFS, na.rm = TRUE) 
+total_EFS_14 <- sum(rwjAll_bil14$French_Spanish, na.rm = TRUE) 
 EFS_percent_14 <- total_EFS_14 / nrow(rwjAll_bil14)
-total_EFAS_14 <- sum(rwjAll_bil14$EFAS, na.rm = TRUE) 
+total_EFAS_14 <- sum(rwjAll_bil14$French_Arabic_Spanish, na.rm = TRUE) 
 EFAS_percent_14 <- total_EFAS_14 / nrow(rwjAll_bil14)
 write.csv(rwjAll_bil14, "rwjAll_bil14.csv")
 rwjAll_bil13 <- filter(rwjAll_bil, year == 2013) 
-total_EF_13 <- sum(rwjAll_bil13$EF, na.rm = TRUE)
+total_EF_13 <- sum(rwjAll_bil13$French, na.rm = TRUE)
 EF_percent_13 <- total_EF_13 / nrow(rwjAll_bil13)
-total_EA_13 <- sum(rwjAll_bil13$EA, na.rm = TRUE) 
+total_EA_13 <- sum(rwjAll_bil13$Arabic, na.rm = TRUE) 
 EA_percent_13 <- total_EA_13 / nrow(rwjAll_bil13)
-total_ES_13 <- sum(rwjAll_bil13$ES, na.rm = TRUE) 
+total_ES_13 <- sum(rwjAll_bil13$Spanish, na.rm = TRUE) 
 ES_percent_13 <- total_ES_13 / nrow(rwjAll_bil13)
-total_ER_13 <- sum(rwjAll_bil13$ER, na.rm = TRUE) 
+total_ER_13 <- sum(rwjAll_bil13$Russian, na.rm = TRUE) 
 ER_percent_13 <- total_ER_13 / nrow(rwjAll_bil13)
-total_EC_13 <- sum(rwjAll_bil13$EC, na.rm = TRUE) 
+total_EC_13 <- sum(rwjAll_bil13$Chinese, na.rm = TRUE) 
 EC_percent_13 <- total_EC_13 / nrow(rwjAll_bil13)
-total_EP_13 <- sum(rwjAll_bil13$EP, na.rm = TRUE) 
+total_EP_13 <- sum(rwjAll_bil13$Portuguese, na.rm = TRUE) 
 EP_percent_13 <- total_EP_13 / nrow(rwjAll_bil13)
-total_EL_13 <- sum(rwjAll_bil13$EL, na.rm = TRUE) 
+total_EL_13 <- sum(rwjAll_bil13$local, na.rm = TRUE) 
 EL_percent_13 <- total_EL_13 / nrow(rwjAll_bil13)
-total_EFA_13 <- sum(rwjAll_bil13$EFA, na.rm = TRUE) 
+total_EFA_13 <- sum(rwjAll_bil13$French_Arabic, na.rm = TRUE) 
 EFA_percent_13 <- total_EFA_13 / nrow(rwjAll_bil13)
-total_EFS_13 <- sum(rwjAll_bil13$EFS, na.rm = TRUE) 
+total_EFS_13 <- sum(rwjAll_bil13$French_Spanish, na.rm = TRUE) 
 EFS_percent_13 <- total_EFS_13 / nrow(rwjAll_bil13)
-total_EFAS_13 <- sum(rwjAll_bil13$EFAS, na.rm = TRUE) 
+total_EFAS_13 <- sum(rwjAll_bil13$French_Arabic_Spanish, na.rm = TRUE) 
 EFAS_percent_13 <- total_EFAS_13 / nrow(rwjAll_bil13)
 write.csv(rwjAll_bil13, "rwjAll_bil13.csv")
 rwjAll_bil12 <- filter(rwjAll_bil, year == 2012) 
-total_EF_12 <- sum(rwjAll_bil12$EF, na.rm = TRUE)
+total_EF_12 <- sum(rwjAll_bil12$French, na.rm = TRUE)
 EF_percent_12 <- total_EF_12 / nrow(rwjAll_bil12)
-total_EA_12 <- sum(rwjAll_bil12$EA, na.rm = TRUE) 
+total_EA_12 <- sum(rwjAll_bil12$Arabic, na.rm = TRUE) 
 EA_percent_12 <- total_EA_12 / nrow(rwjAll_bil12)
-total_ES_12 <- sum(rwjAll_bil12$ES, na.rm = TRUE) 
+total_ES_12 <- sum(rwjAll_bil12$Spanish, na.rm = TRUE) 
 ES_percent_12 <- total_ES_12 / nrow(rwjAll_bil12)
-total_ER_12 <- sum(rwjAll_bil12$ER, na.rm = TRUE) 
+total_ER_12 <- sum(rwjAll_bil12$Russian, na.rm = TRUE) 
 ER_percent_12 <- total_ER_12 / nrow(rwjAll_bil12)
-total_EC_12 <- sum(rwjAll_bil12$EC, na.rm = TRUE) 
+total_EC_12 <- sum(rwjAll_bil12$Chinese, na.rm = TRUE) 
 EC_percent_12 <- total_EC_12 / nrow(rwjAll_bil12)
-total_EP_12 <- sum(rwjAll_bil12$EP, na.rm = TRUE) 
+total_EP_12 <- sum(rwjAll_bil12$Portuguese, na.rm = TRUE) 
 EP_percent_12 <- total_EP_12 / nrow(rwjAll_bil12)
-total_EL_12 <- sum(rwjAll_bil12$EL, na.rm = TRUE) 
+total_EL_12 <- sum(rwjAll_bil12$local, na.rm = TRUE) 
 EL_percent_12 <- total_EL_12 / nrow(rwjAll_bil12)
-total_EFA_12 <- sum(rwjAll_bil12$EFA, na.rm = TRUE) 
+total_EFA_12 <- sum(rwjAll_bil12$French_Arabic, na.rm = TRUE) 
 EFA_percent_12 <- total_EFA_12 / nrow(rwjAll_bil12)
-total_EFS_12 <- sum(rwjAll_bil12$EFS, na.rm = TRUE) 
+total_EFS_12 <- sum(rwjAll_bil12$French_Spanish, na.rm = TRUE) 
 EFS_percent_12 <- total_EFS_12 / nrow(rwjAll_bil12)
-total_EFAS_12 <- sum(rwjAll_bil12$EFAS, na.rm = TRUE) 
+total_EFAS_12 <- sum(rwjAll_bil12$French_Arabic_Spanish, na.rm = TRUE) 
 EFAS_percent_12 <- total_EFAS_12 / nrow(rwjAll_bil12)
 write.csv(rwjAll_bil12, "rwjAll_bil12.csv")
 rwjAll_bil11 <- filter(rwjAll_bil, year == 2011) 
-total_EF_11 <- sum(rwjAll_bil11$EF, na.rm = TRUE)
+total_EF_11 <- sum(rwjAll_bil11$French, na.rm = TRUE)
 EF_percent_11 <- total_EF_11 / nrow(rwjAll_bil11)
-total_EA_11 <- sum(rwjAll_bil11$EA, na.rm = TRUE) 
+total_EA_11 <- sum(rwjAll_bil11$Arabic, na.rm = TRUE) 
 EA_percent_11 <- total_EA_11 / nrow(rwjAll_bil11)
-total_ES_11 <- sum(rwjAll_bil11$ES, na.rm = TRUE) 
+total_ES_11 <- sum(rwjAll_bil11$Spanish, na.rm = TRUE) 
 ES_percent_11 <- total_ES_11 / nrow(rwjAll_bil11)
-total_ER_11 <- sum(rwjAll_bil11$ER, na.rm = TRUE) 
+total_ER_11 <- sum(rwjAll_bil11$Russian, na.rm = TRUE) 
 ER_percent_11 <- total_ER_11 / nrow(rwjAll_bil11)
-total_EC_11 <- sum(rwjAll_bil11$EC, na.rm = TRUE) 
+total_EC_11 <- sum(rwjAll_bil11$Chinese, na.rm = TRUE) 
 EC_percent_11 <- total_EC_11 / nrow(rwjAll_bil11)
-total_EP_11 <- sum(rwjAll_bil11$EP, na.rm = TRUE) 
+total_EP_11 <- sum(rwjAll_bil11$Portuguese, na.rm = TRUE) 
 EP_percent_11 <- total_EP_11 / nrow(rwjAll_bil11)
-total_EL_11 <- sum(rwjAll_bil11$EL, na.rm = TRUE) 
+total_EL_11 <- sum(rwjAll_bil11$local, na.rm = TRUE) 
 EL_percent_11 <- total_EL_11 / nrow(rwjAll_bil11)
-total_EFA_11 <- sum(rwjAll_bil11$EFA, na.rm = TRUE) 
+total_EFA_11 <- sum(rwjAll_bil11$French_Arabic, na.rm = TRUE) 
 EFA_percent_11 <- total_EFA_11 / nrow(rwjAll_bil11)
-total_EFS_11 <- sum(rwjAll_bil11$EFS, na.rm = TRUE) 
+total_EFS_11 <- sum(rwjAll_bil11$French_Spanish, na.rm = TRUE) 
 EFS_percent_11 <- total_EFS_11 / nrow(rwjAll_bil11)
-total_EFAS_11 <- sum(rwjAll_bil11$EFAS, na.rm = TRUE) 
+total_EFAS_11 <- sum(rwjAll_bil11$French_Arabic_Spanish, na.rm = TRUE) 
 EFAS_percent_11 <- total_EFAS_11 / nrow(rwjAll_bil11)
 write.csv(rwjAll_bil11, "rwjAll_bil11.csv")
 
@@ -658,7 +645,7 @@ sd(zTestdf$English_local)
 z.test(zTestdf$English_Portuguese, zTestdf$English_local, sigma.x = sd(zTestdf$English_Portuguese), sigma.y = sd(zTestdf$English_local), conf.level = 0.95)
 cor(zTestdf$English_Portuguese, zTestdf$English_local)
 
-#### Perform linear modeling focused on the demand for English-French speakers using foreign aid commitments and disbursements as predictor variables
+#### Perform linear modeling focused on the demand for English-French and English-Arabic speakers using foreign aid commitments and disbursements as predictor variables
 
 French_speaking_countries <- c("Benin", "Burkina Faso", "Burundi", "Cameroon", "Central African Republic", "Chad", "Comoros", "Democratic Republic of the Congo", "Congo", "CÃ´te d'Ivoire", "Djibouti", "Equatorial Guinea", "Gabon", "Guinea", "Madagascar", "Mali", "Mauritius", "Morocco", "Niger", "Rwanda", "Senegal", "Togo", "Haiti", "Vanuatu")
 English_donors <- c("United States", "United Kingdom", "Canada", "Ireland", "Australia")
@@ -730,5 +717,77 @@ model2 <- lm(EnglishFrench_pct ~ ODAcommitments_FS, data = ODAvsEFjobs)
 model3 <- lm(EnglishFrench_pct ~ ODAdisbursements_FS, data = ODAvsEFjobs)
 cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAdisbursements_FS)
 cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAcommitments_FS)
+
+Arabic_speaking_countries <- c("Benin", "Chad", "Comoros", "Djibouti", "Egypt", "Eritrea", "Libya", "Mauritania", "Morocco", "Sudan", "Tunisia", "Tanzania", "Iraq", "Jordan", "Lebanon", "Oman", "West Bank and Gaza Strip", "Syrian Arab Republic", "Yemen")
+> English_donors <- c("United States", "United Kingdom", "Canada", "Ireland", "Australia")
+ODA_commitments <- read.csv("C:/Users/elizajv/Documents/ODA_commitments.csv", 1)
+View(ODA_commitments)
+ODA_commitments_11_14 <- filter(ODA_commitments, Year >= 2011)
+ODA_commitments_Arabic_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Donor %in% English_donors,]
+ODA_commitments_Arabic_speaking <- ODA_commitments_Arabic_speaking[ODA_commitments_Arabic_speaking$Recipient %in% Arabic_speaking_countries,]
+ODA_commitments_Arabic_speaking <- filter(ODA_commitments_Arabic_speaking, Aid.type == "Total Commitments")
+ODA_commitments_Arabic_speaking$DONOR <- NULL
+ODA_commitments_Arabic_speaking$RECIPIENT <- NULL
+ODA_commitments_Arabic_speaking$PART <- NULL
+ODA_commitments_Arabic_speaking$AIDTYPE <- NULL
+ODA_commitments_Arabic_speaking$DATATYPE <- NULL
+ODA_commitments_Arabic_speaking$TIME <- NULL
+ODA_commitments_Arabic_speaking$Unit.Code <- NULL
+ODA_commitments_Arabic_speaking$PowerCode.Code <- NULL
+ODA_commitments_Arabic_speaking$Reference.Period <- NULL
+ODA_commitments_Arabic_speaking$Reference.Period.Code <- NULL
+ODA_commitments_Arabic_speaking$Flag.Codes <- NULL
+ODA_commitments_Arabic_speaking$Flags <- NULL
+ODA_commitments_Arabic_speaking$Part <- NULL
+ODA_commitments_Arabic_speaking_11 <- filter(ODA_commitments_Arabic_speaking, Year == 2011)
+ODA_commitments_Arabic_speaking_12 <- filter(ODA_commitments_Arabic_speaking, Year == 2012)
+ODA_commitments_Arabic_speaking_13 <- filter(ODA_commitments_Arabic_speaking, Year == 2013)
+ODA_commitments_Arabic_speaking_14 <- filter(ODA_commitments_Arabic_speaking, Year == 2014)
+ESC_AS_11 <- sum(ODA_commitments_Arabic_speaking_11$Value)
+ESC_AS_12 <- sum(ODA_commitments_Arabic_speaking_12$Value)
+ESC_AS_13 <- sum(ODA_commitments_Arabic_speaking_13$Value)
+ESC_AS_14 <- sum(ODA_commitments_Arabic_speaking_14$Value)
+ODA_disbursements <- read.csv("C:/Users/elizajv/Documents/ODA_disbursements.csv", 1)
+ODA_disbursements_11_14 <- filter(ODA_disbursements, Year >= 2011)
+ODA_disbursements_Arabic_speaking <- ODA_disbursements_11_14[ODA_disbursements_11_14$Donor %in% English_donors,]
+ODA_disbursements_Arabic_speaking <- ODA_disbursements_Arabic_speaking[ODA_disbursements_Arabic_speaking$Recipient %in% Arabic_speaking_countries,]
+ODA_disbursements_type1 <- filter(ODA_disbursements_Arabic_speaking, Aid.type == "Grants, Total")
+ODA_disbursements_type2 <- filter(ODA_disbursements_Arabic_speaking, Aid.type == "Technical Cooperation")
+ODA_disbursements_type3 <- filter(ODA_disbursements_Arabic_speaking, Aid.type == "Humanitarian Aid")
+ODA_disbursements_Arabic_speaking <- rbind(ODA_disbursements_type1, ODA_disbursements_type2, ODA_disbursements_type3)
+ODA_disbursements_Arabic_speaking$DONOR <- NULL
+ODA_disbursements_Arabic_speaking$RECIPIENT <- NULL
+ODA_disbursements_Arabic_speaking$PART <- NULL
+ODA_disbursements_Arabic_speaking$AIDTYPE <- NULL
+ODA_disbursements_Arabic_speaking$DATATYPE <- NULL
+ODA_disbursements_Arabic_speaking$TIME <- NULL
+ODA_disbursements_Arabic_speaking$Unit.Code <- NULL
+ODA_disbursements_Arabic_speaking$PowerCode.Code <- NULL
+ODA_disbursements_Arabic_speaking$Reference.Period <- NULL
+ODA_disbursements_Arabic_speaking$Reference.Period.Code <- NULL
+ODA_disbursements_Arabic_speaking$Flag.Codes <- NULL
+ODA_disbursements_Arabic_speaking$Flags <- NULL
+ODA_disbursements_Arabic_speaking$Part <- NULL
+ODA_disbursements_Arabic_speaking_11 <- filter(ODA_disbursements_Arabic_speaking, Year == 2011)
+ODA_disbursements_Arabic_speaking_12 <- filter(ODA_disbursements_Arabic_speaking, Year == 2012)
+ODA_disbursements_Arabic_speaking_13 <- filter(ODA_disbursements_Arabic_speaking, Year == 2013)
+ODA_disbursements_Arabic_speaking_14 <- filter(ODA_disbursements_Arabic_speaking, Year == 2014)
+ESD_AS_11 <- sum(ODA_disbursements_Arabic_speaking_11$Value)
+ESD_AS_12 <- sum(ODA_disbursements_Arabic_speaking_12$Value)
+ESD_AS_13 <- sum(ODA_disbursements_Arabic_speaking_13$Value)
+ESD_AS_14 <- sum(ODA_disbursements_Arabic_speaking_14$Value)
+Year <- c(2011, 2012, 2013, 2014)
+ODAcommitments_AS <- c(ESC_AS_11, ESC_AS_12, ESC_AS_13, ESC_AS_14)
+ODAdisbursements_AS <- c(ESD_AS_11, ESD_AS_12, ESD_AS_13, ESD_AS_14)
+EnglishArabic_pct <- c(EA_percent_11, EA_percent_12, EA_percent_13, EA_percent_14) 
+ODAvsEAjobs <- data.frame(Year, ODAcommitments_AS, ODAdisbursements_AS, EnglishArabic_pct)
+ODAvsEAjobs <- as.data.frame(ODAvsEAjobs)
+ODAvsEAjobs$EnglishArabic_pct <- ODAvsEAjobs$EnglishArabic_pct * 100
+ODAvsEAjobs$EnglishArabic_pct <- round(ODAvsEAjobs$EnglishArabic_pct, digits = 2)
+model4 <- lm(EnglishArabic_pct ~ ODAdisbursements_AS + ODAcommitments_AS, data = ODAvsEAjobs)
+model5 <- lm(EnglishArabic_pct ~ ODAcommitments_AS, data = ODAvsEAjobs)
+model6 <- lm(EnglishArabic_pct ~ ODAdisbursements_AS, data = ODAvsEAjobs)
+cor(ODAvsEAjobs$EnglishArabic_pct, ODAvsEAjobs$ODAdisbursements_AS)
+cor(ODAvsEAjobs$EnglishArabic_pct, ODAvsEAjobs$ODAcommitments_AS)
 ```
 

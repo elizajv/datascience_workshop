@@ -226,6 +226,14 @@ rwjAll$local <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$local <- str_match(rwjAll$body, "local language") 
 rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
 rwjAll$local <- unmatrix(rwjAll$local)
+rwjAll$bilingual_all <- rowSums(rwjAll[, 19:26], na.rm = TRUE)
+rwjAll$bilingual_all[rwjAll$bilingual_all == 2] <- 1
+rwjAll$bilingual_all[rwjAll$bilingual_all == 3] <- 1
+rwjAll$bilingual_all[rwjAll$bilingual_all == 4] <- 1
+rwjAll$bilingual_all[rwjAll$bilingual_all == 5] <- 1
+rwjAll$bilingual_all[rwjAll$bilingual_all == 6] <- 1
+rwjAll$bilingual_all[rwjAll$bilingual_all == 7] <- 1
+rwjAll$bilingual_all[rwjAll$bilingual_all == 8] <- 1
 rwjAll$French_Arabic <- rowSums(rwjAll[, 20:21], na.rm = TRUE)
 rwjAll$French_Spanish <- rowSums(rwjAll[, c("French", "Spanish")], na.rm = TRUE)
 rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, 20:22], na.rm = TRUE)
@@ -233,7 +241,7 @@ rwjAll$French_Arabic[rwjAll$French_Arabic==2] <- 1
 rwjAll$French_Spanish[rwjAll$French_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
-rwjAll_bil <- filter(rwjAll, English_total == 1)
+rwjAll_bil <- filter(rwjAll, bilingual_all == 1)
 rwjAll_bil <- rwjAll_bil[!duplicated(rwjAll_bil), ]
 
 #### Determine frequencies of the demand for bilingual and multilingual speakers

@@ -243,6 +243,20 @@ rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
 rwjAll_bil <- filter(rwjAll, bilingual_all == 1)
 rwjAll_bil <- rwjAll_bil[!duplicated(rwjAll_bil), ]
+rwjAll_bil$EF <- rwjAll_bil$English_total + rwjAll_bil$French
+rwjAll_bil$EA <- rwjAll_bil$English_total + rwjAll_bil$Arabic
+rwjAll_bil$ES <- rwjAll_bil$English_total + rwjAll_bil$Spanish
+rwjAll_bil$ER <- rwjAll_bil$English_total + rwjAll_bil$Russian
+rwjAll_bil$EC <- rwjAll_bil$English_total + rwjAll_bil$Chinese
+rwjAll_bil$EP <- rwjAll_bil$English_total + rwjAll_bil$Portuguese
+rwjAll_bil$EL <- rwjAll_bil$English_total + rwjAll_bil$local
+rwjAll_bil$EF[rwjAll_bil$EF==2] <- 1
+rwjAll_bil$EA[rwjAll_bil$EA==2] <- 1
+rwjAll_bil$ES[rwjAll_bil$ES==2] <- 1
+rwjAll_bil$ER[rwjAll_bil$ER==2] <- 1
+rwjAll_bil$EC[rwjAll_bil$EC==2] <- 1
+rwjAll_bil$EP[rwjAll_bil$EP==2] <- 1
+rwjAll_bil$EL[rwjAll_bil$EL==2] <- 1
 
 #### Determine frequencies of the demand for bilingual and multilingual speakers
 

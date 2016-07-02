@@ -161,6 +161,8 @@ rwjAll$experience[rwjAll$experience=="N/A"] <- "Other"
 
 #### Create columns based on language keywords in the "body" and "country" columns, with the latter based on which donor countries have made English an official language
 
+library(tidyr)
+library(dplyr)
 rwjAll$English1 <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$English1 <- str_match(rwjAll$body, "English")
 rwjAll$English1 <- ifelse(rwjAll$English1 == "English", 1, 0)
@@ -491,7 +493,44 @@ rwjAll$English55 <- ifelse(rwjAll$English55 == "Papua New Guineau", 1, 0)
 rwjAll$English55 <- unmatrix(rwjAll$English55)
 for (i in 1:length(rwjAll$English1))
 if (!is.na(rwjAll$English1[i])) rwjAll$English55[i]=NA
-rwjAll$English_total <- rowSums(rwjAll[, 13:18], na.rm = TRUE)
+rwjAll$English56 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English56 <- str_match(rwjAll$country, "Tanzania")
+rwjAll$English56 <- ifelse(rwjAll$English56 == "Tanzania", 1, 0)
+rwjAll$English56 <- unmatrix(rwjAll$English56)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English56[i]=NA
+rwjAll$English57 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English57 <- str_match(rwjAll$country, "Sudan")
+rwjAll$English57 <- ifelse(rwjAll$English57 == "Sudan", 1, 0)
+rwjAll$English57 <- unmatrix(rwjAll$English57)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English57[i]=NA
+rwjAll$English58 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English58 <- str_match(rwjAll$country, "South Sudan")
+rwjAll$English58 <- ifelse(rwjAll$English58 == "South Sudan", 1, 0)
+rwjAll$English58 <- unmatrix(rwjAll$English58)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English58[i]=NA
+rwjAll$English59 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$English59 <- str_match(rwjAll$country, "Malaysia")
+rwjAll$English59 <- ifelse(rwjAll$English59 == "Malaysia", 1, 0)
+rwjAll$English59 <- unmatrix(rwjAll$English59)
+for (i in 1:length(rwjAll$English1))
+if (!is.na(rwjAll$English1[i])) rwjAll$English59[i]=NA
+rwjAll$English_total <- rowSums(rwjAll[, 13:71], na.rm = TRUE)
+rwjAll$English_total[rwjAll$English_total == 2] <- 1
+rwjAll$English_total[rwjAll$English_total == 3] <- 1
+rwjAll$English_total[rwjAll$English_total == 4] <- 1
+rwjAll$English_total[rwjAll$English_total == 5] <- 1
+rwjAll$English_total[rwjAll$English_total == 6] <- 1
+rwjAll$English_total[rwjAll$English_total == 7] <- 1
+rwjAll$English_total[rwjAll$English_total == 8] <- 1
+rwjAll$English_total[rwjAll$English_total == 9] <- 1
+rwjAll$English_total[rwjAll$English_total == 10] <- 1
+rwjAll$English_total[rwjAll$English_total == 11] <- 1
+rwjAll$English_total[rwjAll$English_total == 12] <- 1
+rwjAll$English_total[rwjAll$English_total == 13] <- 1
+rwjAll$English_total[rwjAll$English_total == 14] <- 1
 rwjAll$French <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$French <- str_match(rwjAll$body, "French")
 rwjAll$French <- ifelse(rwjAll$French == "French", 1, 0)
@@ -520,22 +559,25 @@ rwjAll$local <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$local <- str_match(rwjAll$body, "local language") 
 rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
 rwjAll$local <- unmatrix(rwjAll$local)
-rwjAll$bilingual_all <- rowSums(rwjAll[, 19:26], na.rm = TRUE)
-rwjAll$bilingual_all[rwjAll$bilingual_all == 2] <- 1
-rwjAll$bilingual_all[rwjAll$bilingual_all == 3] <- 1
-rwjAll$bilingual_all[rwjAll$bilingual_all == 4] <- 1
-rwjAll$bilingual_all[rwjAll$bilingual_all == 5] <- 1
-rwjAll$bilingual_all[rwjAll$bilingual_all == 6] <- 1
-rwjAll$bilingual_all[rwjAll$bilingual_all == 7] <- 1
-rwjAll$bilingual_all[rwjAll$bilingual_all == 8] <- 1
-rwjAll$French_Arabic <- rowSums(rwjAll[, 20:21], na.rm = TRUE)
+rwjAll$French_Arabic <- rowSums(rwjAll[, c("French", "Arabic")], na.rm = TRUE)
 rwjAll$French_Spanish <- rowSums(rwjAll[, c("French", "Spanish")], na.rm = TRUE)
-rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, 20:22], na.rm = TRUE)
+rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, c("French", "Arabic", "Spanish")], na.rm = TRUE)
 rwjAll$French_Arabic[rwjAll$French_Arabic==2] <- 1
 rwjAll$French_Spanish[rwjAll$French_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
-rwjAll_bil <- filter(rwjAll, bilingual_all == 1)
+rwjAll$language_all <- rowSums(rwjAll[, 72:82], na.rm = TRUE)
+rwjAll$language_all[rwjAll$language_all == 2] <- 1
+rwjAll$language_all[rwjAll$language_all == 3] <- 1
+rwjAll$language_all[rwjAll$language_all == 4] <- 1
+rwjAll$language_all[rwjAll$language_all == 5] <- 1
+rwjAll$language_all[rwjAll$language_all == 6] <- 1
+rwjAll$language_all[rwjAll$language_all == 7] <- 1
+rwjAll$language_all[rwjAll$language_all == 8] <- 1
+rwjAll$language_all[rwjAll$language_all == 9] <- 1
+rwjAll$language_all[rwjAll$language_all == 10] <- 1
+rwjAll$language_all[rwjAll$language_all == 11] <- 1
+rwjAll_bil <- filter(rwjAll, language_all == 1)
 rwjAll_bil <- rwjAll_bil[!duplicated(rwjAll_bil), ]
 rwjAll_bil$EF <- rwjAll_bil$English_total + rwjAll_bil$French
 rwjAll_bil$EA <- rwjAll_bil$English_total + rwjAll_bil$Arabic
@@ -554,8 +596,6 @@ rwjAll_bil$EL[rwjAll_bil$EL==2] <- 1
 
 #### Determine frequencies of the demand for bilingual and multilingual speakers
 
-library(tidyr)
-library(dplyr)
 rwjAll_bil16 <- filter(rwjAll_bil, year == 2016) 
 total_EF_16 <- sum(rwjAll_bil16$French, na.rm = TRUE)
 EF_percent_16 <- total_EF_16 / nrow(rwjAll_bil16)
@@ -751,9 +791,9 @@ EC_tTest <- t.test(bi_lang_pct$English_Chinese, mu=1.5)
 ER_tTest <- t.test(bi_lang_pct$English_Russian, mu=3)
 EP_tTest <- t.test(bi_lang_pct$English_Portuguese, mu=3)
 EL_tTest <- t.test(bi_lang_pct$English_local, mu=2)
-EFA_tTest <- t.test(bi_lang_pct$English_French_Arabic, mu=40)
-EFS_tTest <- t.test(bi_lang_pct$English_French_Spanish, mu=30)
-EFAS_tTest <- t.test(bi_lang_pct$English_French_Arabic_Spanish, mu=55)
+EFA_tTest <- t.test(bi_lang_pct$English_French_Arabic, mu=36)
+EFS_tTest <- t.test(bi_lang_pct$English_French_Spanish, mu=28)
+EFAS_tTest <- t.test(bi_lang_pct$English_French_Arabic_Spanish, mu=38)
 
 #### Perform a two-sample z- test using monthly frequencies of job ads seeking English-Portuguese and English-local language speakers
 
@@ -963,13 +1003,12 @@ cor(zTestdf$English_Portuguese, zTestdf$English_local)
 
 #### Perform linear modeling focused on the demand for English-French and English-Arabic speakers using foreign aid commitments and disbursements as predictor variables
 
-French_speaking_countries <- c("Benin", "Burkina Faso", "Burundi", "Cameroon", "Central African Republic", "Chad", "Comoros", "Democratic Republic of the Congo", "Congo", "CÃ´te d'Ivoire", "Djibouti", "Equatorial Guinea", "Gabon", "Guinea", "Madagascar", "Mali", "Mauritius", "Morocco", "Niger", "Rwanda", "Senegal", "Togo", "Haiti", "Vanuatu")
-English_donors <- c("United States", "United Kingdom", "Canada", "Ireland", "Australia")
+French_speaking_countries <- c("Benin", "Burkina Faso", "Burundi", "Cameroon", "Central African Republic", "Chad", "Comoros", "Democratic Republic of the Congo", "Congo", "Côte d'Ivoire", "Djibouti", "Equatorial Guinea", "Gabon", "Guinea", "Madagascar", "Mali", "Mauritius", "Morocco", "Niger", "Rwanda", "Senegal", "Togo", "Haiti", "Vanuatu", "Seychelles")
 ODA_commitments <- read.csv("C:/Users/elizajv/Documents/ODA_commitments.csv", 1)
 ODA_commitments_11_14 <- filter(ODA_commitments, Year >= 2011)
-ODA_commitments_French_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Donor %in% English_donors,]
-ODA_commitments_French_speaking <- ODA_commitments_French_speaking[ODA_commitments_French_speaking$Recipient %in% French_speaking_countries,]
+ODA_commitments_French_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Recipient %in% French_speaking_countries,]
 ODA_commitments_French_speaking <- filter(ODA_commitments_French_speaking, Aid.type == "Total Commitments")
+ODA_commitments_French_speaking <- filter(ODA_commitments_French_speaking, Donor == "All Donors, Total")
 ODA_commitments_French_speaking$DONOR <- NULL
 ODA_commitments_French_speaking$RECIPIENT <- NULL
 ODA_commitments_French_speaking$PART <- NULL
@@ -993,8 +1032,8 @@ ESC_FS_13 <- sum(ODA_commitments_French_speaking_13$Value)
 ESC_FS_14 <- sum(ODA_commitments_French_speaking_14$Value)
 ODA_disbursements <- read.csv("C:/Users/elizajv/Documents/ODA_disbursements.csv", 1)
 ODA_disbursements_11_14 <- filter(ODA_disbursements, Year >= 2011)
-ODA_disbursements_French_speaking <- ODA_disbursements_11_14[ODA_disbursements_11_14$Donor %in% English_donors,]
-ODA_disbursements_French_speaking <- ODA_disbursements_French_speaking[ODA_disbursements_French_speaking$Recipient %in% French_speaking_countries,]
+ODA_disbursements_French_speaking <- ODA_disbursements_11_14[ODA_disbursements_11_14$Recipient %in% French_speaking_countries,]
+ODA_disbursements_French_speaking <- filter(ODA_disbursements_French_speaking, Donor == "All Donors, Total") 
 ODA_disbursements_type1 <- filter(ODA_disbursements_French_speaking, Aid.type == "Grants, Total")
 ODA_disbursements_type2 <- filter(ODA_disbursements_French_speaking, Aid.type == "Technical Cooperation")
 ODA_disbursements_type3 <- filter(ODA_disbursements_French_speaking, Aid.type == "Humanitarian Aid")
@@ -1037,9 +1076,9 @@ cor(ODAvsEFjobs$EnglishFrench_pct, ODAvsEFjobs$ODAcommitments_FS)
 Arabic_speaking_countries <- c("Benin", "Chad", "Comoros", "Djibouti", "Egypt", "Eritrea", "Libya", "Mauritania", "Morocco", "Sudan", "Tunisia", "Tanzania", "Iraq", "Jordan", "Lebanon", "Oman", "West Bank and Gaza Strip", "Syrian Arab Republic", "Yemen")
 ODA_commitments <- read.csv("C:/Users/elizajv/Documents/ODA_commitments.csv", 1)
 ODA_commitments_11_14 <- filter(ODA_commitments, Year >= 2011)
-ODA_commitments_Arabic_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Donor %in% English_donors,]
-ODA_commitments_Arabic_speaking <- ODA_commitments_Arabic_speaking[ODA_commitments_Arabic_speaking$Recipient %in% Arabic_speaking_countries,]
+ODA_commitments_Arabic_speaking <- ODA_commitments_11_14[ODA_commitments_11_14$Recipient %in% Arabic_speaking_countries,]
 ODA_commitments_Arabic_speaking <- filter(ODA_commitments_Arabic_speaking, Aid.type == "Total Commitments")
+ODA_commitments_Arabic_speaking <- filter(ODA_commitments_Arabic_speaking, Donor == "All Donors, Total")
 ODA_commitments_Arabic_speaking$DONOR <- NULL
 ODA_commitments_Arabic_speaking$RECIPIENT <- NULL
 ODA_commitments_Arabic_speaking$PART <- NULL
@@ -1063,8 +1102,8 @@ ESC_AS_13 <- sum(ODA_commitments_Arabic_speaking_13$Value)
 ESC_AS_14 <- sum(ODA_commitments_Arabic_speaking_14$Value)
 ODA_disbursements <- read.csv("C:/Users/elizajv/Documents/ODA_disbursements.csv", 1)
 ODA_disbursements_11_14 <- filter(ODA_disbursements, Year >= 2011)
-ODA_disbursements_Arabic_speaking <- ODA_disbursements_11_14[ODA_disbursements_11_14$Donor %in% English_donors,]
-ODA_disbursements_Arabic_speaking <- ODA_disbursements_Arabic_speaking[ODA_disbursements_Arabic_speaking$Recipient %in% Arabic_speaking_countries,]
+ODA_disbursements_Arabic_speaking <- ODA_disbursements_11_14[ODA_disbursements_11_14$Recipient %in% Arabic_speaking_countries,]
+ODA_disbursements_Arabic_speaking <- filter(ODA_disbursements_Arabic_speaking, Donor == "All Donors, Total") 
 ODA_disbursements_type1 <- filter(ODA_disbursements_Arabic_speaking, Aid.type == "Grants, Total")
 ODA_disbursements_type2 <- filter(ODA_disbursements_Arabic_speaking, Aid.type == "Technical Cooperation")
 ODA_disbursements_type3 <- filter(ODA_disbursements_Arabic_speaking, Aid.type == "Humanitarian Aid")

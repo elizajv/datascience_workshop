@@ -215,7 +215,7 @@ rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, c("French", "English2", "Arabic
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==4] <- 1
-rwjAll$language_all <- rowSums(rwjAll[, 16:28], na.rm = TRUE)
+rwjAll$language_all <- rowSums(rwjAll[, 16:26], na.rm = TRUE)
 rwjAll$language_all[rwjAll$language_all == 2] <- 1
 rwjAll$language_all[rwjAll$language_all == 3] <- 1
 rwjAll$language_all[rwjAll$language_all == 4] <- 1

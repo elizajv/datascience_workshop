@@ -159,7 +159,7 @@ rwjAll$experience <- as.character(rwjAll$experience)
 rwjAll$experience[rwjAll$experience=="NULL"] <- "Other"
 rwjAll$experience[rwjAll$experience=="N/A"] <- "Other"
 
-#### Create columns based on language keywords in the "body" and "country" columns, with the latter based on which donor countries have made English an official language
+#### Create columns based on language keywords in the "body" column
 
 library(tidyr)
 library(dplyr)
@@ -185,18 +185,10 @@ rwjAll$Arabic <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$Arabic <- str_match(rwjAll$body, "Arabic") 
 rwjAll$Arabic <- ifelse(rwjAll$Arabic=="Arabic", 1, 0)
 rwjAll$Arabic <- unmatrix(rwjAll$Arabic)
-rwjAll$Arabic2 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$Arabic2 <- str_match(rwjAll$body, "arabe") 
-rwjAll$Arabic2 <- ifelse(rwjAll$Arabic2=="arabe", 1, 0)
-rwjAll$Arabic2 <- unmatrix(rwjAll$Arabic2)
 rwjAll$Spanish <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$Spanish <- str_match(rwjAll$body, "Spanish") 
 rwjAll$Spanish <- ifelse(rwjAll$Spanish=="Spanish", 1, 0)
 rwjAll$Spanish <- unmatrix(rwjAll$Spanish)
-rwjAll$Spanish2 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$Spanish2 <- str_match(rwjAll$body, "espagnol") 
-rwjAll$Spanish2 <- ifelse(rwjAll$Spanish2=="espagnol", 1, 0)
-rwjAll$Spanish2 <- unmatrix(rwjAll$Spanish2)
 rwjAll$Russian <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$Russian <- str_match(rwjAll$body, "Russian") 
 rwjAll$Russian <- ifelse(rwjAll$Russian=="Russian", 1, 0)
@@ -213,20 +205,16 @@ rwjAll$local <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$local <- str_match(rwjAll$body, "local language") 
 rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
 rwjAll$local <- unmatrix(rwjAll$local)
-rwjAll$French_Arabic <- rowSums(rwjAll[, c("French", "English2", "Arabic", "Arabic2")], na.rm = TRUE)
+rwjAll$French_Arabic <- rowSums(rwjAll[, c("French", "English2", "Arabic")], na.rm = TRUE)
 rwjAll$French_Arabic[rwjAll$French_Arabic==2] <- 1
 rwjAll$French_Arabic[rwjAll$French_Arabic==3] <- 1
-rwjAll$French_Arabic[rwjAll$French_Arabic==4] <- 1
 rwjAll$French_Spanish <- rowSums(rwjAll[, c("French", "English2", "Spanish", "English3")], na.rm = TRUE)
 rwjAll$French_Spanish[rwjAll$French_Spanish==2] <- 1
 rwjAll$French_Spanish[rwjAll$French_Spanish==3] <- 1
-rwjAll$French_Spanish[rwjAll$French_Spanish==4] <- 1
-rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, c("French", "English2", "Arabic", "Arabic2", "Spanish", "English3")], na.rm = TRUE)
+rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, c("French", "English2", "Arabic", "Spanish", "English3")], na.rm = TRUE)
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==4] <- 1
-rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==5] <- 1
-rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==6] <- 1
 rwjAll$language_all <- rowSums(rwjAll[, 16:28], na.rm = TRUE)
 rwjAll$language_all[rwjAll$language_all == 2] <- 1
 rwjAll$language_all[rwjAll$language_all == 3] <- 1

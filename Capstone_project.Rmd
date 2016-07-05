@@ -164,373 +164,19 @@ rwjAll$experience[rwjAll$experience=="N/A"] <- "Other"
 library(tidyr)
 library(dplyr)
 rwjAll$English1 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English1 <- str_match(rwjAll$body, "English")
-rwjAll$English1 <- ifelse(rwjAll$English1 == "English", 1, 0)
+rwjAll$English1 <- str_match(rwjAll$body, "is ")
+rwjAll$English1 <- ifelse(rwjAll$English1 == "is ", 1, 0)
 rwjAll$English1 <- unmatrix(rwjAll$English1)
 rwjAll$English2 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English2 <- str_match(rwjAll$country, "United States")
-rwjAll$English2 <- ifelse(rwjAll$English2 == "United States", 1, 0)
+rwjAll$English2 <- str_match(rwjAll$body, "anglais")
+rwjAll$English2 <- ifelse(rwjAll$English2 == "anglais", 1, 0)
 rwjAll$English2 <- unmatrix(rwjAll$English2)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English2[i]=NA
 rwjAll$English3 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English3 <- str_match(rwjAll$country, "United Kingdom")
-rwjAll$English3 <- ifelse(rwjAll$English3 == "United Kingdom", 1, 0)
+rwjAll$English3 <- str_match(rwjAll$body, "ingles")
+rwjAll$English3 <- ifelse(rwjAll$English3 == "ingles", 1, 0)
 rwjAll$English3 <- unmatrix(rwjAll$English3)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English3[i]=NA
-rwjAll$English4 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English4 <- str_match(rwjAll$country, "Ireland")
-rwjAll$English4 <- ifelse(rwjAll$English4 == "Ireland", 1, 0)
-rwjAll$English4 <- unmatrix(rwjAll$English4)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English4[i]=NA
-for (i in 1:length(rwjAll$English3))
-if (!is.na(rwjAll$English3[i])) rwjAll$English4[i]=NA
-rwjAll$English5 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English5 <- str_match(rwjAll$country, "Canada")
-rwjAll$English5 <- ifelse(rwjAll$English5 == "Canada", 1, 0)
-rwjAll$English5 <- unmatrix(rwjAll$English5)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English5[i]=NA
-rwjAll$English6 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English6 <- str_match(rwjAll$country, "Australia")
-rwjAll$English6 <- ifelse(rwjAll$English6 == "Australia", 1, 0)
-rwjAll$English6 <- unmatrix(rwjAll$English6)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English6[i]=NA
-rwjAll$English7 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English7 <- str_match(rwjAll$country, "Botswana")
-rwjAll$English7 <- ifelse(rwjAll$English7 == "Botswana", 1, 0)
-rwjAll$English7 <- unmatrix(rwjAll$English7)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English7[i]=NA
-rwjAll$English8 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English8 <- str_match(rwjAll$country, "Cameroon")
-rwjAll$English8 <- ifelse(rwjAll$English8 == "Cameroon", 1, 0)
-rwjAll$English8 <- unmatrix(rwjAll$English8)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English8[i]=NA
-rwjAll$English9 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English9 <- str_match(rwjAll$country, "Gambia")
-rwjAll$English9 <- ifelse(rwjAll$English9 == "Gambia", 1, 0)
-rwjAll$English9 <- unmatrix(rwjAll$English9)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English9[i]=NA
-rwjAll$English10 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English10 <- str_match(rwjAll$country, "Ghana")
-rwjAll$English10 <- ifelse(rwjAll$English10 == "Ghana", 1, 0)
-rwjAll$English10 <- unmatrix(rwjAll$English10)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English10[i]=NA
-rwjAll$English11 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English11 <- str_match(rwjAll$country, "Kenya")
-rwjAll$English11 <- ifelse(rwjAll$English11 == "Kenya", 1, 0)
-rwjAll$English11 <- unmatrix(rwjAll$English11)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English11[i]=NA
-rwjAll$English12 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English12 <- str_match(rwjAll$country, "Lesotho")
-rwjAll$English12 <- ifelse(rwjAll$English12 == "Lesotho", 1, 0)
-rwjAll$English12 <- unmatrix(rwjAll$English12)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English12[i]=NA
-rwjAll$English13 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English13 <- str_match(rwjAll$country, "Liberia")
-rwjAll$English13 <- ifelse(rwjAll$English13 == "Liberia", 1, 0)
-rwjAll$English13 <- unmatrix(rwjAll$English13)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English13[i]=NA
-rwjAll$English14 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English14 <- str_match(rwjAll$country, "Malawi")
-rwjAll$English14 <- ifelse(rwjAll$English14 == "Malawi", 1, 0)
-rwjAll$English14 <- unmatrix(rwjAll$English14)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English14[i]=NA
-rwjAll$English15 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English15 <- str_match(rwjAll$country, "Mauritius")
-rwjAll$English15 <- ifelse(rwjAll$English15 == "Mauritius", 1, 0)
-rwjAll$English15 <- unmatrix(rwjAll$English15)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English15[i]=NA
-rwjAll$English16 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English16 <- str_match(rwjAll$country, "Namibia")
-rwjAll$English16 <- ifelse(rwjAll$English16 == "Namibia", 1, 0)
-rwjAll$English16 <- unmatrix(rwjAll$English16)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English16[i]=NA
-rwjAll$English17 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English17 <- str_match(rwjAll$country, "Nigeria")
-rwjAll$English17 <- ifelse(rwjAll$English17 == "Nigeria", 1, 0)
-rwjAll$English17 <- unmatrix(rwjAll$English17)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English17[i]=NA
-rwjAll$English18 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English18 <- str_match(rwjAll$country, "Rwanda")
-rwjAll$English18 <- ifelse(rwjAll$English18 == "Rwanda", 1, 0)
-rwjAll$English18 <- unmatrix(rwjAll$English18)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English18[i]=NA
-rwjAll$English19 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English19 <- str_match(rwjAll$country, "Saint Helena")
-rwjAll$English19 <- ifelse(rwjAll$English19 == "Saint Helena", 1, 0)
-rwjAll$English19 <- unmatrix(rwjAll$English19)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English19[i]=NA
-rwjAll$English20 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English20 <- str_match(rwjAll$country, "Seychelles")
-rwjAll$English20 <- ifelse(rwjAll$English20 == "Seychelles", 1, 0)
-rwjAll$English20 <- unmatrix(rwjAll$English20)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English20[i]=NA
-rwjAll$English21 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English21 <- str_match(rwjAll$country, "Sierra Leone")
-rwjAll$English21 <- ifelse(rwjAll$English21 == "Sierra Leone", 1, 0)
-rwjAll$English21 <- unmatrix(rwjAll$English21)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English21[i]=NA
-rwjAll$English22 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English22 <- str_match(rwjAll$country, "South Africa")
-rwjAll$English22 <- ifelse(rwjAll$English22 == "South Africa", 1, 0)
-rwjAll$English22 <- unmatrix(rwjAll$English22)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English22[i]=NA
-rwjAll$English23 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English23 <- str_match(rwjAll$country, "Swaziland")
-rwjAll$English23 <- ifelse(rwjAll$English23 == "Swaziland", 1, 0)
-rwjAll$English23 <- unmatrix(rwjAll$English23)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English23[i]=NA
-rwjAll$English24 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English24 <- str_match(rwjAll$country, "Uganda")
-rwjAll$English24 <- ifelse(rwjAll$English24 == "Uganda", 1, 0)
-rwjAll$English24 <- unmatrix(rwjAll$English24)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English24[i]=NA
-rwjAll$English25 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English25 <- str_match(rwjAll$country, "Zambia")
-rwjAll$English25 <- ifelse(rwjAll$English25 == "Zambia", 1, 0)
-rwjAll$English25 <- unmatrix(rwjAll$English25)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English25[i]=NA
-rwjAll$English26 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English26 <- str_match(rwjAll$country, "Zimbabwe")
-rwjAll$English26 <- ifelse(rwjAll$English26 == "Zimbabwe", 1, 0)
-rwjAll$English26 <- unmatrix(rwjAll$English26)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English26[i]=NA
-rwjAll$English27 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English27 <- str_match(rwjAll$country, "Anguilla")
-rwjAll$English27 <- ifelse(rwjAll$English27 == "Anguilla", 1, 0)
-rwjAll$English27 <- unmatrix(rwjAll$English27)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English27[i]=NA
-rwjAll$English28 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English28 <- str_match(rwjAll$country, "Antigua and Barbuda")
-rwjAll$English28 <- ifelse(rwjAll$English28 == "Antigua and Barbuda", 1, 0)
-rwjAll$English28 <- unmatrix(rwjAll$English28)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English28[i]=NA
-rwjAll$English29 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English29 <- str_match(rwjAll$country, "Barbados")
-rwjAll$English29 <- ifelse(rwjAll$English29 == "Barbados", 1, 0)
-rwjAll$English29 <- unmatrix(rwjAll$English29)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English29[i]=NA
-rwjAll$English30 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English30 <- str_match(rwjAll$country, "Belize")
-rwjAll$English30 <- ifelse(rwjAll$English30 == "Belize", 1, 0)
-rwjAll$English30 <- unmatrix(rwjAll$English30)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English30[i]=NA
-rwjAll$English31 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English31 <- str_match(rwjAll$country, "Dominica")
-rwjAll$English31 <- ifelse(rwjAll$English31 == "Dominica", 1, 0)
-rwjAll$English31 <- unmatrix(rwjAll$English31)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English31[i]=NA
-rwjAll$English32 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English32 <- str_match(rwjAll$country, "Grenada")
-rwjAll$English32 <- ifelse(rwjAll$English32 == "Grenada", 1, 0)
-rwjAll$English32 <- unmatrix(rwjAll$English32)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English32[i]=NA
-rwjAll$English33 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English33 <- str_match(rwjAll$country, "Guyana")
-rwjAll$English33 <- ifelse(rwjAll$English33 == "Guyana", 1, 0)
-rwjAll$English33 <- unmatrix(rwjAll$English33)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English33[i]=NA
-rwjAll$English34 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English34 <- str_match(rwjAll$country, "Jamaica")
-rwjAll$English34 <- ifelse(rwjAll$English34 == "Jamaica", 1, 0)
-rwjAll$English34 <- unmatrix(rwjAll$English34)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English34[i]=NA
-rwjAll$English35 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English35 <- str_match(rwjAll$country, "Saint Lucia")
-rwjAll$English35 <- ifelse(rwjAll$English35 == "Saint Lucia", 1, 0)
-rwjAll$English35 <- unmatrix(rwjAll$English35)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English35[i]=NA
-rwjAll$English36 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English36 <- str_match(rwjAll$country, "Trinidad and Tobago")
-rwjAll$English36 <- ifelse(rwjAll$English36 == "Trinidad and Tobago", 1, 0)
-rwjAll$English36 <- unmatrix(rwjAll$English36)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English36[i]=NA
-rwjAll$English37 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English37 <- str_match(rwjAll$country, "Brunei")
-rwjAll$English37 <- ifelse(rwjAll$English37 == "Brunei", 1, 0)
-rwjAll$English37 <- unmatrix(rwjAll$English37)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English37[i]=NA
-rwjAll$English38 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English38 <- str_match(rwjAll$country, "India")
-rwjAll$English38 <- ifelse(rwjAll$English38 == "India", 1, 0)
-rwjAll$English38 <- unmatrix(rwjAll$English38)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English38[i]=NA
-rwjAll$English39 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English39 <- str_match(rwjAll$country, "Pakistan")
-rwjAll$English39 <- ifelse(rwjAll$English39 == "Pakistan", 1, 0)
-rwjAll$English39 <- unmatrix(rwjAll$English39)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English39[i]=NA
-rwjAll$English40 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English40 <- str_match(rwjAll$country, "Philippines")
-rwjAll$English40 <- ifelse(rwjAll$English40 == "Philippines", 1, 0)
-rwjAll$English40 <- unmatrix(rwjAll$English40)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English40[i]=NA
-rwjAll$English41 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English41 <- str_match(rwjAll$country, "Singapore")
-rwjAll$English41 <- ifelse(rwjAll$English41 == "Singapore", 1, 0)
-rwjAll$English41 <- unmatrix(rwjAll$English41)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English41[i]=NA
-rwjAll$English42 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English42 <- str_match(rwjAll$country, "Sri Lanka")
-rwjAll$English42 <- ifelse(rwjAll$English42 == "Sri Lanka", 1, 0)
-rwjAll$English42 <- unmatrix(rwjAll$English42)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English42[i]=NA
-rwjAll$English43 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English43 <- str_match(rwjAll$country, "Fiji")
-rwjAll$English43 <- ifelse(rwjAll$English43 == "Fiji", 1, 0)
-rwjAll$English43 <- unmatrix(rwjAll$English43)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English43[i]=NA
-rwjAll$English44 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English44 <- str_match(rwjAll$country, "Kiribati")
-rwjAll$English44 <- ifelse(rwjAll$English44 == "Kiribati", 1, 0)
-rwjAll$English44 <- unmatrix(rwjAll$English44)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English44[i]=NA
-rwjAll$English45 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English45 <- str_match(rwjAll$country, "Marshall Islands")
-rwjAll$English45 <- ifelse(rwjAll$English45 == "Marshall Islands", 1, 0)
-rwjAll$English45 <- unmatrix(rwjAll$English45)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English45[i]=NA
-rwjAll$English46 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English46 <- str_match(rwjAll$country, "Micronesia")
-rwjAll$English46 <- ifelse(rwjAll$English46 == "Micronesia", 1, 0)
-rwjAll$English46 <- unmatrix(rwjAll$English46)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English46[i]=NA
-rwjAll$English47 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English47 <- str_match(rwjAll$country, "Nauru")
-rwjAll$English47 <- ifelse(rwjAll$English47 == "Nauru", 1, 0)
-rwjAll$English47 <- unmatrix(rwjAll$English47)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English47[i]=NA
-rwjAll$English48 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English48 <- str_match(rwjAll$country, "New Zealand")
-rwjAll$English48 <- ifelse(rwjAll$English48 == "New Zealand", 1, 0)
-rwjAll$English48 <- unmatrix(rwjAll$English48)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English48[i]=NA
-rwjAll$English49 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English49 <- str_match(rwjAll$country, "Palau")
-rwjAll$English49 <- ifelse(rwjAll$English49 == "Palau", 1, 0)
-rwjAll$English49 <- unmatrix(rwjAll$English49)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English49[i]=NA
-rwjAll$English50 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English50 <- str_match(rwjAll$country, "Samoa")
-rwjAll$English50 <- ifelse(rwjAll$English50 == "Samoa", 1, 0)
-rwjAll$English50 <- unmatrix(rwjAll$English50)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English50[i]=NA
-rwjAll$English51 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English51 <- str_match(rwjAll$country, "Solomon Islands")
-rwjAll$English51 <- ifelse(rwjAll$English51 == "Solomon Islands", 1, 0)
-rwjAll$English51 <- unmatrix(rwjAll$English51)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English51[i]=NA
-rwjAll$English52 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English52 <- str_match(rwjAll$country, "Tonga")
-rwjAll$English52 <- ifelse(rwjAll$English52 == "Tonga", 1, 0)
-rwjAll$English52 <- unmatrix(rwjAll$English52)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English52[i]=NA
-rwjAll$English53 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English53 <- str_match(rwjAll$country, "Tuvalu")
-rwjAll$English53 <- ifelse(rwjAll$English53 == "Tuvalu", 1, 0)
-rwjAll$English53 <- unmatrix(rwjAll$English53)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English53[i]=NA
-rwjAll$English54 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English54 <- str_match(rwjAll$country, "Vanuatu")
-rwjAll$English54 <- ifelse(rwjAll$English54 == "Vanuatu", 1, 0)
-rwjAll$English54 <- unmatrix(rwjAll$English54)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English54[i]=NA
-rwjAll$English55 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English55 <- str_match(rwjAll$country, "Papua New Guineau")
-rwjAll$English55 <- ifelse(rwjAll$English55 == "Papua New Guineau", 1, 0)
-rwjAll$English55 <- unmatrix(rwjAll$English55)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English55[i]=NA
-rwjAll$English56 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English56 <- str_match(rwjAll$country, "Tanzania")
-rwjAll$English56 <- ifelse(rwjAll$English56 == "Tanzania", 1, 0)
-rwjAll$English56 <- unmatrix(rwjAll$English56)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English56[i]=NA
-rwjAll$English57 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English57 <- str_match(rwjAll$country, "Sudan")
-rwjAll$English57 <- ifelse(rwjAll$English57 == "Sudan", 1, 0)
-rwjAll$English57 <- unmatrix(rwjAll$English57)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English57[i]=NA
-rwjAll$English58 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English58 <- str_match(rwjAll$country, "South Sudan")
-rwjAll$English58 <- ifelse(rwjAll$English58 == "South Sudan", 1, 0)
-rwjAll$English58 <- unmatrix(rwjAll$English58)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English58[i]=NA
-rwjAll$English59 <- as.vector(c(NA * nrow(rwjAll)))
-rwjAll$English59 <- str_match(rwjAll$country, "Malaysia")
-rwjAll$English59 <- ifelse(rwjAll$English59 == "Malaysia", 1, 0)
-rwjAll$English59 <- unmatrix(rwjAll$English59)
-for (i in 1:length(rwjAll$English1))
-if (!is.na(rwjAll$English1[i])) rwjAll$English59[i]=NA
-rwjAll$English_total <- rowSums(rwjAll[, 13:71], na.rm = TRUE)
+rwjAll$English_total <- rowSums(rwjAll[, 13:15], na.rm = TRUE)
 rwjAll$English_total[rwjAll$English_total == 2] <- 1
-rwjAll$English_total[rwjAll$English_total == 3] <- 1
-rwjAll$English_total[rwjAll$English_total == 4] <- 1
-rwjAll$English_total[rwjAll$English_total == 5] <- 1
-rwjAll$English_total[rwjAll$English_total == 6] <- 1
-rwjAll$English_total[rwjAll$English_total == 7] <- 1
-rwjAll$English_total[rwjAll$English_total == 8] <- 1
-rwjAll$English_total[rwjAll$English_total == 9] <- 1
-rwjAll$English_total[rwjAll$English_total == 10] <- 1
-rwjAll$English_total[rwjAll$English_total == 11] <- 1
-rwjAll$English_total[rwjAll$English_total == 12] <- 1
-rwjAll$English_total[rwjAll$English_total == 13] <- 1
-rwjAll$English_total[rwjAll$English_total == 14] <- 1
 rwjAll$French <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$French <- str_match(rwjAll$body, "French")
 rwjAll$French <- ifelse(rwjAll$French == "French", 1, 0)
@@ -539,10 +185,18 @@ rwjAll$Arabic <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$Arabic <- str_match(rwjAll$body, "Arabic") 
 rwjAll$Arabic <- ifelse(rwjAll$Arabic=="Arabic", 1, 0)
 rwjAll$Arabic <- unmatrix(rwjAll$Arabic)
+rwjAll$Arabic2 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Arabic2 <- str_match(rwjAll$body, "arabe") 
+rwjAll$Arabic2 <- ifelse(rwjAll$Arabic2=="arabe", 1, 0)
+rwjAll$Arabic2 <- unmatrix(rwjAll$Arabic2)
 rwjAll$Spanish <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$Spanish <- str_match(rwjAll$body, "Spanish") 
 rwjAll$Spanish <- ifelse(rwjAll$Spanish=="Spanish", 1, 0)
 rwjAll$Spanish <- unmatrix(rwjAll$Spanish)
+rwjAll$Spanish2 <- as.vector(c(NA * nrow(rwjAll)))
+rwjAll$Spanish2 <- str_match(rwjAll$body, "espagnol") 
+rwjAll$Spanish2 <- ifelse(rwjAll$Spanish2=="espagnol", 1, 0)
+rwjAll$Spanish2 <- unmatrix(rwjAll$Spanish2)
 rwjAll$Russian <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$Russian <- str_match(rwjAll$body, "Russian") 
 rwjAll$Russian <- ifelse(rwjAll$Russian=="Russian", 1, 0)
@@ -559,14 +213,21 @@ rwjAll$local <- as.vector(c(NA * nrow(rwjAll)))
 rwjAll$local <- str_match(rwjAll$body, "local language") 
 rwjAll$local <- ifelse(rwjAll$local=="local language", 1, 0)
 rwjAll$local <- unmatrix(rwjAll$local)
-rwjAll$French_Arabic <- rowSums(rwjAll[, c("French", "Arabic")], na.rm = TRUE)
-rwjAll$French_Spanish <- rowSums(rwjAll[, c("French", "Spanish")], na.rm = TRUE)
-rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, c("French", "Arabic", "Spanish")], na.rm = TRUE)
+rwjAll$French_Arabic <- rowSums(rwjAll[, c("French", "English2", "Arabic", "Arabic2")], na.rm = TRUE)
 rwjAll$French_Arabic[rwjAll$French_Arabic==2] <- 1
+rwjAll$French_Arabic[rwjAll$French_Arabic==3] <- 1
+rwjAll$French_Arabic[rwjAll$French_Arabic==4] <- 1
+rwjAll$French_Spanish <- rowSums(rwjAll[, c("French", "English2", "Spanish", "English3")], na.rm = TRUE)
 rwjAll$French_Spanish[rwjAll$French_Spanish==2] <- 1
+rwjAll$French_Spanish[rwjAll$French_Spanish==3] <- 1
+rwjAll$French_Spanish[rwjAll$French_Spanish==4] <- 1
+rwjAll$French_Arabic_Spanish <- rowSums(rwjAll[, c("French", "English2", "Arabic", "Arabic2", "Spanish", "English3")], na.rm = TRUE)
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==2] <- 1
 rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==3] <- 1
-rwjAll$language_all <- rowSums(rwjAll[, 72:82], na.rm = TRUE)
+rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==4] <- 1
+rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==5] <- 1
+rwjAll$French_Arabic_Spanish[rwjAll$French_Arabic_Spanish==6] <- 1
+rwjAll$language_all <- rowSums(rwjAll[, 16:28], na.rm = TRUE)
 rwjAll$language_all[rwjAll$language_all == 2] <- 1
 rwjAll$language_all[rwjAll$language_all == 3] <- 1
 rwjAll$language_all[rwjAll$language_all == 4] <- 1
@@ -579,29 +240,28 @@ rwjAll$language_all[rwjAll$language_all == 10] <- 1
 rwjAll$language_all[rwjAll$language_all == 11] <- 1
 rwjAll_bil <- filter(rwjAll, language_all == 1)
 rwjAll_bil <- rwjAll_bil[!duplicated(rwjAll_bil), ]
-rwjAll_bil$EF <- rwjAll_bil$English_total + rwjAll_bil$French
-rwjAll_bil$EA <- rwjAll_bil$English_total + rwjAll_bil$Arabic
-rwjAll_bil$ES <- rwjAll_bil$English_total + rwjAll_bil$Spanish
-rwjAll_bil$ER <- rwjAll_bil$English_total + rwjAll_bil$Russian
-rwjAll_bil$EC <- rwjAll_bil$English_total + rwjAll_bil$Chinese
-rwjAll_bil$EP <- rwjAll_bil$English_total + rwjAll_bil$Portuguese
-rwjAll_bil$EL <- rwjAll_bil$English_total + rwjAll_bil$local
+rwjAll_bil$EF <- rwjAll_bil$English1 + rwjAll_bil$English2 + rwjAll_bil$French
 rwjAll_bil$EF[rwjAll_bil$EF==2] <- 1
+rwjAll_bil$EF[rwjAll_bil$EF==3] <- 1
+rwjAll_bil$EF[rwjAll_bil$EF==4] <- 1
+rwjAll_bil$EA <- rwjAll_bil$English1 + rwjAll_bil$Arabic
 rwjAll_bil$EA[rwjAll_bil$EA==2] <- 1
+rwjAll_bil$ES <- rwjAll_bil$English1 + rwjAll_bil$English3 + rwjAll_bil$Spanish
 rwjAll_bil$ES[rwjAll_bil$ES==2] <- 1
-rwjAll_bil$ER[rwjAll_bil$ER==2] <- 1
-rwjAll_bil$EC[rwjAll_bil$EC==2] <- 1
-rwjAll_bil$EP[rwjAll_bil$EP==2] <- 1
-rwjAll_bil$EL[rwjAll_bil$EL==2] <- 1
+rwjAll_bil$ES[rwjAll_bil$ES==3] <- 1
+rwjAll_bil$ER <- rwjAll_bil$English1 + rwjAll_bil$Russian
+rwjAll_bil$EC <- rwjAll_bil$English1 + rwjAll_bil$Chinese
+rwjAll_bil$EP <- rwjAll_bil$English1 + rwjAll_bil$Portuguese
+rwjAll_bil$EL <- rwjAll_bil$English1 + rwjAll_bil$local
 
 #### Determine frequencies of the demand for bilingual and multilingual speakers
 
 rwjAll_bil16 <- filter(rwjAll_bil, year == 2016) 
-total_EF_16 <- sum(rwjAll_bil16$French, na.rm = TRUE)
+total_EF_16 <- sum(rwjAll_bil16$French, na.rm = TRUE) +  sum(rwjAll_bil16$English2, na.rm = TRUE)
 EF_percent_16 <- total_EF_16 / nrow(rwjAll_bil16)
 total_EA_16 <- sum(rwjAll_bil16$Arabic, na.rm = TRUE) 
 EA_percent_16 <- total_EA_16 / nrow(rwjAll_bil16)
-total_ES_16 <- sum(rwjAll_bil16$Spanish, na.rm = TRUE) 
+total_ES_16 <- sum(rwjAll_bil16$Spanish, na.rm = TRUE) + sum(rwjAll_bil16$English3, na.rm = TRUE)
 ES_percent_16 <- total_ES_16 / nrow(rwjAll_bil16)
 total_ER_16 <- sum(rwjAll_bil16$Russian, na.rm = TRUE) 
 ER_percent_16 <- total_ER_16 / nrow(rwjAll_bil16)
@@ -619,11 +279,11 @@ total_EFAS_16 <- sum(rwjAll_bil16$French_Arabic_Spanish, na.rm = TRUE)
 EFAS_percent_16 <- total_EFAS_16 / nrow(rwjAll_bil16)
 write.csv(rwjAll_bil16, "rwjAll_bil16.csv")
 rwjAll_bil15 <- filter(rwjAll_bil, year == 2015) 
-total_EF_15 <- sum(rwjAll_bil15$French, na.rm = TRUE)
+total_EF_15 <- sum(rwjAll_bil15$French, na.rm = TRUE) + sum(rwjAll_bil15$English2, na.rm = TRUE)
 EF_percent_15 <- total_EF_15 / nrow(rwjAll_bil15)
 total_EA_15 <- sum(rwjAll_bil15$Arabic, na.rm = TRUE) 
 EA_percent_15 <- total_EA_15 / nrow(rwjAll_bil15)
-total_ES_15 <- sum(rwjAll_bil15$Spanish, na.rm = TRUE) 
+total_ES_15 <- sum(rwjAll_bil15$Spanish, na.rm = TRUE) + sum(rwjAll_bil15$English3, na.rm = TRUE)  
 ES_percent_15 <- total_ES_15 / nrow(rwjAll_bil15)
 total_ER_15 <- sum(rwjAll_bil15$Russian, na.rm = TRUE) 
 ER_percent_15 <- total_ER_15 / nrow(rwjAll_bil15)
@@ -641,11 +301,11 @@ total_EFAS_15 <- sum(rwjAll_bil15$French_Arabic_Spanish, na.rm = TRUE)
 EFAS_percent_15 <- total_EFAS_15 / nrow(rwjAll_bil15)
 write.csv(rwjAll_bil15, "rwjAll_bil15.csv")
 rwjAll_bil14 <- filter(rwjAll_bil, year == 2014) 
-total_EF_14 <- sum(rwjAll_bil14$French, na.rm = TRUE)
+total_EF_14 <- sum(rwjAll_bil14$French, na.rm = TRUE) + sum(rwjAll_bil14$Englis2, na.rm = TRUE)
 EF_percent_14 <- total_EF_14 / nrow(rwjAll_bil14)
 total_EA_14 <- sum(rwjAll_bil14$Arabic, na.rm = TRUE) 
 EA_percent_14 <- total_EA_14 / nrow(rwjAll_bil14)
-total_ES_14 <- sum(rwjAll_bil14$Spanish, na.rm = TRUE) 
+total_ES_14 <- sum(rwjAll_bil14$Spanish, na.rm = TRUE) +sum(rwjAll_bil14$English3, na.rm = TRUE)
 ES_percent_14 <- total_ES_14 / nrow(rwjAll_bil14)
 total_ER_14 <- sum(rwjAll_bil14$Russian, na.rm = TRUE) 
 ER_percent_14 <- total_ER_14 / nrow(rwjAll_bil14)
@@ -663,11 +323,11 @@ total_EFAS_14 <- sum(rwjAll_bil14$French_Arabic_Spanish, na.rm = TRUE)
 EFAS_percent_14 <- total_EFAS_14 / nrow(rwjAll_bil14)
 write.csv(rwjAll_bil14, "rwjAll_bil14.csv")
 rwjAll_bil13 <- filter(rwjAll_bil, year == 2013) 
-total_EF_13 <- sum(rwjAll_bil13$French, na.rm = TRUE)
+total_EF_13 <- sum(rwjAll_bil13$French, na.rm = TRUE) + sum(rwjAll_bil13$English2, na.rm = TRUE)
 EF_percent_13 <- total_EF_13 / nrow(rwjAll_bil13)
 total_EA_13 <- sum(rwjAll_bil13$Arabic, na.rm = TRUE) 
 EA_percent_13 <- total_EA_13 / nrow(rwjAll_bil13)
-total_ES_13 <- sum(rwjAll_bil13$Spanish, na.rm = TRUE) 
+total_ES_13 <- sum(rwjAll_bil13$Spanish, na.rm = TRUE) + sum(rwjAll_bil13$English3, na.rm = TRUE)
 ES_percent_13 <- total_ES_13 / nrow(rwjAll_bil13)
 total_ER_13 <- sum(rwjAll_bil13$Russian, na.rm = TRUE) 
 ER_percent_13 <- total_ER_13 / nrow(rwjAll_bil13)
@@ -685,11 +345,11 @@ total_EFAS_13 <- sum(rwjAll_bil13$French_Arabic_Spanish, na.rm = TRUE)
 EFAS_percent_13 <- total_EFAS_13 / nrow(rwjAll_bil13)
 write.csv(rwjAll_bil13, "rwjAll_bil13.csv")
 rwjAll_bil12 <- filter(rwjAll_bil, year == 2012) 
-total_EF_12 <- sum(rwjAll_bil12$French, na.rm = TRUE)
+total_EF_12 <- sum(rwjAll_bil12$French, na.rm = TRUE) + sum(rwjAll_bil12$English2, na.rm = TRUE)
 EF_percent_12 <- total_EF_12 / nrow(rwjAll_bil12)
 total_EA_12 <- sum(rwjAll_bil12$Arabic, na.rm = TRUE) 
 EA_percent_12 <- total_EA_12 / nrow(rwjAll_bil12)
-total_ES_12 <- sum(rwjAll_bil12$Spanish, na.rm = TRUE) 
+total_ES_12 <- sum(rwjAll_bil12$Spanish, na.rm = TRUE) + sum(rwjAll_bil12$English3, na.rm = TRUE) 
 ES_percent_12 <- total_ES_12 / nrow(rwjAll_bil12)
 total_ER_12 <- sum(rwjAll_bil12$Russian, na.rm = TRUE) 
 ER_percent_12 <- total_ER_12 / nrow(rwjAll_bil12)
@@ -707,11 +367,11 @@ total_EFAS_12 <- sum(rwjAll_bil12$French_Arabic_Spanish, na.rm = TRUE)
 EFAS_percent_12 <- total_EFAS_12 / nrow(rwjAll_bil12)
 write.csv(rwjAll_bil12, "rwjAll_bil12.csv")
 rwjAll_bil11 <- filter(rwjAll_bil, year == 2011) 
-total_EF_11 <- sum(rwjAll_bil11$French, na.rm = TRUE)
+total_EF_11 <- sum(rwjAll_bil11$French, na.rm = TRUE) + sum(rwjAll_bil11$English2, na.rm = TRUE)
 EF_percent_11 <- total_EF_11 / nrow(rwjAll_bil11)
 total_EA_11 <- sum(rwjAll_bil11$Arabic, na.rm = TRUE) 
 EA_percent_11 <- total_EA_11 / nrow(rwjAll_bil11)
-total_ES_11 <- sum(rwjAll_bil11$Spanish, na.rm = TRUE) 
+total_ES_11 <- sum(rwjAll_bil11$Spanish, na.rm = TRUE) + sum(rwjAll_bil11$English3, na.rm = TRUE) 
 ES_percent_11 <- total_ES_11 / nrow(rwjAll_bil11)
 total_ER_11 <- sum(rwjAll_bil11$Russian, na.rm = TRUE) 
 ER_percent_11 <- total_ER_11 / nrow(rwjAll_bil11)
@@ -784,16 +444,16 @@ plot1 <- ggplot(ml_comb, aes(x = year, y = percentage, color = bilingual_combina
 
 #### Perform one sample t-tests
 
-EF_tTest <- t.test(bi_lang_pct$English_French, mu=25)
-EA_tTest <- t.test(bi_lang_pct$English_Arabic, mu=15)
-ES_tTest <- t.test(bi_lang_pct$English_Spanish, mu=9)
-EC_tTest <- t.test(bi_lang_pct$English_Chinese, mu=1.5)
-ER_tTest <- t.test(bi_lang_pct$English_Russian, mu=3)
-EP_tTest <- t.test(bi_lang_pct$English_Portuguese, mu=3)
-EL_tTest <- t.test(bi_lang_pct$English_local, mu=2)
-EFA_tTest <- t.test(bi_lang_pct$English_French_Arabic, mu=36)
-EFS_tTest <- t.test(bi_lang_pct$English_French_Spanish, mu=28)
-EFAS_tTest <- t.test(bi_lang_pct$English_French_Arabic_Spanish, mu=38)
+EF_tTest <- t.test(bi_lang_pct$English_French, mu=23)
+EA_tTest <- t.test(bi_lang_pct$English_Arabic, mu=14)
+ES_tTest <- t.test(bi_lang_pct$English_Spanish, mu=7)
+EC_tTest <- t.test(bi_lang_pct$English_Chinese, mu=1)
+ER_tTest <- t.test(bi_lang_pct$English_Russian, mu=2.5)
+EP_tTest <- t.test(bi_lang_pct$English_Portuguese, mu=2)
+EL_tTest <- t.test(bi_lang_pct$English_local, mu=2.5)
+EFA_tTest <- t.test(bi_lang_pct$English_French_Arabic, mu=33)
+EFS_tTest <- t.test(bi_lang_pct$English_French_Spanish, mu=26)
+EFAS_tTest <- t.test(bi_lang_pct$English_French_Arabic_Spanish, mu=35)
 
 #### Perform a two-sample z- test using monthly frequencies of job ads seeking English-Portuguese and English-local language speakers
 
@@ -994,10 +654,7 @@ Year <- c(2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2012, 2012
 Month <- c(03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 01, 02, 03, 04, 05, 06)   
 English_Portuguese <- c(mar11_EP, apr11_EP, may11_EP, jun11_EP, jul11_EP, aug11_EP, sep11_EP, oct11_EP, nov11_EP, dec11_EP, jan12_EP, feb12_EP, mar12_EP, apr12_EP, may12_EP, jun12_EP, jul12_EP, aug12_EP, sep12_EP, oct12_EP, nov12_EP, dec12_EP, jan13_EP, feb13_EP, mar13_EP, apr13_EP, may13_EP, jun13_EP, jul13_EP, aug13_EP, sep13_EP, oct13_EP, nov13_EP, dec13_EP, jan14_EP, feb14_EP, mar14_EP, apr14_EP, may14_EP, jun14_EP, jul14_EP, aug14_EP, sep14_EP, oct14_EP, nov14_EP, dec14_EP, jan15_EP, feb15_EP, mar15_EP, apr15_EP, may15_EP, jun15_EP, jul15_EP, aug15_EP, sep15_EP, oct15_EP, nov15_EP, dec15_EP, jan16_EP, feb16_EP, mar16_EP, apr16_EP, may16_EP, jun16_EP)
 English_local <- c(mar11_EL, apr11_EL, may11_EL, jun11_EL, jul11_EL, aug11_EL, sep11_EL, oct11_EL, nov11_EL, dec11_EL, jan12_EL, feb12_EL, mar12_EL, apr12_EL, may12_EL, jun12_EL, jul12_EL, aug12_EL, sep12_EL, oct12_EL, nov12_EL, dec12_EL, jan13_EL, feb13_EL, mar13_EL, apr13_EL, may13_EL, jun13_EL, jul13_EL, aug13_EL, sep13_EL, oct13_EL, nov13_EL, dec13_EL, jan14_EL, feb14_EL, mar14_EL, apr14_EL, may14_EL, jun14_EL, jul14_EL, aug14_EL, sep14_EL, oct14_EL, nov14_EL, dec14_EL, jan15_EL, feb15_EL, mar15_EL, apr15_EL, may15_EL, jun15_EL, jul15_EL, aug15_EL, sep15_EL, oct15_EL, nov15_EL, dec15_EL, jan16_EL, feb16_EL, mar16_EL, apr16_EL, may16_EL, jun16_EL)
-zTestdf <- cbind(Year, Month, English_Portuguese, English_local)
-zTestdf <- as.data.frame(zTestdf)
-sd(zTestdf$English_Portuguese)
-sd(zTestdf$English_local)
+zTestdf <- data.frame(Year, Month, English_Portuguese, English_local)
 z.test(zTestdf$English_Portuguese, zTestdf$English_local, sigma.x = sd(zTestdf$English_Portuguese), sigma.y = sd(zTestdf$English_local), conf.level = 0.95)
 cor(zTestdf$English_Portuguese, zTestdf$English_local)
 

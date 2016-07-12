@@ -428,7 +428,18 @@ plot1 <- ggplot(ml_comb, aes(x = year, y = percentage, color = bilingual_combina
                             "English_French_Arabic", "English_French_Spanish", 
                             "English_French", "English_Arabic", "English_Spanish", 
                             "English_Portuguese", "English_local", "English_Russian", 
-                            "English_Chinese"))
+                            "English_Chinese"),
+                            labels = c("English-French-Arabic-Spanish", "English-French-Arabic", "English-French-Spanish", "English-French", "English-Arabic", "English-Spanish", "English-Portuguese", "English-local", "English-Russian", "English-Chinese")) + 
+                            labs(title="Demand for English speakers with foreign language skills\nin global development and humanitarian relief") + 
+                            theme(plot.title = element_text(hjust = 0.5, size = 12), 
+                                  legend.text = element_text(size = 8),
+                                  legend.title = element_text(size = 8),
+                                  axis.title.y = element_text(size = 8),
+                                  axis.title.x = element_blank(),
+                                  axis.text.x = element_text(size = 8),
+                                  axis.text.y = element_text(size = 8)) 
+f <- add_sub(plot1, "*Based on 99,310 job ads on Reliefweb", size=8, hjust=1, vjust =1)
+ggsave("plot1.jpeg", f))
 
 #### Perform one sample t-tests
 
